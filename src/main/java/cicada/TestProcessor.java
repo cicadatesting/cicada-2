@@ -89,6 +89,10 @@ public class TestProcessor {
             asserts = makeAsserts(test.getAsserts());
         }
 
+        if (test.getExecutionsPerClient() != null) {
+            test.setExecutionsPerClient(asserts.size() > 0 ? Integer.MAX_VALUE : 1);
+        }
+
         // run clients once if no asserts (or number of times specified)
         // run clients indefinitely until asserts pass
     }

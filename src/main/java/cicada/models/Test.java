@@ -10,6 +10,9 @@ public class Test {
     @JsonProperty("name")
     private String name;
 
+    @JsonProperty("executionPerClient")
+    private Integer executionsPerClient;
+
     @JsonProperty("clients")
     private List<ClientSpec> clients;
 
@@ -22,6 +25,14 @@ public class Test {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getExecutionsPerClient() {
+        return executionsPerClient;
+    }
+
+    public void setExecutionsPerClient(Integer executionsPerClient) {
+        this.executionsPerClient = executionsPerClient;
     }
 
     public List<ClientSpec> getClients() {
