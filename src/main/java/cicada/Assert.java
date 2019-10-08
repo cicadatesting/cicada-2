@@ -1,7 +1,11 @@
 package cicada;
 
-import com.fasterxml.jackson.databind.JsonNode;
+import cicada.models.CicadaAssert;
 
-public interface Assert {
-    public void readParameters(JsonNode parameters);
+public class Assert {
+    private CicadaAssert cicadaAssert;
+
+    public Assert(CicadaAssert cicadaAssert) {
+        this.cicadaAssert = cicadaAssert;
+    }
 }

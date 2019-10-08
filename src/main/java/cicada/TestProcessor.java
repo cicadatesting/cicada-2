@@ -1,6 +1,5 @@
 package cicada;
 
-import java.lang.System.Logger;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,23 +7,25 @@ import java.util.List;
 import java.util.Map;
 
 import cicada.models.AssertSpec;
+import cicada.models.CicadaAssert;
+import cicada.models.CicadaClient;
 import cicada.models.ClientSpec;
 import cicada.models.Test;
 
 public class TestProcessor {
-    Map<String, Class<? extends Client>> availableClients;
-    Map<String, Class<? extends Assert>> availableAsserts;
+    Map<String, Class<? extends CicadaClient>> availableClients;
+    Map<String, Class<? extends CicadaAssert>> availableAsserts;
 
     public TestProcessor() {
         this.availableAsserts = new HashMap<>();
         this.availableAsserts = new HashMap<>();
     }
 
-    public void addClient(String name, Class<? extends Client> client) {
+    public void addClient(String name, Class<? extends CicadaClient> client) {
         this.availableClients.put(name, client);
     }
 
-    public void addAssert(String name, Class<? extends Assert> asrt) {
+    public void addAssert(String name, Class<? extends CicadaAssert> asrt) {
         this.availableAsserts.put(name, asrt);
     }
 
@@ -33,9 +34,14 @@ public class TestProcessor {
 
         for (ClientSpec clientSpec : clientSpecs) {
             try {
-                Client c = this.availableClients.get(clientSpec.getType()).getDeclaredConstructor().newInstance();
+                CicadaClient c = this.availableClients
+                    .get(clientSpec.getType())
+                    .getDeclaredConstructor()
+                    .newInstance();
+
                 c.readSettings(clientSpec.getSettings());
-                clients.add(c);
+                // NOTE: may validate earlier to ensure client has actions
+                clients.add(new Client(c, clientSpec.getActions()));
             } catch (
                 NullPointerException
                 |InstantiationException
@@ -56,9 +62,13 @@ public class TestProcessor {
 
         for (AssertSpec assertSpec : assertSpecs) {
             try {
-                Assert a = this.availableAsserts.get(assertSpec.getType()).getDeclaredConstructor().newInstance();
+                CicadaAssert a = this.availableAsserts
+                    .get(assertSpec.getType())
+                    .getDeclaredConstructor()
+                    .newInstance();
+
                 a.readParameters(assertSpec.getParameters());
-                asserts.add(a);
+                asserts.add(new Assert(a));
             } catch (
                 NullPointerException
                 |InstantiationException
@@ -90,10 +100,21 @@ public class TestProcessor {
         }
 
         if (test.getExecutionsPerClient() != null) {
+            // 1 execution of all actions for each client if no asserts, or infinite if has asserts
             test.setExecutionsPerClient(asserts.size() > 0 ? Integer.MAX_VALUE : 1);
         }
 
-        // run clients once if no asserts (or number of times specified)
-        // run clients indefinitely until asserts pass
+        // TODO: Submit to timed thread executor
+        // run for number of executions specified, or until asserts have finished if infinite
+        for (int i = 0; i < test.getExecutionsPerClient(); i++) {
+            for (Client client : clients) {
+                // TODO: set state
+                client.invoke();
+            }
+
+            for (Assert asrt : asserts) {
+                // TODO: check assert against state container
+            }
+        }
     }
 }
