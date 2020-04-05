@@ -1,0 +1,10 @@
+requests
+grpcio
+protobuf
+dask==2.12.0
+distributed==2.12.0
+fsspec>=0.3.3
+docker
+jinja2
+psycopg2
+sqlalchemy

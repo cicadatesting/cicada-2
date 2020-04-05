@@ -1,0 +1,7 @@
+.idea
+.vscode
+.mypy_cache
+.env
+dask-worker-space
+*/__pycache__
+*/.pytest_cache

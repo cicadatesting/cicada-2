@@ -1,0 +1,50 @@
+description: Example test
+version: 0.0
+tests:
+  - name: add_members
+    description: add 100 new members
+    runner: RESTRunner
+    # runnerCount (number of instances)
+    # cycles (number of times to run each action and assert)
+    # actionDistributionStrategy
+    # Each runner runs all actions independently (parallel)
+    # Each runner is in a circular queue and gets an action (series)
+    actions:
+      - type: POST
+        # name (POST0 if not specified)
+        executionsPerCycle: 100 # execute 100 times before moving onto next action
+        params:
+          url: "http://host.docker.internal:8080/members"
+          body:
+            name: jeff
+  - name: update_ages
+    description: update ages of new members
+    runner: SQLRunner
+    dependencies:
+      - add_members
+    config:
+      # NOTE: possibly add feature to render inline without template section
+      connectionString: postgresql://postgres:admin@host.docker.internal:5432/postgres
+    # Run each action, then check each assert. Repeat actions until all asserts have passed
+    actions:
+      - type: SQLQuery
+        template: >
+          params:
+            {% set ids = [] %}
+            {% for member in state['add_members']['actions']['POST0']['results'] %}
+            {% do ids.append(member['body']['id']) %}
+            {% endfor %}
+            query: "update members set name='jeff2' where id in ({{ ids|join(',') }})"
+        outputs:
+          # Used to add state outside of runners 
+          - name: index
+            isGlobal: false # if global, store as state['index'] or something, else, state['update_ages']['actions']['SQLQuery0']['index']
+            template: >
+              value: {{ state.get('update_ages', {}).get('actions', {}).get('SQLQuery0', {}).get('outputs', {}).get('index', [1]) }}
+    asserts:
+      - type: SQLQuery
+        params:
+          query: select count(*) from my_table where my_name='jeff'
+          table:
+            - row:
+              - column: 100

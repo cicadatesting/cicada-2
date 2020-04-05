@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+
+package cicada_2;
+
+service Runner {
+    // TODO: stream action requests and results for multiple executions
+    rpc Action (ActionRequest) returns (ActionReply);
+    rpc Assert (AssertRequest) returns (AssertReply);
+    rpc Healthcheck (google.protobuf.Empty) returns (HealthcheckReply);
+}
+
+message ActionRequest {
+    string type = 1;
+    bytes params = 2; // utf-8 encoded json byte string
+}
+
+message ActionReply {
+    bytes outputs = 1; // utf-8 encoded json byte string
+}
+
+message AssertRequest {
+    string type = 1;
+    bytes params = 2;
+}
+
+message AssertReply {
+    bool passed = 1;
+}
+
+message HealthcheckReply {
+    bool ready = 1;
+}

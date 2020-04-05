@@ -1,0 +1,19 @@
+version: '3'
+services:
+  db:
+    image: postgres:12-alpine
+    environment:
+      - POSTGRES_PASSWORD=admin
+    ports:
+      - 5432:5432
+  flyway:
+    image: flyway/flyway:6-alpine
+    command: -url=jdbc:postgresql://db:5432/ -schemas=public -user=postgres -password=admin -connectRetries=60 migrate
+    volumes:
+      - .:/flyway/sql
+    depends_on:
+      - db
+  api:
+    image: example-rest-api
+    ports:
+      - 8080:8080
