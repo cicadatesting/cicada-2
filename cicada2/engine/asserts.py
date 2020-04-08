@@ -3,7 +3,7 @@ from typing import Dict, List
 from cicada2.engine.messaging import send_assert
 from cicada2.engine.parsing import render_section
 from cicada2.engine.state import create_result_name
-from cicada2.engine.types import Assert, Statuses
+from cicada2.engine.types import Assert, AssertResult, Statuses
 
 
 def run_asserts(asserts: List[Assert], state: dict, hostname: str) -> Statuses:
@@ -16,17 +16,24 @@ def run_asserts(asserts: List[Assert], state: dict, hostname: str) -> Statuses:
         # TODO: validate for action/assert having type param
         if rendered_assert['type'] == 'NullAssert':
             # NOTE: possibly add template free way of computing passed
-            passed: bool = rendered_assert.get('passed', False)
+            # passed: bool = rendered_assert.get('passed', False)
+            assert_result = AssertResult(
+                passed=rendered_assert.get('passed', False),
+                actual=rendered_assert.get('actual', ''),
+                expected=rendered_assert.get('expected', ''),
+                description=rendered_assert.get('description', '')
+            )
         else:
-            passed: bool = send_assert(hostname, rendered_assert)
+            # passed: bool = send_assert(hostname, rendered_assert)
+            assert_result = send_assert(hostname, rendered_assert)
 
         assert_name: str = rendered_assert.get('name')
 
         if assert_name is None:
             assert_name = create_result_name(rendered_assert['type'], results)
 
-        # NOTE: This should be improved, [passed] is un-intuitive
-        results[assert_name] = [passed]
+        # NOTE: This should be improved, [assert_result] is un-intuitive
+        results[assert_name] = [assert_result]
 
     return results
 
@@ -48,5 +55,5 @@ def get_remaining_asserts(asserts: List[Assert], statuses: Statuses) -> List[Ass
     return [
         asserts_by_name[assert_name]
         for assert_name in asserts_by_name
-        if not any(statuses[assert_name])
+        if not any(status.passed for status in statuses[assert_name])
     ]

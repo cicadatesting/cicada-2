@@ -8,7 +8,7 @@ from cicada2.engine.state import (
     combine_lists_by_key,
     create_result_name
 )
-from cicada2.engine.types import Action, ActionsData, ActionData, ActionResult, Output
+from cicada2.engine.types import Action, ActionsData, ActionResult, Output
 
 
 def run_actions(actions: List[Action], state: dict, hostname: str) -> ActionsData:
@@ -50,7 +50,7 @@ def run_actions(actions: List[Action], state: dict, hostname: str) -> ActionsDat
     return data
 
 
-def combine_action_data(combined_data: ActionsData, action_data: ActionData) -> ActionsData:
+def combine_action_data(combined_data: ActionsData, action_data: ActionsData) -> ActionsData:
     combined_keys: Set[str] = combine_keys(combined_data, action_data)
 
     return {

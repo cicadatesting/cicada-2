@@ -1,5 +1,6 @@
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, NamedTuple, Optional
 from typing_extensions import TypedDict
+
 
 class Output(TypedDict):
     name: str
@@ -20,6 +21,7 @@ class Action(TypedDict):
 ActionResult = dict
 
 
+# NOTE: possibly make this a named tuple
 class ActionData(TypedDict):
     results: List[ActionResult]
     outputs: Dict[str, List[Any]]
@@ -33,9 +35,20 @@ class Assert(TypedDict):
     type: str
     params: dict
     template: str
+    passed: bool
+    actual: str
+    expected: str
+    description: str
 
 
-Statuses: object = Dict[str, List[bool]]
+class AssertResult(NamedTuple):
+    passed: bool
+    actual: Optional[str]
+    expected: Optional[str]
+    description: Optional[str]
+
+
+Statuses: object = Dict[str, List[AssertResult]]
 
 
 class TestConfig(TypedDict):

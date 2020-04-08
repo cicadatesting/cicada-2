@@ -2,6 +2,7 @@ from collections import defaultdict
 from unittest.mock import patch, Mock
 
 from cicada2.engine import testing
+from cicada2.engine.types import AssertResult
 
 
 def test_get_default_cycles_empty():
@@ -58,7 +59,7 @@ def test_continue_running_asserts_failed_unlimited_second_run():
     ]
 
     assert_statuses = {
-        'RESTAssert0': [False],
+        'RESTAssert0': [AssertResult(passed=False, actual='', expected='', description='')],
     }
 
     assert testing.continue_running(asserts=test_asserts, remaining_cycles=-2, assert_statuses=assert_statuses)
@@ -72,7 +73,7 @@ def test_continue_running_asserts_passed_unlimited_second_run():
     ]
 
     assert_statuses = {
-        'RESTAssert0': [True],
+        'RESTAssert0': [AssertResult(passed=True, actual='', expected='', description='')],
     }
 
     assert not testing.continue_running(asserts=test_asserts, remaining_cycles=-2, assert_statuses=assert_statuses)
@@ -86,7 +87,7 @@ def test_continue_running_asserts_passed_limited_second_run():
     ]
 
     assert_statuses = {
-        'RESTAssert0': [True],
+        'RESTAssert0': [AssertResult(passed=True, actual='', expected='', description='')],
     }
 
     assert not testing.continue_running(asserts=test_asserts, remaining_cycles=0, assert_statuses=assert_statuses)
@@ -100,7 +101,7 @@ def test_continue_running_asserts_failed_limited_second_run():
     ]
 
     assert_statuses = {
-        'RESTAssert0': [False],
+        'RESTAssert0': [AssertResult(passed=False, actual='', expected='', description='')],
     }
 
     assert not testing.continue_running(asserts=test_asserts, remaining_cycles=0, assert_statuses=assert_statuses)
@@ -196,7 +197,7 @@ def test_run_actions_parallel_multiple_hosts(run_actions_mock: Mock):
 @patch('cicada2.engine.testing.run_asserts')
 def test_run_asserts_series_one_assert(run_asserts_mock: Mock):
     run_asserts_mock.return_value = {
-        'A': [True]
+        'A': [AssertResult(passed=True, actual='', expected='', description='')]
     }
 
     test_state = defaultdict(dict)
@@ -215,15 +216,17 @@ def test_run_asserts_series_one_assert(run_asserts_mock: Mock):
     )
 
     assert results == {
-        'A': [True]
+        'A': [AssertResult(passed=True, actual='', expected='', description='')]
     }
 
 
 @patch('cicada2.engine.testing.run_asserts')
 def test_run_asserts_series_multiple_hosts_one_assert(run_asserts_mock: Mock):
-    run_asserts_mock.side_effect = {
-        'A': [True]
-    }
+    run_asserts_mock.side_effect = [
+        {
+            'A': [AssertResult(passed=True, actual='', expected='', description='')]
+        }
+    ]
 
     test_state = defaultdict(dict)
     test_asserts = [
@@ -241,15 +244,15 @@ def test_run_asserts_series_multiple_hosts_one_assert(run_asserts_mock: Mock):
     )
 
     assert results == {
-        'A': [True]
+        'A': [AssertResult(passed=True, actual='', expected='', description='')]
     }
 
 
 @patch('cicada2.engine.testing.run_asserts')
 def test_run_asserts_series_one_host_multiple_asserts(run_asserts_mock: Mock):
     run_asserts_mock.return_value = {
-        'A': [True],
-        'B': [False]
+        'A': [AssertResult(passed=True, actual='', expected='', description='')],
+        'B': [AssertResult(passed=False, actual='', expected='', description='')]
     }
 
     test_state = defaultdict(dict)
@@ -272,8 +275,8 @@ def test_run_asserts_series_one_host_multiple_asserts(run_asserts_mock: Mock):
     )
 
     assert results == {
-        'A': [True],
-        'B': [False]
+        'A': [AssertResult(passed=True, actual='', expected='', description='')],
+        'B': [AssertResult(passed=False, actual='', expected='', description='')]
     }
 
 
@@ -319,16 +322,28 @@ def test_run_asserts_series_multiple_host_multiple_asserts(run_asserts_mock: Moc
 def test_run_tests_unlimited_cycles(run_asserts_series_mock: Mock):
     run_asserts_series_mock.side_effect = [
         {
-            'A': [False]
+            'A': [AssertResult(passed=False, actual='', expected='', description='')]
         },
         {
-            'A': [False, False]
+            'A': [
+                AssertResult(passed=False, actual='', expected='', description=''),
+                AssertResult(passed=False, actual='', expected='', description='')
+            ]
         },
         {
-            'A': [False, False, True]
+            'A': [
+                AssertResult(passed=False, actual='', expected='', description=''),
+                AssertResult(passed=False, actual='', expected='', description=''),
+                AssertResult(passed=True, actual='', expected='', description='')
+            ]
         },
         {
-            'A': [False, False, True, True]
+            'A': [
+                AssertResult(passed=False, actual='', expected='', description=''),
+                AssertResult(passed=False, actual='', expected='', description=''),
+                AssertResult(passed=True, actual='', expected='', description=''),
+                AssertResult(passed=True, actual='', expected='', description='')
+            ]
         }
     ]
 
@@ -352,7 +367,11 @@ def test_run_tests_unlimited_cycles(run_asserts_series_mock: Mock):
     assert end_state == {
         'some_test_name': {
             'asserts': {
-                'A': [False, False, True]
+                'A': [
+                    AssertResult(passed=False, actual='', expected='', description=''),
+                    AssertResult(passed=False, actual='', expected='', description=''),
+                    AssertResult(passed=True, actual='', expected='', description='')
+                ]
             }
         }
     }
@@ -362,13 +381,20 @@ def test_run_tests_unlimited_cycles(run_asserts_series_mock: Mock):
 def test_run_tests_limited_cycles(run_asserts_series_mock: Mock):
     run_asserts_series_mock.side_effect = [
         {
-            'A': [False]
+            'A': [AssertResult(passed=False, actual='', expected='', description='')]
         },
         {
-            'A': [False, False]
+            'A': [
+                AssertResult(passed=False, actual='', expected='', description=''),
+                AssertResult(passed=False, actual='', expected='', description='')
+            ]
         },
         {
-            'A': [False, False, False]
+            'A': [
+                AssertResult(passed=False, actual='', expected='', description=''),
+                AssertResult(passed=False, actual='', expected='', description=''),
+                AssertResult(passed=False, actual='', expected='', description='')
+            ]
         }
     ]
 
@@ -393,7 +419,10 @@ def test_run_tests_limited_cycles(run_asserts_series_mock: Mock):
     assert end_state == {
         'some_test_name': {
             'asserts': {
-                'A': [False, False]
+                'A': [
+                    AssertResult(passed=False, actual='', expected='', description=''),
+                    AssertResult(passed=False, actual='', expected='', description='')
+                ]
             }
         }
     }

@@ -1,11 +1,17 @@
 from unittest.mock import patch
 
 from cicada2.engine import asserts
+from cicada2.engine.types import AssertResult
 
 
 @patch('cicada2.engine.asserts.send_assert')
 def test_run_asserts(mock_send_assert):
-    mock_send_assert.return_value = True
+    mock_send_assert.return_value = AssertResult(
+        passed=True,
+        actual='foo',
+        expected='foo',
+        description='good'
+    )
 
     test_asserts = [
         {
@@ -25,9 +31,22 @@ def test_run_asserts(mock_send_assert):
 
     statuses = asserts.run_asserts(test_asserts, {}, '')
 
-    assert statuses['A'] == [True]
-    assert statuses['B'] == [True]
-    assert statuses['C'] == [False]
+    assert statuses['A'] == [
+        AssertResult(
+            passed=True,
+            actual='foo',
+            expected='foo',
+            description='good'
+        )
+    ]
+
+    assert statuses['B'] == [
+        AssertResult(passed=True, actual='', expected='', description='')
+    ]
+
+    assert statuses['C'] == [
+        AssertResult(passed=False, actual='', expected='', description='')
+    ]
 
 # TODO: test remote assert errors
 
@@ -49,10 +68,21 @@ def test_get_remaining_asserts():
     ]
 
     statuses = {
-        'A': [False, True],
-        'B0': [True, True],
-        'B1': [False, False],
-        'C0': [False]
+        'A': [
+            AssertResult(passed=False, actual='', expected='', description=''),
+            AssertResult(passed=True, actual='', expected='', description='')
+        ],
+        'B0': [
+            AssertResult(passed=True, actual='', expected='', description=''),
+            AssertResult(passed=True, actual='', expected='', description='')
+        ],
+        'B1': [
+            AssertResult(passed=False, actual='', expected='', description=''),
+            AssertResult(passed=False, actual='', expected='', description='')
+        ],
+        'C0': [
+            AssertResult(passed=False, actual='', expected='', description='')
+        ]
     }
 
     remaining_asserts = asserts.get_remaining_asserts(test_asserts, statuses)

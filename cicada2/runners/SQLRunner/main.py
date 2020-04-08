@@ -1,5 +1,4 @@
 import time
-from threading import Thread
 from concurrent import futures
 import json
 
@@ -21,7 +20,7 @@ class SQLRunnerServer(runner_pb2_grpc.RunnerServicer):
         )
 
     def Assert(self, request, context):
-        return runner.runner_pb2.AssertReply(passed=True)
+        return runner_pb2.AssertReply(passed=True)
 
     def Healthcheck(self, request, context):
         return runner_pb2.HealthcheckReply(ready=True)

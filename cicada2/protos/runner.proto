@@ -17,6 +17,7 @@ message ActionRequest {
 }
 
 message ActionReply {
+    // TODO: possibly support an encoding param to load non-json datatypes
     bytes outputs = 1; // utf-8 encoded json byte string
 }
 
@@ -27,6 +28,9 @@ message AssertRequest {
 
 message AssertReply {
     bool passed = 1;
+    string actual = 2;
+    string expected = 3;
+    string description = 4;
 }
 
 message HealthcheckReply {

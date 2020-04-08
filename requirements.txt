@@ -1,5 +1,7 @@
 requests
 grpcio
+grpcio-status
+googleapis-common-protos>=1.5.5
 protobuf
 dask==2.12.0
 distributed==2.12.0
@@ -8,3 +10,4 @@ docker
 jinja2
 psycopg2
 sqlalchemy
+typing_extensions

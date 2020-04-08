@@ -9,6 +9,7 @@ tests:
     # actionDistributionStrategy
     # Each runner runs all actions independently (parallel)
     # Each runner is in a circular queue and gets an action (series)
+    # TODO: wait time between executions
     actions:
       - type: POST
         # name (POST0 if not specified)
@@ -44,7 +45,7 @@ tests:
     asserts:
       - type: SQLQuery
         params:
-          query: select count(*) from my_table where my_name='jeff'
+          query: select count(*) from my_table where my_name='jeff2'
           table:
             - row:
               - column: 100

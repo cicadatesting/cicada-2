@@ -2,10 +2,9 @@ from os import getenv
 
 from sqlalchemy import create_engine
 
-from cicada2.protos import runner_pb2
-
 
 ENGINE = None
+
 
 def get_engine():
     global ENGINE
@@ -19,7 +18,8 @@ def get_engine():
         # NOTE: maybe expect connection string in JDBC format
         ENGINE = create_engine(connection_string)
         return ENGINE
-    
+
+    # TODO: support for mysql, possibly sqllite
     # postgresql://postgres:admin@db:5432/postgres
 
     driver = getenv('RUNNER_DRIVER')
