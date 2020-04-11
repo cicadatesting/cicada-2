@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, NamedTuple, Optional
+from typing import Any, Callable, Dict, List, Optional
 from typing_extensions import TypedDict
 
 
@@ -41,7 +41,7 @@ class Assert(TypedDict):
     description: str
 
 
-class AssertResult(NamedTuple):
+class AssertResult(TypedDict):
     passed: bool
     actual: Optional[str]
     expected: Optional[str]

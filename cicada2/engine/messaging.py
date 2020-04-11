@@ -1,7 +1,6 @@
 import json
 
 import grpc
-from grpc_status import rpc_status
 from google.protobuf.empty_pb2 import Empty
 
 from cicada2.protos import runner_pb2, runner_pb2_grpc
@@ -20,9 +19,9 @@ def send_action(runner_address: str, action: dict) -> ActionResult:
             response: runner_pb2.ActionReply = stub.Action(request)
             return json.loads(response.outputs)
         except grpc.RpcError as err:
-            # status = rpc_status.from_call(err)
             # TODO: log error
             print(err)
+            print(err.code())
 
             return {}
 
@@ -38,22 +37,23 @@ def send_assert(runner_address: str, asrt: dict) -> AssertResult:
         try:
             response: runner_pb2.AssertReply = stub.Assert(request)
 
-            return AssertResult(
-                passed=response.passed,
-                actual=response.actual,
-                expected=response.expected,
-                description=response.description
-            )
+            return {
+                'passed': response.passed,
+                'actual': response.actual,
+                'expected': response.expected,
+                'description': response.description
+            }
         except grpc.RpcError as err:
-            status = rpc_status.from_call(err)
             # TODO: log error
+            print(err)
+            print(err.code())
 
-            return AssertResult(
-                passed=False,
-                actual=None,
-                expected=None,
-                description=status.details
-            )
+            return {
+                'passed': False,
+                'actual': None,
+                'expected': None,
+                'description': err.details()
+            }
 
 
 def runner_healthcheck(runner_address: str) -> bool:

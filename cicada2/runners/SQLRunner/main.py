@@ -8,26 +8,59 @@ from cicada2.protos import runner_pb2, runner_pb2_grpc
 from cicada2.runners.SQLRunner import runner
 
 
+# TODO: need a nicer way to test runners individually
 class SQLRunnerServer(runner_pb2_grpc.RunnerServicer):
     def Action(self, request, context):
-        outputs = runner.run_action(
-            action_type=request.type,
-            params=json.loads(request.params)
-        )
+        try:
+            outputs = runner.run_action(
+                action_type=request.type,
+                params=json.loads(request.params)
+            )
 
-        return runner_pb2.ActionReply(
-            outputs=json.dumps(outputs).encode('utf-8')
-        )
+            return runner_pb2.ActionReply(
+                outputs=json.dumps(outputs).encode('utf-8')
+            )
+        except ValueError as e:
+            # NOTE: use abort_with_status?
+            context.abort(
+                code=grpc.StatusCode.INVALID_ARGUMENT,
+                details=e
+            )
+        except RuntimeError as e:
+            context.abort(
+                code=grpc.StatusCode.UNAVAILABLE,
+                details=e
+            )
 
     def Assert(self, request, context):
-        return runner_pb2.AssertReply(passed=True)
+        try:
+            result = runner.run_assert(
+                assert_type=request.type,
+                params=json.loads(request.params)
+            )
+
+            return runner_pb2.AssertReply(
+                passed=result.passed,
+                expected=result.expected,
+                actual=result.actual,
+                description=result.description
+            )
+        except ValueError as e:
+            context.abort(
+                code=grpc.StatusCode.INVALID_ARGUMENT,
+                details=str(e)
+            )
+        except RuntimeError as e:
+            context.abort(
+                code=grpc.StatusCode.UNAVAILABLE,
+                details=str(e)
+            )
 
     def Healthcheck(self, request, context):
         return runner_pb2.HealthcheckReply(ready=True)
 
 
 def main():
-    # TODO: provide config map as env
     server = grpc.server(futures.ThreadPoolExecutor())
 
     runner_pb2_grpc.add_RunnerServicer_to_server(SQLRunnerServer(), server)

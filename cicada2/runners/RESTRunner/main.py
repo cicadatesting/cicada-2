@@ -21,7 +21,6 @@ class RESTRunnerServer(runner_pb2_grpc.RunnerServicer):
                 outputs=json.dumps(outputs).encode('utf-8')
             )
         except ValueError as e:
-            # TODO: catch errors in messaging.py
             # NOTE: use abort_with_status?
             context.abort(
                 code=grpc.StatusCode.INVALID_ARGUMENT,

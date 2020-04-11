@@ -55,5 +55,5 @@ def get_remaining_asserts(asserts: List[Assert], statuses: Statuses) -> List[Ass
     return [
         asserts_by_name[assert_name]
         for assert_name in asserts_by_name
-        if not any(status.passed for status in statuses[assert_name])
+        if not any(status['passed'] for status in statuses[assert_name])
     ]

@@ -10,6 +10,7 @@ RUN pip install -r requirements.txt
 
 ADD cicada2/protos cicada2/protos
 ADD cicada2/runners/SQLRunner cicada2/runners/SQLRunner
+ADD cicada2/runners/util cicada2/runners/util
 
 ADD cicada2/__init__.py cicada2/__init__.py
 ADD cicada2/runners/__init__.py cicada2/runners/__init__.py

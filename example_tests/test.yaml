@@ -29,6 +29,9 @@ tests:
     # Run each action, then check each assert. Repeat actions until all asserts have passed
     actions:
       - type: SQLQuery
+        params:
+          query: "delete from members where name='jeff2'"
+      - type: SQLQuery
         template: >
           params:
             {% set ids = [] %}
@@ -41,11 +44,19 @@ tests:
           - name: index
             isGlobal: false # if global, store as state['index'] or something, else, state['update_ages']['actions']['SQLQuery0']['index']
             template: >
-              value: {{ state.get('update_ages', {}).get('actions', {}).get('SQLQuery0', {}).get('outputs', {}).get('index', [1]) }}
+              {% set index = state.get('update_ages', {}).get('actions', {}).get('SQLQuery1', {}).get('outputs', {}).get('index') %}
+              {% if index is none %}
+                {% set index = [1] %}
+              {% else %}
+                {% set index = [index[-1] + 1] %}
+              {% endif %}
+              value: {{ index }}
     asserts:
-      - type: SQLQuery
+      - type: EqualsRows
         params:
-          query: select count(*) from my_table where my_name='jeff2'
-          table:
-            - row:
-              - column: 100
+          method: SQLQuery
+          actionParams:
+            query: "select count(*) as cnt from members where name='jeff2'"
+          expected:
+            rows:
+              - cnt: 100

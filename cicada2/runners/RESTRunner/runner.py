@@ -7,6 +7,9 @@ import requests
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import BaseHTTPError
 
+from cicada2.runners.util.asserts import assert_dicts
+from cicada2.runners.util.types import AssertResult
+
 
 class ActionParams(TypedDict):
     url: str
@@ -38,14 +41,6 @@ class AssertParams(TypedDict):
     method: str
     expected: Union[int, dict]
     allRequired: Optional[bool]
-
-
-# TODO: move to shared
-class AssertResult(NamedTuple):
-    passed: bool
-    actual: str
-    expected: str
-    description: str
 
 
 def parse_action_params(params: ActionParams) -> RequestParams:
@@ -126,38 +121,6 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
         'text': text,
         'runtime': (end - start).microseconds / 1000
     }
-
-
-# NOTE: Possibly move to shared
-def assert_dicts(
-        expected: dict,
-        actual: dict,
-        all_required=False
-) -> Tuple[bool, str]:
-    if all_required:
-        passed = expected == actual
-
-        if not passed:
-            description = f"Expected {expected}, got {actual}"
-        else:
-            description = 'passed'
-
-        return passed, description
-    else:
-        passed = expected.items() <= actual.items()
-
-        if not passed:
-            non_matching_items = {
-                item[0]: item[1]
-                for item in expected.items()
-                if item not in actual.items()
-            }
-
-            description = f"Expected {non_matching_items} to be in {actual}"
-        else:
-            description = 'passed'
-
-        return passed, description
 
 
 def assert_params_problems(params: AssertParams) -> List[str]:
