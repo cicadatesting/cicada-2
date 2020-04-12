@@ -60,6 +60,12 @@ class TestConfig(TypedDict):
     asserts: List[Assert]
 
 
+class TestSummary(TypedDict):
+    completed_cycles: Optional[int]
+    remaining_asserts: Optional[List[Assert]]
+    error: Optional[str]
+
+
 class MainTestsConfig(TypedDict):
     description: str
     version: str

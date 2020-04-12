@@ -7,7 +7,7 @@ import docker
 from cicada2.engine.messaging import runner_healthcheck
 from cicada2.engine.parsing import render_section
 from cicada2.engine.testing import run_test_with_timeout
-from cicada2.engine.types import TestConfig, RunnerClosure
+from cicada2.engine.types import TestConfig, RunnerClosure, TestSummary
 
 
 def runner_to_image(runner_name: str) -> Optional[str]:
@@ -71,7 +71,6 @@ def create_docker_container(client: docker.DockerClient, image: str, env_map: Di
         raise RuntimeError('Unable to successfully contact container')
 
 
-# TODO: type for state
 def run_docker(test_config: TestConfig) -> RunnerClosure:
     def closure(state):
         client: docker.DockerClient = docker.from_env()
@@ -96,17 +95,22 @@ def run_docker(test_config: TestConfig) -> RunnerClosure:
                 hostnames=[f"{container.name}:50051"],
                 duration=15
             )
-        except Exception as e:
+        except Exception as err:
             # TODO: fine tune exception types
-            print(e)
+            print(err)
             container.stop()
-            # TODO: allow pass state
-            return None
+            new_state = {
+                test_config['name']: TestSummary(
+                    error=str(err),
+                    completed_cycles=0,
+                    remaining_asserts=[]
+                )
+            }
 
         container.stop()
 
         # call test runner with container address
         # Return new state with updates
-        return new_state
+        return {**state, **new_state}
 
     return closure

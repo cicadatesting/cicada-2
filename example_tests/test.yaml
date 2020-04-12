@@ -56,7 +56,7 @@ tests:
         params:
           method: SQLQuery
           actionParams:
-            query: "select count(*) as cnt from members where name='jeff2'"
+            query: "select count(*) as cnt from my_members where name='jeff2'"
           expected:
             rows:
               - cnt: 100

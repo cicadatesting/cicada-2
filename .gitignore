@@ -5,3 +5,4 @@
 dask-worker-space
 *__pycache__
 *.pytest_cache
+reports

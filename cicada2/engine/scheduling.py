@@ -1,9 +1,12 @@
+import os
 import time
 from typing import Dict, List, Optional
 
 from dask.distributed import Client, Future
 
 from cicada2.engine.loading import load_test_runners_tree
+from cicada2.engine.reporting import render_report
+from cicada2.engine.types import TestSummary
 
 
 def sort_dependencies(dependency_map: Dict[str, List[str]]) -> List[str]:
@@ -52,7 +55,7 @@ def run_tests(tests_folder: str, tasks_type: str):
 
     client = Client(processes=False)
     # Initialize to None to prevent stopping on first run
-    test_statuses = {test_name: None for test_name in test_runners}
+    test_statuses: Dict[str, Future] = {test_name: None for test_name in test_runners}
 
     # Poll for jobs that can be launched based on completed test dependencies
     while not all_tests_finished(test_statuses):
@@ -66,15 +69,26 @@ def run_tests(tests_folder: str, tasks_type: str):
                     # NOTE: dependencies may need ordering in future
                     dependency_result = test_statuses[test_dependency].result()
 
-                    if dependency_result is None:
+                    dependency_summary = dependency_result[test_dependency]['summary']
+
+                    dependency_error = dependency_summary['error']
+                    dependency_remaining_asserts = dependency_summary['remaining_asserts']
+
+                    if dependency_error or dependency_remaining_asserts != []:
                         has_missing_dependencies = True
                     else:
                         inital_state.update(dependency_result)
 
-                # TODO: Skip if does not allow passthrough (need test config)
+                # TODO: Allow test to run with missing dependencies if allowed
                 if has_missing_dependencies:
+                    test_summary = TestSummary(
+                        error='skipped',
+                        remaining_asserts=[],
+                        completed_cycles=0
+                    )
+
                     test_statuses[test_name] = client.submit(
-                        lambda: None
+                        lambda: {**inital_state, **{test_name: {'summary': test_summary}}}
                     )
                 else:
                     # TODO: save state to file
@@ -90,6 +104,14 @@ def run_tests(tests_folder: str, tasks_type: str):
     final_state = {}
 
     for test_name in sort_dependencies(test_dependencies):
-        final_state[test_name] = test_statuses[test_name].result()
+        final_state = {**final_state, **test_statuses[test_name].result()}
 
     print(f"final state: {final_state}")
+    # TODO: make configurable
+    report_file = "./reports/report.md"
+    report_string = render_report(final_state)
+
+    os.makedirs(os.path.dirname(report_file), exist_ok=True)
+
+    with open(report_file, 'w') as report_fp:
+        report_fp.write(report_string)
