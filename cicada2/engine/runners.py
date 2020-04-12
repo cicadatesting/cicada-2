@@ -100,11 +100,13 @@ def run_docker(test_config: TestConfig) -> RunnerClosure:
             print(err)
             container.stop()
             new_state = {
-                test_config['name']: TestSummary(
-                    error=str(err),
-                    completed_cycles=0,
-                    remaining_asserts=[]
-                )
+                test_config['name']: {
+                    'summary': TestSummary(
+                        error=str(err),
+                        completed_cycles=0,
+                        remaining_asserts=[]
+                    )
+                }
             }
 
         container.stop()

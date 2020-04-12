@@ -48,7 +48,7 @@ tests:
               {% if index is none %}
                 {% set index = [1] %}
               {% else %}
-                {% set index = [index[-1] + 1] %}
+                {% set index = index[-1] + 1 %}
               {% endif %}
               value: {{ index }}
     asserts:
