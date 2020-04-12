@@ -372,6 +372,11 @@ def test_run_tests_unlimited_cycles(run_asserts_series_mock: Mock):
                     AssertResult(passed=False, actual='', expected='', description=''),
                     AssertResult(passed=True, actual='', expected='', description='')
                 ]
+            },
+            'summary': {
+                'completed_cycles': 3,
+                'error': None,
+                'remaining_asserts': []
             }
         }
     }
@@ -422,6 +427,16 @@ def test_run_tests_limited_cycles(run_asserts_series_mock: Mock):
                 'A': [
                     AssertResult(passed=False, actual='', expected='', description=''),
                     AssertResult(passed=False, actual='', expected='', description='')
+                ]
+            },
+            'summary': {
+                'completed_cycles': 2,
+                'error': None,
+                'remaining_asserts': [
+                    {
+                        'name': 'A',
+                        'type': 'SQLAssert'
+                    }
                 ]
             }
         }
