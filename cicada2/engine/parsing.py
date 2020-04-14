@@ -4,6 +4,9 @@ import yaml
 import jinja2
 
 
+from cicada2.engine.errors import ValidationError
+
+
 def render_section(section: dict, state: dict, **kwargs: Any) -> dict:
     template = jinja2.Environment(
         loader=jinja2.BaseLoader,
@@ -13,8 +16,7 @@ def render_section(section: dict, state: dict, **kwargs: Any) -> dict:
     try:
         rendered_template_string = template.render(state=state, **kwargs)
     except jinja2.TemplateError as exc:
-        # TODO: custom error types
-        raise ValueError(f"Template section is invalid: {exc}")
+        raise ValidationError(f"Template section is invalid: {exc}")
 
     rendered_section_template = yaml.safe_load(rendered_template_string)
 

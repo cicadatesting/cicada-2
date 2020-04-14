@@ -5,8 +5,12 @@ from typing import Dict, List, Optional
 from dask.distributed import Client, Future
 
 from cicada2.engine.loading import load_test_runners_tree
+from cicada2.engine.logs import get_logger
 from cicada2.engine.reporting import render_report
 from cicada2.engine.types import TestSummary
+
+
+LOGGER = get_logger('scheduling')
 
 
 def sort_dependencies(dependency_map: Dict[str, List[str]]) -> List[str]:
@@ -60,7 +64,6 @@ def run_tests(tests_folder: str, tasks_type: str):
     # Poll for jobs that can be launched based on completed test dependencies
     while not all_tests_finished(test_statuses):
         for test_name in test_statuses:
-            # print(f"{test_name} is ready: {test_is_ready(test_name, test_statuses, test_dependencies)}")
             if test_is_ready(test_name, test_statuses, test_dependencies):
                 inital_state = {}
                 has_missing_dependencies = False
@@ -100,13 +103,13 @@ def run_tests(tests_folder: str, tasks_type: str):
         # TODO: launch tasks with wait on completed
         time.sleep(1)
 
-    print(f"test statuses: {test_statuses}")
+    LOGGER.debug(f"test statuses: {test_statuses}")
     final_state = {}
 
     for test_name in sort_dependencies(test_dependencies):
         final_state = {**final_state, **test_statuses[test_name].result()}
 
-    print(f"final state: {final_state}")
+    LOGGER.debug(f"final state: {final_state}")
     # TODO: make configurable
     report_file = "./reports/report.md"
     report_string = render_report(final_state)

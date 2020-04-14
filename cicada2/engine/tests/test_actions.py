@@ -19,7 +19,7 @@ def test_run_actions(send_action_mock):
             'outputs': [
                 {
                     'name': 'A',
-                    'value': ['xyz']
+                    'value': 'xyz'
                 }
             ]
         },
@@ -58,7 +58,7 @@ def test_run_actions_errored_call(send_action_mock):
             'outputs': [
                 {
                     'name': 'A',
-                    'value': ['xyz']
+                    'value': 'xyz'
                 }
             ]
         },

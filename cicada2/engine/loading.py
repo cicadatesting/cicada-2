@@ -2,6 +2,7 @@ import os
 import yaml
 from typing import Dict, List, Optional, Tuple
 
+from cicada2.engine.errors import ValidationError
 from cicada2.engine.runners import run_docker
 from cicada2.engine.types import TestConfig, MainTestsConfig, RunnerClosure
 
@@ -11,8 +12,7 @@ def create_test_task(test_config: TestConfig, task_type: str) -> Optional[Runner
     if task_type == 'docker':
         return run_docker(test_config)
     else:
-        # TODO: return validation info or throw error
-        return None
+        raise ValidationError(f"Task type {task_type} not found")
 
 
 def create_test_runners(main_tests_config: MainTestsConfig, task_type: str) -> Dict[str, Optional[RunnerClosure]]:
@@ -32,12 +32,16 @@ def create_test_dependencies(main_tests_config: MainTestsConfig) -> Dict[str, Li
     }
 
 
+# TODO: where to get task type?
 def load_test_runners(
         test_filename: str,
         task_type: str
 ) -> Tuple[Dict[str, Optional[RunnerClosure]], Dict[str, List]]:
     with open(test_filename, 'r') as test_file:
         main_tests_config: MainTestsConfig = yaml.load(test_file, Loader=yaml.FullLoader)
+
+        for test_config in main_tests_config['tests']:
+            assert 'name' in test_config, f"Test {test_config} is missing the property 'name'"
 
         # TODO: other possible metadata handling
         test_runners = create_test_runners(main_tests_config, task_type)

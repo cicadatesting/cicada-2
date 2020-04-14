@@ -4,10 +4,14 @@ from typing import Dict, Optional
 
 import docker
 
+from cicada2.engine.logs import get_logger
 from cicada2.engine.messaging import runner_healthcheck
 from cicada2.engine.parsing import render_section
 from cicada2.engine.testing import run_test_with_timeout
 from cicada2.engine.types import TestConfig, RunnerClosure, TestSummary
+
+
+LOGGER = get_logger('runners')
 
 
 def runner_to_image(runner_name: str) -> Optional[str]:
@@ -63,7 +67,7 @@ def create_docker_container(client: docker.DockerClient, image: str, env_map: Di
         # TODO: custom error
         raise RuntimeError(f"Unable to create container: {err}")
 
-    print(f"healthchecking container {container.name}")
+    LOGGER.debug(f"healthchecking container {container.name}")
 
     if container_is_healthy(f"{container_id}:50051"):
         return container
@@ -74,11 +78,12 @@ def create_docker_container(client: docker.DockerClient, image: str, env_map: Di
 def run_docker(test_config: TestConfig) -> RunnerClosure:
     def closure(state):
         client: docker.DockerClient = docker.from_env()
-        # TODO: error if no image found
         image = (
             runner_to_image(test_config.get('runner'))
-            or test_config['image']
+            or test_config.get('image')
         )
+
+        assert image is not None, "Must specify a valid 'runner' or 'image'"
 
         env = config_to_runner_env(
             render_section(test_config.get('config', {}), state)
@@ -86,7 +91,7 @@ def run_docker(test_config: TestConfig) -> RunnerClosure:
 
         # TODO: create all containers here (based on runnerCount)
         container = create_docker_container(client, image, env)
-        print(f"successfully created container {container.name}")
+        LOGGER.info(f"successfully created container {container.name}")
 
         try:
             new_state = run_test_with_timeout(
@@ -97,7 +102,7 @@ def run_docker(test_config: TestConfig) -> RunnerClosure:
             )
         except Exception as err:
             # TODO: fine tune exception types
-            print(err)
+            LOGGER.error(f"Error running test {test_config['name']}: {err}", exc_info=True)
             container.stop()
             new_state = {
                 test_config['name']: {

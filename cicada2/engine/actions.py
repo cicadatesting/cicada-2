@@ -40,12 +40,12 @@ def run_actions(actions: List[Action], state: dict, hostname: str) -> ActionsDat
                 results=action_results
             )
 
-            # TODO: handle key errors (output may not have name or value)
-            # TODO: support for indexed/non-list outputs
+            assert 'name' in rendered_output, "Output section must have parameter 'name'"
+            assert 'value' in rendered_output, "Output section must have parameter 'value'"
+
+            # TODO: support for outputs that overwrite value
             # TODO: support for global outputs
-            data[action_name]['outputs'][rendered_output['name']] = (
-                rendered_output['value']
-            )
+            data[action_name]['outputs'][rendered_output['name']] = [rendered_output['value']]
 
     return data
 

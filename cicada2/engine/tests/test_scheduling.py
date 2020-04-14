@@ -14,8 +14,6 @@ def test_sort_dependencies():
 
     sorted_dependencies = scheduling.sort_dependencies(dependency_map)
 
-    print(sorted_dependencies)
-
     assert len(sorted_dependencies) == 5
     assert sorted_dependencies[0] == 'B'
     assert sorted_dependencies[1] in ['A', 'D']

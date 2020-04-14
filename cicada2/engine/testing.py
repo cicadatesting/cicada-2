@@ -1,4 +1,3 @@
-import traceback
 import time
 import uuid
 from collections import defaultdict
@@ -6,10 +5,11 @@ from itertools import cycle
 from typing import Any, Dict, List
 
 from dask import bag
-from dask.distributed import Future, get_client, Variable
+from dask.distributed import Future, get_client, Variable, wait
 
 from cicada2.engine.actions import run_actions, combine_action_data
 from cicada2.engine.asserts import get_remaining_asserts, run_asserts
+from cicada2.engine.logs import get_logger
 from cicada2.engine.state import combine_lists_by_key
 from cicada2.engine.types import (
     Action,
@@ -18,6 +18,9 @@ from cicada2.engine.types import (
     Statuses,
     TestSummary
 )
+
+
+LOGGER = get_logger('testing')
 
 
 def get_default_cycles(actions: List[Any], asserts: List[Any]) -> int:
@@ -111,8 +114,20 @@ def run_test(test_config: dict, incoming_state: dict, hostnames: List[str], time
     # NOTE: possibly use infinite default dict
     state = defaultdict(dict, incoming_state)
 
-    # TODO: ensure at least one hostname
-    # TODO: ensure action/assert names unique if specified
+    # Validate tests before running
+    # NOTE: may be a good use of walrus operator
+    action_names = [a.get('name') for a in actions if a.get('name')]
+    assert_names = [a.get('name') for a in asserts if a.get('name')]
+
+    assert hostnames, 'Must have at least one host to run tests'
+    assert len(set(action_names)) == len(action_names), 'Action names if specified must be unique'
+    assert len(set(assert_names)) == len(assert_names), 'Assert names if specified must be unique'
+
+    for action in actions:
+        assert 'type' in action, f"Action in test '{test_config['name']}' is missing property 'type'"
+
+    for asrt in asserts:
+        assert 'type' in asrt, f"Assert in test '{test_config['name']}' is missing property 'type'"
 
     # stop if remaining_cycles == 0 or had asserts and no asserts remain
     while continue_running(asserts, remaining_cycles, state[test_config['name']].get('asserts', {})):
@@ -126,6 +141,7 @@ def run_test(test_config: dict, incoming_state: dict, hostnames: List[str], time
             if not keep_going.get():
                 break
 
+        # TODO: exceptions thrown in actions/asserts cause rest of test to exit
         action_distribution_strategy = test_config.get(
             'actionDistributionStrategy', 'parallel'
         )
@@ -179,7 +195,7 @@ def run_test_with_timeout(
         client = get_client()
 
     # NOTE: may improve way of doing this
-    timeout_signal_name = f"keep-going-{str(uuid.uuid4())[:8]}"
+    timeout_signal_name = f"keep-going-{str(uuid.uuid4())}"
     keep_going = Variable(timeout_signal_name)
     keep_going.set(True)
 
@@ -191,27 +207,19 @@ def run_test_with_timeout(
         timeout_signal_name=timeout_signal_name
     )
 
-    # time.sleep takes no kwargs
+    # NOTE: time.sleep takes no kwargs
     timeout_task: Future = client.submit(lambda: time.sleep(duration))
 
     # Wait for either test or timeout to finish
     # Return test result if it finishes first
     # End test if timeout finishes first and return state
-    while True:
-        if run_test_task.done():
-            return run_test_task.result()
-        elif timeout_task.done():
-            print(f"Test {test_config['name']} timed out")
-            # NOTE: add timed out to summary?
-            keep_going.set(False)
-            return run_test_task.result()
+    wait([run_test_task, timeout_task], return_when='FIRST_COMPLETED')
 
-        # tb = run_test_task.traceback()
-        #
-        # if tb is not None:
-        #     # TODO: traceback in debug logs
-        #     print(traceback.format_tb(tb))
-        #     run_test_task.cancel()
-        #     timeout_task.cancel()
-
-        # NOTE: possibly sleep between polls
+    if run_test_task.done():
+        timeout_task.cancel()
+        return run_test_task.result()
+    elif timeout_task.done():
+        LOGGER.info(f"Test {test_config['name']} timed out")
+        # NOTE: add timed out to summary?
+        keep_going.set(False)
+        return run_test_task.result()

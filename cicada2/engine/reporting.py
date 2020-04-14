@@ -7,7 +7,6 @@ import jinja2
 TEMPLATES_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
 # TODO: table of contents
-# TODO: color highlighting failed tests/asserts
 # TODO: include more test config information
 
 

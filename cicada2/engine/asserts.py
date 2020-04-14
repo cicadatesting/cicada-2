@@ -10,10 +10,9 @@ def run_asserts(asserts: List[Assert], state: dict, hostname: str) -> Statuses:
     results: Statuses = {}
 
     for asrt in asserts:
-        # TODO: support executionPerCycle?
+        # NOTE: support executionPerCycle?
         rendered_assert: Assert = render_section(asrt, state)
 
-        # TODO: validate for action/assert having type param
         if rendered_assert['type'] == 'NullAssert':
             # NOTE: possibly add template free way of computing passed
             # passed: bool = rendered_assert.get('passed', False)
@@ -32,6 +31,7 @@ def run_asserts(asserts: List[Assert], state: dict, hostname: str) -> Statuses:
         if assert_name is None:
             assert_name = create_result_name(rendered_assert['type'], results)
 
+        # Saved as list so versions of the assert call can be stored
         # NOTE: This should be improved, [assert_result] is un-intuitive
         results[assert_name] = [assert_result]
 

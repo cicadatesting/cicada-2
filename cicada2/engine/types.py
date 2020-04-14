@@ -52,6 +52,7 @@ Statuses: object = Dict[str, List[AssertResult]]
 
 
 class TestConfig(TypedDict):
+    # TODO: allow test config to be rendered
     name: str
     description: str
     runner: str

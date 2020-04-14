@@ -3,8 +3,12 @@ import json
 import grpc
 from google.protobuf.empty_pb2 import Empty
 
+from cicada2.engine.logs import get_logger
 from cicada2.protos import runner_pb2, runner_pb2_grpc
 from cicada2.engine.types import ActionResult, AssertResult
+
+
+LOGGER = get_logger('messaging')
 
 
 def send_action(runner_address: str, action: dict) -> ActionResult:
@@ -19,9 +23,7 @@ def send_action(runner_address: str, action: dict) -> ActionResult:
             response: runner_pb2.ActionReply = stub.Action(request)
             return json.loads(response.outputs)
         except grpc.RpcError as err:
-            # TODO: log error
-            print(err)
-            print(err.code())
+            LOGGER.warning(f"Received {err.code()} during send_action: {err}")
 
             return {}
 
@@ -44,9 +46,7 @@ def send_assert(runner_address: str, asrt: dict) -> AssertResult:
                 'description': response.description
             }
         except grpc.RpcError as err:
-            # TODO: log error
-            print(err)
-            print(err.code())
+            LOGGER.warning(f"Received {err.code()} during send_assert: {err}")
 
             return {
                 'passed': False,
@@ -65,5 +65,5 @@ def runner_healthcheck(runner_address: str) -> bool:
             response = stub.Healthcheck(Empty())
             return response.ready
         except grpc.RpcError as err:
-            print(err)
+            LOGGER.warning(f"Received {err.code()} during healthcheck: {err}")
             return False
