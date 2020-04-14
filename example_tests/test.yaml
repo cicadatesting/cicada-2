@@ -46,7 +46,7 @@ tests:
             template: >
               {% set index = state.get('update_ages', {}).get('actions', {}).get('SQLQuery1', {}).get('outputs', {}).get('index') %}
               {% if index is none %}
-                {% set index = [1] %}
+                {% set index = 1 %}
               {% else %}
                 {% set index = index[-1] + 1 %}
               {% endif %}
