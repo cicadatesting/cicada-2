@@ -4,6 +4,11 @@ from typing import Dict, Optional
 
 import docker
 
+from cicada2.engine.config import (
+    CONTAINER_NETWORK,
+    HEALTHCHECK_INITIAL_WAIT,
+    HEALTHCHECK_MAX_RETRIES
+)
 from cicada2.engine.logs import get_logger
 from cicada2.engine.messaging import runner_healthcheck
 from cicada2.engine.parsing import render_section
@@ -31,9 +36,11 @@ def config_to_runner_env(config: Dict[str, str]) -> Dict[str, str]:
     }
 
 
-def container_is_healthy(hostname: str, initial_wait_time: int = 2, max_retries: int = 5) -> bool:
-    # healthcheck container/exponential backoff
-    # TODO: make configurable
+def container_is_healthy(
+        hostname: str,
+        initial_wait_time: int = HEALTHCHECK_INITIAL_WAIT,
+        max_retries: int = HEALTHCHECK_MAX_RETRIES
+) -> bool:
     retries = 0
     wait_time = initial_wait_time
 
@@ -43,6 +50,7 @@ def container_is_healthy(hostname: str, initial_wait_time: int = 2, max_retries:
 
         if not ready:
             retries += 1
+            # NOTE: make multiplier configurable too?
             wait_time *= 2
         else:
             return True
@@ -50,7 +58,11 @@ def container_is_healthy(hostname: str, initial_wait_time: int = 2, max_retries:
     return False
 
 
-def create_docker_container(client: docker.DockerClient, image: str, env_map: Dict[str, str]):
+def create_docker_container(
+        client: docker.DockerClient,
+        image: str, env_map: Dict[str, str],
+        network: str = CONTAINER_NETWORK
+):
     container_id = f"{image}-{str(uuid.uuid4())[:8]}"
 
     try:
@@ -61,7 +73,7 @@ def create_docker_container(client: docker.DockerClient, image: str, env_map: Di
             name=container_id,
             detach=True,
             environment=env_map,
-            network='cicada-2',  # TODO: make configurable, ensure network exists
+            network=network,  # TODO: ensure network exists
         )
     except docker.errors.APIError as err:
         # TODO: custom error
@@ -77,33 +89,51 @@ def create_docker_container(client: docker.DockerClient, image: str, env_map: Di
 
 def run_docker(test_config: TestConfig) -> RunnerClosure:
     def closure(state):
-        client: docker.DockerClient = docker.from_env()
-        image = (
-            runner_to_image(test_config.get('runner'))
-            or test_config.get('image')
-        )
-
-        assert image is not None, "Must specify a valid 'runner' or 'image'"
-
-        env = config_to_runner_env(
-            render_section(test_config.get('config', {}), state)
-        )
-
-        # TODO: create all containers here (based on runnerCount)
-        container = create_docker_container(client, image, env)
-        LOGGER.info(f"successfully created container {container.name}")
-
         try:
-            new_state = run_test_with_timeout(
-                test_config=test_config,
-                incoming_state=state,
-                hostnames=[f"{container.name}:50051"],
-                duration=15
+            # TODO: break out docker specific sections
+            rendered_test_config = render_section(test_config, state)
+
+            image = (
+                runner_to_image(rendered_test_config.get('runner'))
+                or rendered_test_config.get('image')
             )
-        except Exception as err:
-            # TODO: fine tune exception types
-            LOGGER.error(f"Error running test {test_config['name']}: {err}", exc_info=True)
+
+            assert image is not None, "Must specify a valid 'runner' or 'image'"
+
+            env = config_to_runner_env(
+                render_section(rendered_test_config.get('config', {}), state)
+            )
+
+            # TODO: create all containers here (based on runnerCount)
+            client: docker.DockerClient = docker.from_env()
+
+            container = create_docker_container(client, image, env)
+            LOGGER.info(f"successfully created container {container.name}")
+
+            try:
+                new_state = run_test_with_timeout(
+                    test_config=rendered_test_config,
+                    incoming_state=state,
+                    hostnames=[f"{container.name}:50051"],
+                    duration=15
+                )
+            except (AssertionError, ValueError, TypeError, RuntimeError) as err:
+                # TODO: fine tune exception types
+                LOGGER.error(f"Error running test {test_config['name']}: {err}", exc_info=True)
+                container.stop()
+                new_state = {
+                    test_config['name']: {
+                        'summary': TestSummary(
+                            error=str(err),
+                            completed_cycles=0,
+                            remaining_asserts=[]
+                        )
+                    }
+                }
+
             container.stop()
+        except (AssertionError, ValueError, TypeError, RuntimeError) as err:
+            LOGGER.error(f"Error creating test {test_config['name']}: {err}", exc_info=True)
             new_state = {
                 test_config['name']: {
                     'summary': TestSummary(
@@ -114,10 +144,6 @@ def run_docker(test_config: TestConfig) -> RunnerClosure:
                 }
             }
 
-        container.stop()
-
-        # call test runner with container address
-        # Return new state with updates
         return {**state, **new_state}
 
     return closure

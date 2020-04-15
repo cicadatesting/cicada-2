@@ -1,10 +1,12 @@
 import os
 import time
+import json
 from typing import Dict, List, Optional
 
 from dask.distributed import Client, Future
 
-from cicada2.engine.loading import load_test_runners_tree
+from cicada2.engine.config import INITIAL_STATE_FILE, TASK_TYPE, REPORTS_FOLDER, TESTS_FOLDER
+from cicada2.engine.loading import load_tests_tree, create_test_task, create_test_runners
 from cicada2.engine.logs import get_logger
 from cicada2.engine.reporting import render_report
 from cicada2.engine.types import TestSummary
@@ -37,7 +39,6 @@ def test_is_ready(
         test_dependencies: Dict[str, List[str]]
 ) -> bool:
     # test has not run yet and all dependencies have finished
-    # TODO: Run task but fail immediately if previous test failed
     return (
         not test_statuses[test_name]
         and all(
@@ -54,8 +55,19 @@ def all_tests_finished(test_statuses: Dict[str, Optional[Future]]) -> bool:
     )
 
 
-def run_tests(tests_folder: str, tasks_type: str):
-    test_runners, test_dependencies = load_test_runners_tree(tests_folder, tasks_type)
+def run_tests(
+        tests_folder: str = TESTS_FOLDER,
+        initial_state_file: str = INITIAL_STATE_FILE,
+        tasks_type: str = TASK_TYPE,
+        reports_location: str = REPORTS_FOLDER
+):
+    test_configs, test_runners, test_dependencies = load_tests_tree(tests_folder, tasks_type)
+
+    if initial_state_file:
+        with open(initial_state_file) as initial_state_fp:
+            initial_state = json.load(initial_state_fp)
+    else:
+        initial_state = {}
 
     client = Client(processes=False)
     # Initialize to None to prevent stopping on first run
@@ -65,7 +77,9 @@ def run_tests(tests_folder: str, tasks_type: str):
     while not all_tests_finished(test_statuses):
         for test_name in test_statuses:
             if test_is_ready(test_name, test_statuses, test_dependencies):
-                inital_state = {}
+                # TODO: move to function
+                # NOTE: allow rendering test_config here too?
+                state = {**{'globals': {}}, **initial_state}
                 has_missing_dependencies = False
 
                 for test_dependency in test_dependencies[test_name]:
@@ -80,10 +94,9 @@ def run_tests(tests_folder: str, tasks_type: str):
                     if dependency_error or dependency_remaining_asserts != []:
                         has_missing_dependencies = True
                     else:
-                        inital_state.update(dependency_result)
+                        state.update(dependency_result)
 
-                # TODO: Allow test to run with missing dependencies if allowed
-                if has_missing_dependencies:
+                if has_missing_dependencies and not test_configs[test_name].get('runIfFailedDependency', False):
                     test_summary = TestSummary(
                         error='skipped',
                         remaining_asserts=[],
@@ -91,30 +104,34 @@ def run_tests(tests_folder: str, tasks_type: str):
                     )
 
                     test_statuses[test_name] = client.submit(
-                        lambda: {**inital_state, **{test_name: {'summary': test_summary}}}
+                        lambda: {**state, **{test_name: {'summary': test_summary}}}
                     )
                 else:
-                    # TODO: save state to file
                     test_statuses[test_name] = client.submit(
                         test_runners[test_name],
-                        state=inital_state
+                        state=state
                     )
 
         # TODO: launch tasks with wait on completed
         time.sleep(1)
 
     LOGGER.debug(f"test statuses: {test_statuses}")
+
+    os.makedirs(reports_location, exist_ok=True)
     final_state = {}
 
     for test_name in sort_dependencies(test_dependencies):
-        final_state = {**final_state, **test_statuses[test_name].result()}
+        final_test_state = test_statuses[test_name].result()
 
-    LOGGER.debug(f"final state: {final_state}")
-    # TODO: make configurable
-    report_file = "./reports/report.md"
+        with open(os.path.join(reports_location, f'state.{test_name}.json'), 'w') as final_test_state_fp:
+            json.dump(final_state, final_test_state_fp, indent=2)
+
+        final_state = {**final_state, **final_test_state}
+
     report_string = render_report(final_state)
 
-    os.makedirs(os.path.dirname(report_file), exist_ok=True)
-
-    with open(report_file, 'w') as report_fp:
+    with open(os.path.join(reports_location, 'report.md'), 'w') as report_fp:
         report_fp.write(report_string)
+
+    with open(os.path.join(reports_location, 'state.final.json'), 'w') as final_state_fp:
+        json.dump(final_state, final_state_fp, indent=2)

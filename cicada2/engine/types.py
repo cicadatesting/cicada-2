@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, NamedTuple, Optional
 from typing_extensions import TypedDict
 
 
@@ -11,11 +11,12 @@ class Output(TypedDict):
 
 class Action(TypedDict):
     type: str
-    name: str
-    template: str
-    excecutionsPerCycle: int
+    name: Optional[str]  # NOTE: should this be set in the background if type is set but not name?
+    template: Optional[str]
+    excecutionsPerCycle: Optional[int]
+    secondsBetweenExecutions: Optional[float]
     params: dict
-    outputs: List[Output]
+    outputs: Optional[List[Output]]
 
 
 ActionResult = dict
@@ -52,25 +53,35 @@ Statuses: object = Dict[str, List[AssertResult]]
 
 
 class TestConfig(TypedDict):
-    # TODO: allow test config to be rendered
     name: str
-    description: str
-    runner: str
-    image: str
-    actions: List[Action]
-    asserts: List[Assert]
+    runIfFailedDependency: Optional[bool]
+    description: Optional[str]  # TODO: add to report
+    runner: Optional[str]
+    image: Optional[str]
+    actions: Optional[List[Action]]
+    asserts: Optional[List[Assert]]
+    secondsBetweenCycles: Optional[float]
+    secondsBetweenActions: Optional[float]
+    secondsBetweenAsserts: Optional[float]
 
 
 class TestSummary(TypedDict):
+    # TODO: report total test runtime
     completed_cycles: Optional[int]
     remaining_asserts: Optional[List[Assert]]
     error: Optional[str]
 
 
-class MainTestsConfig(TypedDict):
+class FileTestsConfig(TypedDict):
     description: str
     version: str
     tests: List[TestConfig]
 
 
 RunnerClosure = Callable[[dict], Optional[dict]]
+
+
+class TestRunners(NamedTuple):
+    test_configs: Dict[str, TestConfig]
+    test_runners: Dict[str, RunnerClosure]
+    test_dependencies: Dict[str, List[str]]

@@ -50,12 +50,13 @@ def run_actions_parallel(
         actions: List[Action],
         state: defaultdict,
         test_name: str,
-        hostnames: List[str]
+        hostnames: List[str],
+        seconds_between_actions: float
 ) -> ActionsData:
     actions_task = bag.from_sequence(
         hostnames
     ).map(
-        lambda hostname: run_actions(actions, {**state}, hostname)
+        lambda hostname: run_actions(actions, {**state}, hostname, seconds_between_actions)
     ).fold(
         combine_action_data,
         initial=state[test_name].get('actions', {})
@@ -68,7 +69,8 @@ def run_asserts_series(
         asserts: List[Assert],
         state: defaultdict,
         test_name: str,
-        hostnames: List[str]
+        hostnames: List[str],
+        seconds_between_asserts: float
 ) -> Statuses:
     hostname_asserts_map: Dict[str, List[Assert]] = {}
 
@@ -93,7 +95,8 @@ def run_asserts_series(
         lambda h_name: run_asserts(
             hostname_asserts_map[h_name],
             {**state},
-            h_name
+            h_name,
+            seconds_between_asserts
         )
     ).fold(
         combine_lists_by_key,
@@ -124,10 +127,10 @@ def run_test(test_config: dict, incoming_state: dict, hostnames: List[str], time
     assert len(set(assert_names)) == len(assert_names), 'Assert names if specified must be unique'
 
     for action in actions:
-        assert 'type' in action, f"Action in test '{test_config['name']}' is missing property 'type'"
+        assert 'type' in action, f"Action in test \'{test_config['name']}\' is missing property 'type'"
 
     for asrt in asserts:
-        assert 'type' in asrt, f"Assert in test '{test_config['name']}' is missing property 'type'"
+        assert 'type' in asrt, f"Assert in test \'{test_config['name']}\' is missing property 'type'"
 
     # stop if remaining_cycles == 0 or had asserts and no asserts remain
     while continue_running(asserts, remaining_cycles, state[test_config['name']].get('asserts', {})):
@@ -141,16 +144,15 @@ def run_test(test_config: dict, incoming_state: dict, hostnames: List[str], time
             if not keep_going.get():
                 break
 
-        # TODO: exceptions thrown in actions/asserts cause rest of test to exit
+        # NOTE: exceptions thrown in actions/asserts cause rest of test to exit
         action_distribution_strategy = test_config.get(
             'actionDistributionStrategy', 'parallel'
         )
 
         # TODO: series distribution strategy
         if action_distribution_strategy == 'parallel' and actions != []:
-            # TODO: make sure test_config['name'] exists in validation
             state[test_config['name']]['actions'] = run_actions_parallel(
-                actions, state, test_config['name'], hostnames
+                actions, state, test_config['name'], hostnames, test_config.get('secondsBetweenActions', 0)
             )
 
         assert_distribution_strategy = test_config.get(
@@ -159,13 +161,20 @@ def run_test(test_config: dict, incoming_state: dict, hostnames: List[str], time
 
         # TODO: parallel distribution strategy
         if assert_distribution_strategy == 'series' and asserts != []:
-            state[test_config['name']]['asserts'] = run_asserts_series(asserts, state, test_config['name'], hostnames)
+            state[test_config['name']]['asserts'] = run_asserts_series(
+                asserts,
+                state,
+                test_config['name'],
+                hostnames,
+                test_config.get('secondsBetweenAsserts', 0)
+            )
 
         remaining_cycles -= 1
         completed_cycles += 1
 
-        # TODO: configurable sleep between cycles
-        time.sleep(1)
+        time.sleep(
+            test_config.get('secondsBetweenCycles', 1)
+        )
 
     # TODO: just have assert names in remaining asserts
     state[test_config['name']]['summary'] = TestSummary(

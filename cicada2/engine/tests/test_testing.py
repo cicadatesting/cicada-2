@@ -135,7 +135,8 @@ def test_run_actions_parallel(run_actions_mock: Mock):
         actions=test_actions,
         state=test_state,
         test_name='Test1',
-        hostnames=['alpha']
+        hostnames=['alpha'],
+        seconds_between_actions=0
     )
 
     assert results == {
@@ -176,7 +177,8 @@ def test_run_actions_parallel_multiple_hosts(run_actions_mock: Mock):
         actions=test_actions,
         state=test_state,
         test_name='Test1',
-        hostnames=['alpha', 'bravo']
+        hostnames=['alpha', 'bravo'],
+        seconds_between_actions=0
     )
 
     assert results == {
@@ -212,7 +214,8 @@ def test_run_asserts_series_one_assert(run_asserts_mock: Mock):
         asserts=test_asserts,
         state=test_state,
         test_name='foo',
-        hostnames=['alpha']
+        hostnames=['alpha'],
+        seconds_between_asserts=0
     )
 
     assert results == {
@@ -240,7 +243,8 @@ def test_run_asserts_series_multiple_hosts_one_assert(run_asserts_mock: Mock):
         asserts=test_asserts,
         state=test_state,
         test_name='foo',
-        hostnames=['alpha', 'bravo']
+        hostnames=['alpha', 'bravo'],
+        seconds_between_asserts=0
     )
 
     assert results == {
@@ -271,7 +275,8 @@ def test_run_asserts_series_one_host_multiple_asserts(run_asserts_mock: Mock):
         asserts=test_asserts,
         state=test_state,
         test_name='foo',
-        hostnames=['alpha']
+        hostnames=['alpha'],
+        seconds_between_asserts=0
     )
 
     assert results == {
@@ -307,7 +312,8 @@ def test_run_asserts_series_multiple_host_multiple_asserts(run_asserts_mock: Moc
         asserts=test_asserts,
         state=test_state,
         test_name='foo',
-        hostnames=['alpha', 'bravo']
+        hostnames=['alpha', 'bravo'],
+        seconds_between_asserts=0
     )
 
     # NOTE: B does not run because I'm pretty sure Dask is pickling
@@ -349,10 +355,12 @@ def test_run_tests_unlimited_cycles(run_asserts_series_mock: Mock):
 
     test_config = {
         'name': 'some_test_name',
+        'secondsBetweenCycles': 0,
         'asserts': [
             {
                 'name': 'A',
-                'type': 'SQLAssert'
+                'type': 'SQLAssert',
+                'params': {}
             }
         ]
     }
@@ -406,10 +414,12 @@ def test_run_tests_limited_cycles(run_asserts_series_mock: Mock):
     test_config = {
         'name': 'some_test_name',
         'cycles': 2,
+        'secondsBetweenCycles': 0,
         'asserts': [
             {
                 'name': 'A',
-                'type': 'SQLAssert'
+                'type': 'SQLAssert',
+                'params': {}
             }
         ]
     }
@@ -435,7 +445,8 @@ def test_run_tests_limited_cycles(run_asserts_series_mock: Mock):
                 'remaining_asserts': [
                     {
                         'name': 'A',
-                        'type': 'SQLAssert'
+                        'type': 'SQLAssert',
+                        'params': {}
                     }
                 ]
             }

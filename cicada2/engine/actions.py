@@ -1,3 +1,4 @@
+import time
 from collections import defaultdict
 from typing import List, Set
 
@@ -11,7 +12,7 @@ from cicada2.engine.state import (
 from cicada2.engine.types import Action, ActionsData, ActionResult, Output
 
 
-def run_actions(actions: List[Action], state: dict, hostname: str) -> ActionsData:
+def run_actions(actions: List[Action], state: dict, hostname: str, seconds_between_actions: float) -> ActionsData:
     def infinite_defaultdict():
         return defaultdict(infinite_defaultdict)
 
@@ -19,6 +20,14 @@ def run_actions(actions: List[Action], state: dict, hostname: str) -> ActionsDat
 
     for action in actions:
         rendered_action: Action = render_section(action, state)
+
+        action_name: str = rendered_action.get('name')
+
+        if action_name is None:
+            action_name: str = create_result_name(rendered_action['type'], data)
+
+        assert 'params' in rendered_action, f"Action {action_name} is missing property 'params'"
+
         executions_per_cycle: int = rendered_action.get('executionsPerCycle', 1)
         action_results: List[ActionResult] = []
 
@@ -26,10 +35,7 @@ def run_actions(actions: List[Action], state: dict, hostname: str) -> ActionsDat
             execution_output: ActionResult = send_action(hostname, rendered_action)
             action_results.append(execution_output)
 
-        action_name: str = rendered_action.get('name')
-
-        if action_name is None:
-            action_name: str = create_result_name(rendered_action['type'], data)
+            time.sleep(rendered_action.get('secondsBetweenExecutions', 0))
 
         data[action_name]['results'] = action_results
 
@@ -46,6 +52,8 @@ def run_actions(actions: List[Action], state: dict, hostname: str) -> ActionsDat
             # TODO: support for outputs that overwrite value
             # TODO: support for global outputs
             data[action_name]['outputs'][rendered_output['name']] = [rendered_output['value']]
+
+        time.sleep(seconds_between_actions)
 
     return data
 

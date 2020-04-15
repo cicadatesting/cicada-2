@@ -31,7 +31,7 @@ def test_run_actions(send_action_mock):
         }
     ]
 
-    actions_data = actions.run_actions(test_actions, {}, '')
+    actions_data = actions.run_actions(test_actions, {}, '', 0)
 
     assert actions_data['POST0']['results'] == [{'foo': 'bar'}, {'foo': 'bar'}]
     assert actions_data['POST0']['outputs']['A'] == ['xyz']
@@ -70,7 +70,7 @@ def test_run_actions_errored_call(send_action_mock):
         }
     ]
 
-    actions_data = actions.run_actions(test_actions, {}, '')
+    actions_data = actions.run_actions(test_actions, {}, '', 0)
 
     assert actions_data['POST0']['results'] == [{'foo': 'bar'}, {}]
     assert actions_data['POST0']['outputs']['A'] == ['xyz']

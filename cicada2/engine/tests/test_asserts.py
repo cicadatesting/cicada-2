@@ -16,20 +16,23 @@ def test_run_asserts(mock_send_assert):
     test_asserts = [
         {
             'name': 'A',
-            'type': 'SQLAssert'
+            'type': 'SQLAssert',
+            'params': {}
         },
         {
             'name': 'B',
             'type': 'NullAssert',
-            'passed': True
+            'passed': True,
+            'params': {}
         },
         {
             'name': 'C',
-            'type': 'NullAssert'
+            'type': 'NullAssert',
+            'params': {}
         }
     ]
 
-    statuses = asserts.run_asserts(test_asserts, {}, '')
+    statuses = asserts.run_asserts(test_asserts, {}, '', 0)
 
     assert statuses['A'] == [
         AssertResult(

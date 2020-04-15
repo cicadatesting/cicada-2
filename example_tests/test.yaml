@@ -6,14 +6,20 @@ tests:
     runner: RESTRunner
     # runnerCount (number of instances)
     # cycles (number of times to run each action and assert)
+    # secondsBetweenCycles
+    # secondsBetweenActions
+    # secondsBetweenAsserts
     # actionDistributionStrategy
     # Each runner runs all actions independently (parallel)
     # Each runner is in a circular queue and gets an action (series)
-    # TODO: wait time between executions
+    # assertDistributionStrategy
+    # runIfFailedDependency
+    # TODO: action/assert able to read data from file
     actions:
       - type: POST
         # name (POST0 if not specified)
         executionsPerCycle: 100 # execute 100 times before moving onto next action
+        # secondsBetweenExecutions
         params:
           url: "http://host.docker.internal:8080/members"
           body:
