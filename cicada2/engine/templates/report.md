@@ -12,12 +12,13 @@
     {%- endif %}
 {%- endfor %}
 
+* Run ID: {{ run_id }}
 * Successful Tests: {{ successful|length }}
 * Failed Tests: {{ failed|length }}
 
 ## Tests
 
-{%- for test_name in state %}
+{%- for test_name in state if test_name != 'globals' %}
 * #### {{ test_name }}
     {%- set summary = state[test_name].get('summary') %}
     - Completed Cycles: {{ summary['completed_cycles'] }}

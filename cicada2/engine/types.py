@@ -4,7 +4,7 @@ from typing_extensions import TypedDict
 
 class Output(TypedDict):
     name: str
-    isGlobal: Optional[bool]
+    # isGlobal: Optional[bool]
     template: Optional[str]
     storeVersions: Optional[bool]
     value: List[Any]
@@ -60,6 +60,7 @@ class TestConfig(TypedDict):
     runIfFailedDependency: Optional[bool]
     description: Optional[str]  # TODO: add to report
     runner: Optional[str]
+    runnerCount: Optional[str]
     image: Optional[str]
     actions: Optional[List[Action]]
     asserts: Optional[List[Assert]]

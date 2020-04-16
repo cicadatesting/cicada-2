@@ -7,19 +7,20 @@ from cicada2.engine.runners import run_docker
 from cicada2.engine.types import TestConfig, FileTestsConfig, RunnerClosure, TestRunners
 
 
-def create_test_task(test_config: TestConfig, task_type: str) -> RunnerClosure:
+def create_test_task(test_config: TestConfig, task_type: str, run_id: str) -> RunnerClosure:
     # NOTE: task must be a callable
     if task_type == 'docker':
-        return run_docker(test_config)
+        return run_docker(test_config, run_id)
     else:
         raise ValidationError(f"Task type {task_type} not found")
 
 
-def create_test_runners(test_configs: Iterable[TestConfig], task_type: str) -> Dict[str, RunnerClosure]:
+def create_test_runners(test_configs: Iterable[TestConfig], task_type: str, run_id: str) -> Dict[str, RunnerClosure]:
     return {
         test_config['name']: create_test_task(
             test_config,
-            task_type
+            task_type,
+            run_id
         )
         for test_config in test_configs
     }
@@ -34,7 +35,8 @@ def create_test_dependencies(test_configs: Iterable[TestConfig]) -> Dict[str, Li
 
 def load_test_config(
         test_filename: str,
-        task_type: str
+        task_type: str,
+        run_id: str
 ) -> TestRunners:
     with open(test_filename, 'r') as test_file:
         main_tests_config: FileTestsConfig = yaml.load(test_file, Loader=yaml.FullLoader)
@@ -45,7 +47,7 @@ def load_test_config(
             assert 'name' in test_config, f"Test {test_config} is missing the property 'name'"
             test_configs[test_config['name']] = test_config
 
-        test_runners = create_test_runners(test_configs.values(), task_type)
+        test_runners = create_test_runners(test_configs.values(), task_type, run_id)
         test_dependencies = create_test_dependencies(test_configs.values())
 
         return TestRunners(
@@ -57,7 +59,8 @@ def load_test_config(
 
 def load_tests_tree(
         tests_folder: str,
-        task_type: str
+        task_type: str,
+        run_id: str
 ) -> TestRunners:
     test_configs = {}
     test_runners = {}
@@ -66,7 +69,11 @@ def load_tests_tree(
     for root, _, files in os.walk(tests_folder):
         for file in files:
             test_filepath = os.path.abspath(os.path.join(root, file))
-            test_file_configs, test_file_runners, test_file_dependencies = load_test_config(test_filepath, task_type)
+            test_file_configs, test_file_runners, test_file_dependencies = load_test_config(
+                test_filepath,
+                task_type,
+                run_id
+            )
 
             test_configs.update(test_file_configs)
             test_runners.update(test_file_runners)

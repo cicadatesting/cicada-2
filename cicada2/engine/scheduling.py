@@ -1,6 +1,7 @@
 import os
 import time
 import json
+import uuid
 from typing import Dict, List, Optional
 
 from dask.distributed import Client, Future
@@ -61,7 +62,11 @@ def run_tests(
         tasks_type: str = TASK_TYPE,
         reports_location: str = REPORTS_FOLDER
 ):
-    test_configs, test_runners, test_dependencies = load_tests_tree(tests_folder, tasks_type)
+    # NOTE: possibly have run ID in globals
+    run_id = f"cicada-2-run-{str(uuid.uuid4())[:8]}"
+
+    LOGGER.info(f"Starting run {run_id}")
+    test_configs, test_runners, test_dependencies = load_tests_tree(tests_folder, tasks_type, run_id)
 
     if initial_state_file:
         with open(initial_state_file) as initial_state_fp:
@@ -78,7 +83,7 @@ def run_tests(
         for test_name in test_statuses:
             if test_is_ready(test_name, test_statuses, test_dependencies):
                 # TODO: move to function
-                # TODO: do not mix in globals with tests
+                # NOTE: possibly have globals in separate section
                 state = {**{'globals': {}}, **initial_state}
                 has_missing_dependencies = False
 
@@ -128,7 +133,7 @@ def run_tests(
 
         final_state = {**final_state, **final_test_state}
 
-    report_string = render_report(final_state)
+    report_string = render_report(final_state, run_id=run_id)
 
     with open(os.path.join(reports_location, 'report.md'), 'w') as report_fp:
         report_fp.write(report_string)

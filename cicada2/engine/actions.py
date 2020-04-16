@@ -55,7 +55,7 @@ def run_actions(actions: List[Action], state: dict, hostname: str, seconds_betwe
             assert 'name' in rendered_output, "Output section must have parameter 'name'"
             assert 'value' in rendered_output, "Output section must have parameter 'value'"
 
-            # TODO: support for global outputs
+            # NOTE: support updating outputs in globals section?
             store_output_versions = rendered_output.get('storeVersions', False)
 
             if not store_output_versions:
