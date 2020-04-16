@@ -34,7 +34,7 @@ def test_run_actions(send_action_mock):
     actions_data = actions.run_actions(test_actions, {}, '', 0)
 
     assert actions_data['POST0']['results'] == [{'foo': 'bar'}, {'foo': 'bar'}]
-    assert actions_data['POST0']['outputs']['A'] == ['xyz']
+    assert actions_data['POST0']['outputs']['A'] == 'xyz'
     assert actions_data['X']['results'] == [{'foo': 'bar'}]
 
 
@@ -73,8 +73,45 @@ def test_run_actions_errored_call(send_action_mock):
     actions_data = actions.run_actions(test_actions, {}, '', 0)
 
     assert actions_data['POST0']['results'] == [{'foo': 'bar'}, {}]
-    assert actions_data['POST0']['outputs']['A'] == ['xyz']
+    assert actions_data['POST0']['outputs']['A'] == 'xyz'
     assert actions_data['X']['results'] == [{}]
+
+
+@patch('cicada2.engine.actions.send_action')
+def test_run_actions_non_versioned(send_action_mock):
+    send_action_mock.return_value = {
+        'foo': 'bar'
+    }
+
+    test_actions = [
+        {
+            'type': 'POST',
+            'executionsPerCycle': 2,
+            'storeVersions': False,
+            'params': {
+                'foo': 'bar'
+            },
+            'outputs': [
+                {
+                    'name': 'A',
+                    'value': 'xyz',
+                    'storeVersions': True
+                }
+            ]
+        },
+        {
+            'name': 'X',
+            'params': {
+                'fizz': 'buzz'
+            }
+        }
+    ]
+
+    actions_data = actions.run_actions(test_actions, {}, '', 0)
+
+    assert actions_data['POST0']['results'] == {'foo': 'bar'}
+    assert actions_data['POST0']['outputs']['A'] == ['xyz']
+    assert actions_data['X']['results'] == [{'foo': 'bar'}]
 
 
 def test_combine_action_data():

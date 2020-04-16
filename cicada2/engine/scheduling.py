@@ -78,7 +78,7 @@ def run_tests(
         for test_name in test_statuses:
             if test_is_ready(test_name, test_statuses, test_dependencies):
                 # TODO: move to function
-                # NOTE: allow rendering test_config here too?
+                # TODO: do not mix in globals with tests
                 state = {**{'globals': {}}, **initial_state}
                 has_missing_dependencies = False
 
@@ -112,7 +112,7 @@ def run_tests(
                         state=state
                     )
 
-        # TODO: launch tasks with wait on completed
+        # NOTE: Possibly launch tasks with wait on completed
         time.sleep(1)
 
     LOGGER.debug(f"test statuses: {test_statuses}")
@@ -124,7 +124,7 @@ def run_tests(
         final_test_state = test_statuses[test_name].result()
 
         with open(os.path.join(reports_location, f'state.{test_name}.json'), 'w') as final_test_state_fp:
-            json.dump(final_state, final_test_state_fp, indent=2)
+            json.dump(final_test_state, final_test_state_fp, indent=2)
 
         final_state = {**final_state, **final_test_state}
 

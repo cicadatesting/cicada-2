@@ -33,6 +33,11 @@
                 ```json
                 {{ action['results'][-1]|tojson(indent=2)|indent(16)|replace("&#34;", "\"") }}
                 ```
+            {%- elif action['results'] %}
+            - Result
+                ```json
+                {{ action['results']|tojson(indent=2)|indent(16)|replace("&#34;", "\"") }}
+                ```
             {%- endif %}
             {%- if action['outputs']|length > 0 %}
             - Outputs
@@ -48,11 +53,15 @@
     {%- set asserts = state[test_name].get('asserts') %}
     {%- if asserts is not none %}
     - Asserts:
-        {%- for assert_name, assert in asserts.items() %}
+        {%- for assert_name, asrt in asserts.items() %}
         * {{ assert_name }}
-            {%- if assert|length > 0 %}
+            {%- if asrt|length > 0 %}
             ```json
-            {{ assert[-1]|tojson(indent=2)|indent(12)|replace("&#34;", "\"") }}
+            {{ asrt[-1]|tojson(indent=2)|indent(12)|replace("&#34;", "\"") }}
+            ```
+            {%- elif assert %}
+            ```json
+            {{ asrt|tojson(indent=2)|indent(16)|replace("&#34;", "\"") }}
             ```
             {%- endif %}
         {%- endfor %}

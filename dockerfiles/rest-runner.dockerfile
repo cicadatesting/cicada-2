@@ -5,7 +5,7 @@ WORKDIR /app
 RUN apt-get update
 RUN apt-get install -y libpq-dev python-dev
 
-# TODO: Render a handlebars template for runners on runner build
+# NOTE: Possiblt render a handlebars template for runners on runner build
 # or have seperate requirements.txt per project
 ADD requirements.txt .
 RUN pip install -r requirements.txt

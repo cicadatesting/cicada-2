@@ -45,7 +45,6 @@ def load_test_config(
             assert 'name' in test_config, f"Test {test_config} is missing the property 'name'"
             test_configs[test_config['name']] = test_config
 
-        # TODO: other possible metadata handling
         test_runners = create_test_runners(test_configs.values(), task_type)
         test_dependencies = create_test_dependencies(test_configs.values())
 

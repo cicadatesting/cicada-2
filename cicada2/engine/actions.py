@@ -6,7 +6,8 @@ from cicada2.engine.messaging import send_action
 from cicada2.engine.parsing import render_section
 from cicada2.engine.state import (
     combine_keys,
-    combine_lists_by_key,
+    combine_data_by_key,
+    combine_datas,
     create_result_name
 )
 from cicada2.engine.types import Action, ActionsData, ActionResult, Output
@@ -37,7 +38,12 @@ def run_actions(actions: List[Action], state: dict, hostname: str, seconds_betwe
 
             time.sleep(rendered_action.get('secondsBetweenExecutions', 0))
 
-        data[action_name]['results'] = action_results
+        store_action_versions = rendered_action.get('storeVersions', True)
+
+        if not store_action_versions and action_results:
+            data[action_name]['results'] = action_results[-1]
+        else:
+            data[action_name]['results'] = action_results
 
         for output in rendered_action.get('outputs', []):
             rendered_output: Output = render_section(
@@ -49,9 +55,13 @@ def run_actions(actions: List[Action], state: dict, hostname: str, seconds_betwe
             assert 'name' in rendered_output, "Output section must have parameter 'name'"
             assert 'value' in rendered_output, "Output section must have parameter 'value'"
 
-            # TODO: support for outputs that overwrite value
             # TODO: support for global outputs
-            data[action_name]['outputs'][rendered_output['name']] = [rendered_output['value']]
+            store_output_versions = rendered_output.get('storeVersions', False)
+
+            if not store_output_versions:
+                data[action_name]['outputs'][rendered_output['name']] = rendered_output['value']
+            else:
+                data[action_name]['outputs'][rendered_output['name']] = [rendered_output['value']]
 
         time.sleep(seconds_between_actions)
 
@@ -63,11 +73,11 @@ def combine_action_data(combined_data: ActionsData, action_data: ActionsData) ->
 
     return {
         key: {
-            'results': (
-                combined_data.get(key, {}).get('results', [])
-                + action_data.get(key, {}).get('results', [])
+            'results': combine_datas(
+                combined_data.get(key, {}).get('results', []),
+                action_data.get(key, {}).get('results', [])
             ),
-            'outputs': combine_lists_by_key(
+            'outputs': combine_data_by_key(
                 combined_data.get(key, {}).get('outputs', {}),
                 action_data.get(key, {}).get('outputs', {})
             )

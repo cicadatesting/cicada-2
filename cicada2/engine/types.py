@@ -1,11 +1,12 @@
-from typing import Any, Callable, Dict, List, NamedTuple, Optional
+from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
 from typing_extensions import TypedDict
 
 
 class Output(TypedDict):
     name: str
-    isGlobal: bool
-    template: str
+    isGlobal: Optional[bool]
+    template: Optional[str]
+    storeVersions: Optional[bool]
     value: List[Any]
 
 
@@ -15,6 +16,7 @@ class Action(TypedDict):
     template: Optional[str]
     excecutionsPerCycle: Optional[int]
     secondsBetweenExecutions: Optional[float]
+    storeVersions: Optional[bool]
     params: dict
     outputs: Optional[List[Output]]
 
@@ -24,22 +26,23 @@ ActionResult = dict
 
 # NOTE: possibly make this a named tuple
 class ActionData(TypedDict):
-    results: List[ActionResult]
-    outputs: Dict[str, List[Any]]
+    results: Union[ActionResult, List[ActionResult]]
+    outputs: Dict[str, Union[Any, List[Any]]]
 
 
 ActionsData = Dict[str, ActionData]
 
 
 class Assert(TypedDict):
-    name: str
+    name: Optional[str]
     type: str
     params: dict
-    template: str
+    template: Optional[str]
     passed: bool
     actual: str
     expected: str
     description: str
+    storeVersions: Optional[bool]
 
 
 class AssertResult(TypedDict):
@@ -49,7 +52,7 @@ class AssertResult(TypedDict):
     description: Optional[str]
 
 
-Statuses: object = Dict[str, List[AssertResult]]
+Statuses: object = Dict[str, Union[AssertResult, List[AssertResult]]]
 
 
 class TestConfig(TypedDict):

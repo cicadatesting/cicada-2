@@ -109,7 +109,6 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
         else:
             raise ValueError(f"Action type {action_type} is invalid")
     except BaseHTTPError as e:
-        # TODO: custom error types
         raise RuntimeError(f"Request failed: {e}")
 
     text, body = parse_response_body(response)

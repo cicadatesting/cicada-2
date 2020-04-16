@@ -76,7 +76,6 @@ def create_docker_container(
             network=network,  # TODO: ensure network exists
         )
     except docker.errors.APIError as err:
-        # TODO: custom error
         raise RuntimeError(f"Unable to create container: {err}")
 
     LOGGER.debug(f"healthchecking container {container.name}")
@@ -118,9 +117,9 @@ def run_docker(test_config: TestConfig) -> RunnerClosure:
                     duration=15
                 )
             except (AssertionError, ValueError, TypeError, RuntimeError) as err:
-                # TODO: fine tune exception types
+                # NOTE: May need to fine tune exception types
                 LOGGER.error(f"Error running test {test_config['name']}: {err}", exc_info=True)
-                container.stop()
+                container.stop(timeout=3)
                 new_state = {
                     test_config['name']: {
                         'summary': TestSummary(
@@ -131,7 +130,7 @@ def run_docker(test_config: TestConfig) -> RunnerClosure:
                     }
                 }
 
-            container.stop()
+            container.stop(timeout=3)
         except (AssertionError, ValueError, TypeError, RuntimeError) as err:
             LOGGER.error(f"Error creating test {test_config['name']}: {err}", exc_info=True)
             new_state = {

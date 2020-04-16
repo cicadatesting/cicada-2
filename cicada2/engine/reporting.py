@@ -7,7 +7,8 @@ import jinja2
 TEMPLATES_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
 # TODO: table of contents
-# TODO: include more test config information
+# TODO: include number of failed asserts, executions, errored action/assert calls
+# TODO: include more test/assert/action config information
 
 
 def render_report(

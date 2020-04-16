@@ -37,8 +37,8 @@ class RunnerServicer(object):
   pass
 
   def Action(self, request, context):
-    """TODO: stream action requests and results for multiple executions
-    """
+    # missing associated documentation comment in .proto file
+    pass
     context.set_code(grpc.StatusCode.UNIMPLEMENTED)
     context.set_details('Method not implemented!')
     raise NotImplementedError('Method not implemented!')

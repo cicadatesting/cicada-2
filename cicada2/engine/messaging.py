@@ -10,6 +10,8 @@ from cicada2.engine.types import ActionResult, AssertResult
 
 LOGGER = get_logger('messaging')
 
+# NOTE: stream action requests and results for multiple executions
+# NOTE: support for non-json types with encoding param
 
 def send_action(runner_address: str, action: dict) -> ActionResult:
     with grpc.insecure_channel(runner_address) as channel:

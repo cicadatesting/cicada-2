@@ -5,7 +5,6 @@ import "google/protobuf/empty.proto";
 package cicada_2;
 
 service Runner {
-    // TODO: stream action requests and results for multiple executions
     rpc Action (ActionRequest) returns (ActionReply);
     rpc Assert (AssertRequest) returns (AssertReply);
     rpc Healthcheck (google.protobuf.Empty) returns (HealthcheckReply);
@@ -17,7 +16,6 @@ message ActionRequest {
 }
 
 message ActionReply {
-    // TODO: possibly support an encoding param to load non-json datatypes
     bytes outputs = 1; // utf-8 encoded json byte string
 }
 

@@ -10,7 +10,7 @@ from dask.distributed import Future, get_client, Variable, wait
 from cicada2.engine.actions import run_actions, combine_action_data
 from cicada2.engine.asserts import get_remaining_asserts, run_asserts
 from cicada2.engine.logs import get_logger
-from cicada2.engine.state import combine_lists_by_key
+from cicada2.engine.state import combine_data_by_key
 from cicada2.engine.types import (
     Action,
     ActionsData,
@@ -99,7 +99,7 @@ def run_asserts_series(
             seconds_between_asserts
         )
     ).fold(
-        combine_lists_by_key,
+        combine_data_by_key,
         initial=state[test_name].get('asserts', {})
     )
 

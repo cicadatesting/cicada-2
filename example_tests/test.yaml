@@ -14,7 +14,7 @@ tests:
     # Each runner is in a circular queue and gets an action (series)
     # assertDistributionStrategy
     # runIfFailedDependency
-    # TODO: action/assert able to read data from file
+    # TODO: action/assert able to read data from file (For S3 Support)
     actions:
       - type: POST
         # name (POST0 if not specified)
@@ -54,7 +54,7 @@ tests:
               {% if index is none %}
                 {% set index = 1 %}
               {% else %}
-                {% set index = index[-1] + 1 %}
+                {% set index = index + 1 %}
               {% endif %}
               value: {{ index }}
     asserts:

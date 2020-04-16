@@ -34,9 +34,12 @@ def run_asserts(asserts: List[Assert], state: dict, hostname: str, seconds_betwe
             # passed: bool = send_assert(hostname, rendered_assert)
             assert_result = send_assert(hostname, rendered_assert)
 
-        # Saved as list so versions of the assert call can be stored
-        # NOTE: This should be improved, [assert_result] is un-intuitive
-        results[assert_name] = [assert_result]
+        save_assert_versions = rendered_assert.get('storeVersions', True)
+
+        if not save_assert_versions:
+            results[assert_name] = assert_result
+        else:
+            results[assert_name] = [assert_result]
 
         time.sleep(seconds_between_asserts)
 
