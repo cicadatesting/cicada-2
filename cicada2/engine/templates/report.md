@@ -19,6 +19,10 @@
 ## Tests
 
 {%- for test_name in state if test_name != 'globals' %}
+{{ loop.index }}. [{{test_name}}](#{{test_name}})
+{%- endfor %}
+
+{%- for test_name in state if test_name != 'globals' %}
 * #### {{ test_name }}
     {%- set summary = state[test_name].get('summary') %}
     - Completed Cycles: {{ summary['completed_cycles'] }}

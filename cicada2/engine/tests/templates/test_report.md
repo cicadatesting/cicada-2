@@ -7,6 +7,7 @@
 * Failed Tests: 1
 
 ## Tests
+1. [test-name](#test-name)
 * #### test-name
     - Completed Cycles: 12
     - Remaining Asserts: 1
