@@ -148,7 +148,8 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                         'summary': TestSummary(
                             error=str(err),
                             completed_cycles=0,
-                            remaining_asserts=[]
+                            remaining_asserts=[],
+                            duration=0
                         )
                     }
                 }
@@ -163,7 +164,8 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                     'summary': TestSummary(
                         error=str(err),
                         completed_cycles=0,
-                        remaining_asserts=[]
+                        remaining_asserts=[],
+                        duration=0
                     )
                 }
             }

@@ -9,9 +9,10 @@
 ## Tests
 1. [test-name](#test-name)
 * #### test-name
+    - Duration: 4 seconds
     - Completed Cycles: 12
     - Remaining Asserts: 1
-    - Error: 
+    - Error: None
     - Actions:
         * POST0
             - Number of Calls: 1

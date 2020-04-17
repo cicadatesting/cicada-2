@@ -76,7 +76,7 @@ def test_continue_running_asserts_passed_limited_second_run():
         'RESTAssert0': [AssertResult(passed=True, actual='', expected='', description='')],
     }
 
-    assert testing.continue_running(asserts=test_asserts, remaining_cycles=1, assert_statuses=assert_statuses)
+    assert not testing.continue_running(asserts=test_asserts, remaining_cycles=1, assert_statuses=assert_statuses)
 
 
 def test_continue_running_asserts_passed_unlimited_second_run():
@@ -93,7 +93,7 @@ def test_continue_running_asserts_passed_unlimited_second_run():
     assert not testing.continue_running(asserts=test_asserts, remaining_cycles=-2, assert_statuses=assert_statuses)
 
 
-def test_continue_running_asserts_passed_limited_second_run():
+def test_continue_running_asserts_passed_limited_second_run_no_remaining():
     test_asserts = [
         {
             'type': 'RESTAssert'
@@ -108,20 +108,6 @@ def test_continue_running_asserts_passed_limited_second_run():
 
 
 def test_continue_running_asserts_failed_limited_second_run():
-    test_asserts = [
-        {
-            'type': 'RESTAssert'
-        }
-    ]
-
-    assert_statuses = {
-        'RESTAssert0': [AssertResult(passed=False, actual='', expected='', description='')],
-    }
-
-    assert not testing.continue_running(asserts=test_asserts, remaining_cycles=0, assert_statuses=assert_statuses)
-
-
-def test_continue_running_asserts_passed_limited_second_run():
     test_asserts = [
         {
             'type': 'RESTAssert'
@@ -412,6 +398,7 @@ def test_run_tests_unlimited_cycles(run_asserts_series_mock: Mock):
             'summary': {
                 'completed_cycles': 3,
                 'error': None,
+                'duration': 0,
                 'remaining_asserts': []
             }
         }
@@ -470,6 +457,7 @@ def test_run_tests_limited_cycles(run_asserts_series_mock: Mock):
             'summary': {
                 'completed_cycles': 2,
                 'error': None,
+                'duration': 0,
                 'remaining_asserts': [
                     {
                         'name': 'A',

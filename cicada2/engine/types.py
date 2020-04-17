@@ -71,10 +71,10 @@ class TestConfig(TypedDict):
 
 
 class TestSummary(TypedDict):
-    # TODO: report total test runtime
-    completed_cycles: Optional[int]
-    remaining_asserts: Optional[List[Assert]]
+    completed_cycles: int
+    remaining_asserts: List[Assert]
     error: Optional[str]
+    duration: int
 
 
 class FileTestsConfig(TypedDict):

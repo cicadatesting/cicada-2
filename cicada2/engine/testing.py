@@ -1,6 +1,7 @@
 import time
 import uuid
 from collections import defaultdict
+from datetime import datetime
 from itertools import cycle
 from typing import Any, Dict, List
 
@@ -163,6 +164,8 @@ def run_test(test_config: dict, incoming_state: dict, hostnames: List[str], time
     for asrt in asserts:
         assert 'type' in asrt, f"Assert in test \'{test_config['name']}\' is missing property 'type'"
 
+    start_time = datetime.now()
+
     # stop if remaining_cycles == 0 or had asserts and no asserts remain
     while continue_running(asserts, remaining_cycles, state[test_config['name']].get('asserts', {})):
         # Check if running with a timeout and break if timeout has signaled
@@ -214,7 +217,8 @@ def run_test(test_config: dict, incoming_state: dict, hostnames: List[str], time
             asserts,
             state[test_config['name']].get('asserts', {})
         ),
-        error=None
+        error=None,
+        duration=(datetime.now() - start_time).seconds
     )
 
     return state

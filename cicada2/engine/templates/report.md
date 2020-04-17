@@ -25,6 +25,7 @@
 {%- for test_name in state if test_name != 'globals' %}
 * #### {{ test_name }}
     {%- set summary = state[test_name].get('summary') %}
+    - Duration: {{ summary['duration'] }} seconds
     - Completed Cycles: {{ summary['completed_cycles'] }}
     - Remaining Asserts: {{ summary['remaining_asserts']|length }}
     - Error: {{ summary['error'] }}
