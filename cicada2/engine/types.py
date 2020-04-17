@@ -36,12 +36,13 @@ ActionsData = Dict[str, ActionData]
 class Assert(TypedDict):
     name: Optional[str]
     type: str
-    params: dict
+    params: Optional[dict]
     template: Optional[str]
-    passed: bool
-    actual: str
-    expected: str
-    description: str
+    passed: Optional[bool]
+    keepIfPassed: Optional[bool]
+    actual: Optional[str]
+    expected: Optional[str]
+    description: Optional[str]
     storeVersions: Optional[bool]
 
 

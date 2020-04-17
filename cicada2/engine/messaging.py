@@ -1,4 +1,5 @@
 import json
+from typing import Optional
 
 import grpc
 from google.protobuf.empty_pb2 import Empty
@@ -10,10 +11,11 @@ from cicada2.engine.types import ActionResult, AssertResult
 
 LOGGER = get_logger('messaging')
 
-# NOTE: stream action requests and results for multiple executions
-# NOTE: support for non-json types with encoding param
+# NOTE: stream action requests and results for multiple executions?
+# NOTE: support for non-json types with encoding param?
 
-def send_action(runner_address: str, action: dict) -> ActionResult:
+
+def send_action(runner_address: str, action: dict) -> Optional[ActionResult]:
     with grpc.insecure_channel(runner_address) as channel:
         stub = runner_pb2_grpc.RunnerStub(channel)
         request = runner_pb2.ActionRequest(
@@ -24,10 +26,13 @@ def send_action(runner_address: str, action: dict) -> ActionResult:
         try:
             response: runner_pb2.ActionReply = stub.Action(request)
             return json.loads(response.outputs)
+        except json.JSONDecodeError as err:
+            LOGGER.warning(f"Runner did not return JSON encoded action response")
         except grpc.RpcError as err:
             LOGGER.warning(f"Received {err.code()} during send_action: {err}")
 
-            return {}
+        # TODO: unit test for None return
+        return None
 
 
 def send_assert(runner_address: str, asrt: dict) -> AssertResult:
@@ -41,21 +46,21 @@ def send_assert(runner_address: str, asrt: dict) -> AssertResult:
         try:
             response: runner_pb2.AssertReply = stub.Assert(request)
 
-            return {
-                'passed': response.passed,
-                'actual': response.actual,
-                'expected': response.expected,
-                'description': response.description
-            }
+            return AssertResult(
+                passed=response.passed,
+                actual=response.actual,
+                expected=response.expected,
+                description=response.description
+            )
         except grpc.RpcError as err:
             LOGGER.warning(f"Received {err.code()} during send_assert: {err}")
 
-            return {
-                'passed': False,
-                'actual': None,
-                'expected': None,
-                'description': err.details()
-            }
+            return AssertResult(
+                passed=False,
+                actual=None,
+                expected=None,
+                description=err.details()
+            )
 
 
 def runner_healthcheck(runner_address: str) -> bool:

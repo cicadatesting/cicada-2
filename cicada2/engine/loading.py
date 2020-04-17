@@ -1,6 +1,6 @@
 import os
 import yaml
-from typing import Dict, List, Iterable, Tuple
+from typing import Dict, List, Iterable
 
 from cicada2.engine.errors import ValidationError
 from cicada2.engine.runners import run_docker

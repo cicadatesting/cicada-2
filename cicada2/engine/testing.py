@@ -23,7 +23,21 @@ from cicada2.engine.types import (
 LOGGER = get_logger('testing')
 
 
-def get_default_cycles(actions: List[Any], asserts: List[Any]) -> int:
+def get_default_cycles(actions: List[Action], asserts: List[Assert]) -> int:
+    """
+    Determine number of default cycles for test given actions and asserts in it
+
+    * If there are asserts, by default run unlimited
+    * If there are no asserts but actions, run only once
+    * Otherwise, the test has no actions or asserts so do not run
+
+    Args:
+        actions: list of actions in test
+        asserts: list of asserts in test
+
+    Returns:
+        Default number of cycles the test should have
+    """
     if asserts:
         return -1
     elif actions:
@@ -33,10 +47,27 @@ def get_default_cycles(actions: List[Any], asserts: List[Any]) -> int:
 
 
 def continue_running(
-        asserts: List[Any],
+        asserts: List[Assert],
         remaining_cycles: int,
         assert_statuses: Statuses
 ) -> bool:
+    """
+    Determines if the test should continue running
+
+    * Stop if no asserts and remaining cycles == 0
+    * Stop if has asserts and remaining cycles == 0
+    * Stop if has asserts, unlimited cycles, no remaining asserts
+
+    * Keep going if has no remaining asserts and remaining cycles > 0
+
+    Args:
+        asserts: List of asserts test has
+        remaining_cycles: Number of remaining cycles in test
+        assert_statuses: Status of asserts in list
+
+    Returns:
+        Whether to continue running or not
+    """
     return (
         asserts == [] and remaining_cycles != 0
     ) or (

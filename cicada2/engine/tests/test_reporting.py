@@ -42,8 +42,8 @@ def test_render_report():
 
     report = reporting.render_report(state=test_state, run_id='12345')
 
-    # with open(os.path.join(control_report_dir, 'test_report.md'), 'w') as control_report:
-    #     control_report.write(report)
+    with open(os.path.join(control_report_dir, 'test_report.md'), 'w') as control_report:
+        control_report.write(report)
 
     with open(os.path.join(control_report_dir, 'test_report.md'), 'r') as control_report:
         assert control_report.read() == report

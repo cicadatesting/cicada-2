@@ -14,6 +14,8 @@
     - Error: 
     - Actions:
         * POST0
+            - Number of Calls: 1
+            - Failed Calls: 0
             - Result
                 ```json
                 {
@@ -27,12 +29,14 @@
                     ```
     - Asserts:
         * EqualsRows0
-            ```json
-            {
-              "actual": null,
-              "description": "Exception calling application: (psycopg2.errors.UndefinedTable) relation \"my_members\" does not exist\nLINE 1: select count(*) as cnt from my_members where name=\u0027jeff2\u0027\n                                    ^\n\n[SQL: select count(*) as cnt from my_members where name=\u0027jeff2\u0027]\n(Background on this error at: http://sqlalche.me/e/f405)",
-              "expected": null,
-              "passed": false
-            }
-            ```
+            - Number of Calls: 1
+            - Failed Calls: 1
+                ```json
+                {
+                  "actual": null,
+                  "description": "Exception calling application: (psycopg2.errors.UndefinedTable) relation \"my_members\" does not exist\nLINE 1: select count(*) as cnt from my_members where name=\u0027jeff2\u0027\n                                    ^\n\n[SQL: select count(*) as cnt from my_members where name=\u0027jeff2\u0027]\n(Background on this error at: http://sqlalche.me/e/f405)",
+                  "expected": null,
+                  "passed": false
+                }
+                ```
 ---

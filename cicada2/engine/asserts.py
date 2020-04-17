@@ -8,6 +8,18 @@ from cicada2.engine.types import Assert, AssertResult, Statuses
 
 
 def run_asserts(asserts: List[Assert], state: dict, hostname: str, seconds_between_asserts: float) -> Statuses:
+    """
+    Run asserts assigned to host
+
+    Args:
+        asserts: List of asserts assigned to host
+        state: Test state to pass to templates
+        hostname: Host name to send assert data to
+        seconds_between_asserts: Time to wait in between running each assert
+
+    Returns:
+        Statuses of all asserts run by host
+    """
     results: Statuses = {}
 
     for asrt in asserts:
@@ -19,11 +31,8 @@ def run_asserts(asserts: List[Assert], state: dict, hostname: str, seconds_betwe
         if assert_name is None:
             assert_name = create_result_name(rendered_assert['type'], results)
 
-        assert 'params' in rendered_assert, f"Assert {assert_name} is missing property 'params'"
-
         if rendered_assert['type'] == 'NullAssert':
             # NOTE: possibly add template free way of computing passed
-            # passed: bool = rendered_assert.get('passed', False)
             assert_result = AssertResult(
                 passed=rendered_assert.get('passed', False),
                 actual=rendered_assert.get('actual', ''),
@@ -31,7 +40,8 @@ def run_asserts(asserts: List[Assert], state: dict, hostname: str, seconds_betwe
                 description=rendered_assert.get('description', '')
             )
         else:
-            # passed: bool = send_assert(hostname, rendered_assert)
+            assert 'params' in rendered_assert, f"Assert {assert_name} is missing property 'params'"
+
             assert_result = send_assert(hostname, rendered_assert)
 
         save_assert_versions = rendered_assert.get('storeVersions', True)
@@ -47,6 +57,16 @@ def run_asserts(asserts: List[Assert], state: dict, hostname: str, seconds_betwe
 
 
 def get_remaining_asserts(asserts: List[Assert], statuses: Statuses) -> List[Assert]:
+    """
+    Returns the asserts that haven't passed yet or should still be run
+
+    Args:
+        asserts: List of asserts in test
+        statuses: Statuses of each assert
+
+    Returns:
+        List of asserts that still need to run
+    """
     asserts_by_name: Dict[str, Assert] = {}
 
     for asrt in asserts:
@@ -57,11 +77,15 @@ def get_remaining_asserts(asserts: List[Assert], statuses: Statuses) -> List[Ass
 
         asserts_by_name[assert_name] = asrt
 
+    # Test has not been run yet for each assert so they're all remaining
     if any(assert_name not in statuses for assert_name in asserts_by_name):
         return asserts
 
     return [
         asserts_by_name[assert_name]
         for assert_name in asserts_by_name
-        if not any(status['passed'] for status in statuses[assert_name])
+        if (
+                asserts_by_name[assert_name].get('keepIfPassed', False)
+                or not any(status['passed'] for status in statuses[assert_name])
+        )
     ]

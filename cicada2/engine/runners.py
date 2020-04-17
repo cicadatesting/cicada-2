@@ -140,6 +140,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                 LOGGER.error(f"Error running test {test_config['name']}: {err}", exc_info=True)
 
                 for container in containers:
+                    LOGGER.debug(f"Stopping runner {container.name}")
                     container.stop(timeout=3)
 
                 new_state = {
@@ -153,6 +154,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                 }
 
             for container in containers:
+                LOGGER.debug(f"Stopping runner {container.name}")
                 container.stop(timeout=3)
         except (AssertionError, ValueError, TypeError, RuntimeError) as err:
             LOGGER.error(f"Error creating test {test_config['name']}: {err}", exc_info=True)

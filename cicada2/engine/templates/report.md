@@ -34,6 +34,8 @@
         {%- for action_name, action in actions.items() %}
         * {{ action_name }}
             {%- if action['results']|length > 0 %}
+            - Number of Calls: {{ action['results']|length }}
+            - Failed Calls: {{ action['results']|select("none")|list|length }}
             - Result
                 ```json
                 {{ action['results'][-1]|tojson(indent=2)|indent(16)|replace("&#34;", "\"") }}
@@ -60,14 +62,16 @@
     - Asserts:
         {%- for assert_name, asrt in asserts.items() %}
         * {{ assert_name }}
-            {%- if asrt|length > 0 %}
-            ```json
-            {{ asrt[-1]|tojson(indent=2)|indent(12)|replace("&#34;", "\"") }}
-            ```
-            {%- elif assert %}
-            ```json
-            {{ asrt|tojson(indent=2)|indent(16)|replace("&#34;", "\"") }}
-            ```
+                {%- if asrt|length > 0 %}
+            - Number of Calls: {{ asrt|length }}
+            - Failed Calls: {{ asrt|map(attribute="passed")|select("false")|list|length }}
+                ```json
+                {{ asrt[-1]|tojson(indent=2)|indent(16)|replace("&#34;", "\"") }}
+                ```
+                {%- elif assert %}
+                ```json
+                {{ asrt|tojson(indent=2)|indent(16)|replace("&#34;", "\"") }}
+                ```
             {%- endif %}
         {%- endfor %}
     {%- endif %}

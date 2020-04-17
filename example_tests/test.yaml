@@ -41,7 +41,7 @@ tests:
         template: >
           params:
             {% set ids = [] %}
-            {% for member in state['add_members']['actions']['POST0']['results'] %}
+            {% for member in state['add_members']['actions']['POST0']['results'] if member is not none %}
             {% do ids.append(member['body']['id']) %}
             {% endfor %}
             query: "update members set name='jeff2' where id in ({{ ids|join(',') }})"

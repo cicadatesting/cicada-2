@@ -65,6 +65,20 @@ def test_continue_running_asserts_failed_unlimited_second_run():
     assert testing.continue_running(asserts=test_asserts, remaining_cycles=-2, assert_statuses=assert_statuses)
 
 
+def test_continue_running_asserts_passed_limited_second_run():
+    test_asserts = [
+        {
+            'type': 'RESTAssert'
+        }
+    ]
+
+    assert_statuses = {
+        'RESTAssert0': [AssertResult(passed=True, actual='', expected='', description='')],
+    }
+
+    assert testing.continue_running(asserts=test_asserts, remaining_cycles=1, assert_statuses=assert_statuses)
+
+
 def test_continue_running_asserts_passed_unlimited_second_run():
     test_asserts = [
         {
@@ -94,6 +108,20 @@ def test_continue_running_asserts_passed_limited_second_run():
 
 
 def test_continue_running_asserts_failed_limited_second_run():
+    test_asserts = [
+        {
+            'type': 'RESTAssert'
+        }
+    ]
+
+    assert_statuses = {
+        'RESTAssert0': [AssertResult(passed=False, actual='', expected='', description='')],
+    }
+
+    assert not testing.continue_running(asserts=test_asserts, remaining_cycles=0, assert_statuses=assert_statuses)
+
+
+def test_continue_running_asserts_passed_limited_second_run():
     test_asserts = [
         {
             'type': 'RESTAssert'
