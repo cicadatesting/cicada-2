@@ -10,18 +10,27 @@ from cicada2.engine.config import (
     HEALTHCHECK_INITIAL_WAIT,
     HEALTHCHECK_MAX_RETRIES
 )
-from cicada2.engine.errors import ValidationError
-from cicada2.engine.logs import get_logger
+from cicada2.shared.errors import ValidationError
+from cicada2.shared.logs import get_logger
 from cicada2.engine.messaging import runner_healthcheck
 from cicada2.engine.parsing import render_section
 from cicada2.engine.testing import run_test_with_timeout
-from cicada2.engine.types import TestConfig, RunnerClosure, TestSummary
+from cicada2.shared.types import TestConfig, RunnerClosure, TestSummary
 
 
 LOGGER = get_logger('runners')
 
 
 def runner_to_image(runner_name: str) -> Optional[str]:
+    """
+    Determine docker image based on runner name
+
+    Args:
+        runner_name: Type of test runner
+
+    Returns:
+        Docker image for runner
+    """
     if runner_name == 'RESTRunner':
         # TODO: update to remote name after pushed
         return 'rest-runner'
@@ -32,6 +41,15 @@ def runner_to_image(runner_name: str) -> Optional[str]:
 
 
 def config_to_runner_env(config: Dict[str, str]) -> Dict[str, str]:
+    """
+    Converts runner config to standard env vars (prefixed with 'RUNNER_')
+
+    Args:
+        config: Runner config dictionary
+
+    Returns:
+        Formatted env map for runner
+    """
     return {
         f"RUNNER_{key.upper()}": config[key]
         for key in config
@@ -43,6 +61,17 @@ def container_is_healthy(
         initial_wait_time: int = HEALTHCHECK_INITIAL_WAIT,
         max_retries: int = HEALTHCHECK_MAX_RETRIES
 ) -> bool:
+    """
+    Determines if a container is ready to accept messages using an exponential backoff
+
+    Args:
+        hostname: Address of runner
+        initial_wait_time: Amount of seconds to wait before checking runner
+        max_retries: Number of times to check runner
+
+    Returns:
+        If the runner is ready
+    """
     retries = 0
     wait_time = initial_wait_time
 
@@ -68,6 +97,20 @@ def create_docker_container(
         network: str = CONTAINER_NETWORK,
         create_network: bool = CREATE_NETWORK
 ):
+    """
+    Creates and configures docker container for docker runner
+
+    Args:
+        client: Docker client
+        image: docker image to launch
+        env_map: env vars to provide to container
+        run_id: cicada run ID (to provide as a tag to the container)
+        network: Docker network to add container to
+        create_network: Creates the network if not found if set to True
+
+    Returns:
+        Docker container object
+    """
     try:
         try:
             client.networks.get(network)
@@ -104,6 +147,16 @@ def create_docker_container(
 
 
 def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
+    """
+    Runs test using docker runners
+
+    Args:
+        test_config: config of test to run
+        run_id: cicada run ID
+
+    Returns:
+        Function to run test using state gathered from previous tests
+    """
     def closure(state):
         try:
             # TODO: break out docker specific sections
@@ -120,6 +173,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                 render_section(rendered_test_config.get('config', {}), state)
             )
 
+            # NOTE: client may need more config options
             client: docker.DockerClient = docker.from_env()
             containers = []
 
@@ -133,7 +187,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                     test_config=rendered_test_config,
                     incoming_state=state,
                     hostnames=[f"{container.name}:50051" for container in containers],
-                    duration=15
+                    duration=rendered_test_config.get('timeout', 15)
                 )
             except (AssertionError, ValueError, TypeError, RuntimeError) as err:
                 # NOTE: May need to fine tune exception types

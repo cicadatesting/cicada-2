@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from cicada2.engine import asserts
-from cicada2.engine.types import AssertResult
+from cicada2.shared.types import AssertResult
 
 
 @patch('cicada2.engine.asserts.send_assert')

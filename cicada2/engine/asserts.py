@@ -3,8 +3,8 @@ from typing import Dict, List
 
 from cicada2.engine.messaging import send_assert
 from cicada2.engine.parsing import render_section
-from cicada2.engine.state import create_result_name
-from cicada2.engine.types import Assert, AssertResult, Statuses
+from cicada2.engine.state import create_item_name
+from cicada2.shared.types import Assert, AssertResult, Statuses
 
 
 def run_asserts(asserts: List[Assert], state: dict, hostname: str, seconds_between_asserts: float) -> Statuses:
@@ -22,14 +22,14 @@ def run_asserts(asserts: List[Assert], state: dict, hostname: str, seconds_betwe
     """
     results: Statuses = {}
 
-    for asrt in asserts:
+    for i, asrt in enumerate(asserts):
         # NOTE: support executionPerCycle?
         rendered_assert: Assert = render_section(asrt, state)
 
         assert_name: str = rendered_assert.get('name')
 
         if assert_name is None:
-            assert_name = create_result_name(rendered_assert['type'], results)
+            assert_name = create_item_name(rendered_assert['type'], results)
 
         if rendered_assert['type'] == 'NullAssert':
             # NOTE: possibly add template free way of computing passed
@@ -51,7 +51,9 @@ def run_asserts(asserts: List[Assert], state: dict, hostname: str, seconds_betwe
         else:
             results[assert_name] = [assert_result]
 
-        time.sleep(seconds_between_asserts)
+        if i != len(asserts) - 1:
+            # Only wait if there is another assert
+            time.sleep(seconds_between_asserts)
 
     return results
 
@@ -73,7 +75,7 @@ def get_remaining_asserts(asserts: List[Assert], statuses: Statuses) -> List[Ass
         assert_name: str = asrt.get('name')
 
         if assert_name is None:
-            assert_name = create_result_name(asrt['type'], asserts_by_name)
+            assert_name = create_item_name(asrt['type'], asserts_by_name)
 
         asserts_by_name[assert_name] = asrt
 

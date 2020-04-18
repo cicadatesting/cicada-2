@@ -1,14 +1,14 @@
 from json import JSONDecodeError
 from datetime import datetime
-from typing import Dict, List, Optional, Tuple, NamedTuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 from typing_extensions import TypedDict
 
 import requests
 from requests.auth import HTTPBasicAuth
 from requests.exceptions import BaseHTTPError
 
-from cicada2.runners.util.asserts import assert_dicts
-from cicada2.runners.util.types import AssertResult
+from cicada2.shared.asserts import assert_dicts
+from cicada2.shared.types import AssertResult
 
 
 class ActionParams(TypedDict):

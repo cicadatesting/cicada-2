@@ -4,8 +4,8 @@ from typing_extensions import TypedDict
 
 from sqlalchemy import create_engine, engine
 
-from cicada2.runners.util.asserts import assert_dicts
-from cicada2.runners.util.types import AssertResult
+from cicada2.shared.asserts import assert_dicts
+from cicada2.shared.types import AssertResult
 
 
 Rows = List[dict]

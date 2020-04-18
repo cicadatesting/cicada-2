@@ -4,9 +4,9 @@ from typing import Optional
 import grpc
 from google.protobuf.empty_pb2 import Empty
 
-from cicada2.engine.logs import get_logger
+from cicada2.shared.logs import get_logger
 from cicada2.protos import runner_pb2, runner_pb2_grpc
-from cicada2.engine.types import ActionResult, AssertResult
+from cicada2.shared.types import ActionResult, AssertResult
 
 
 LOGGER = get_logger('messaging')

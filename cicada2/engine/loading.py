@@ -2,13 +2,23 @@ import os
 import yaml
 from typing import Dict, List, Iterable
 
-from cicada2.engine.errors import ValidationError
+from cicada2.shared.errors import ValidationError
 from cicada2.engine.runners import run_docker
-from cicada2.engine.types import TestConfig, FileTestsConfig, RunnerClosure, TestRunners
+from cicada2.shared.types import TestConfig, FileTestsConfig, RunnerClosure, TestRunners
 
 
 def create_test_task(test_config: TestConfig, task_type: str, run_id: str) -> RunnerClosure:
-    # NOTE: task must be a callable
+    """
+    Create runner closure for test
+
+    Args:
+        test_config: Test config to create closure for
+        task_type: Type of runner service
+        run_id: cicada run ID
+
+    Returns:
+        Runner closure for test
+    """
     if task_type == 'docker':
         return run_docker(test_config, run_id)
     else:
@@ -16,6 +26,17 @@ def create_test_task(test_config: TestConfig, task_type: str, run_id: str) -> Ru
 
 
 def create_test_runners(test_configs: Iterable[TestConfig], task_type: str, run_id: str) -> Dict[str, RunnerClosure]:
+    """
+    Creates runner closures for multiple tests
+
+    Args:
+        test_configs: Tests to create runners for
+        task_type: Runner service type
+        run_id: cicada run ID
+
+    Returns:
+        Map of runner closures by test name
+    """
     return {
         test_config['name']: create_test_task(
             test_config,
@@ -38,6 +59,17 @@ def load_test_config(
         task_type: str,
         run_id: str
 ) -> TestRunners:
+    """
+    Loads test config for a file and loads test configs, creates runner_closures, and determines dependencies
+
+    Args:
+        test_filename: Path to test file
+        task_type: Runner service type
+        run_id: cicada run ID
+
+    Returns:
+        Test configs, runners and dependencies for test file
+    """
     with open(test_filename, 'r') as test_file:
         main_tests_config: FileTestsConfig = yaml.load(test_file, Loader=yaml.FullLoader)
 
@@ -62,6 +94,17 @@ def load_tests_tree(
         task_type: str,
         run_id: str
 ) -> TestRunners:
+    """
+    Loads tests recursively given a directory containing test files
+
+    Args:
+        tests_folder: Path to folder containing test files
+        task_type: Runner service type
+        run_id: cicada run ID
+
+    Returns:
+        Test configs, runners and dependencies for test files under test directory
+    """
     test_configs = {}
     test_runners = {}
     test_dependencies = {}

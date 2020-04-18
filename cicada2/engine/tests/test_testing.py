@@ -2,7 +2,7 @@ from collections import defaultdict
 from unittest.mock import patch, Mock
 
 from cicada2.engine import testing
-from cicada2.engine.types import AssertResult
+from cicada2.shared.types import AssertResult
 
 
 def test_get_default_cycles_empty():
@@ -207,6 +207,252 @@ def test_run_actions_parallel_multiple_hosts(run_actions_mock: Mock):
                 }
             ]
         }
+    }
+
+
+@patch('cicada2.engine.testing.run_actions')
+def test_run_actions_series(run_actions_mock):
+    run_actions_mock.return_value = {
+        'A': {
+            'results': [
+                {
+                    'foo': 'bar'
+                }
+            ]
+        }
+    }
+
+    test_state = defaultdict(dict)
+    test_actions = [
+        {
+            'name': 'A',
+            'params': {
+                'foo': 'bar'
+            }
+        }
+    ]
+
+    results = testing.run_actions_series(
+        actions=test_actions,
+        state=test_state,
+        test_name='Test1',
+        hostnames=['alpha'],
+        seconds_between_actions=0
+    )
+
+    assert results == {
+        'A': {
+            'outputs': {},
+            'results': [
+                {
+                    'foo': 'bar'
+                }
+            ]
+        }
+    }
+
+
+@patch('cicada2.engine.testing.run_actions')
+def test_run_actions_series_multiple_actions(run_actions_mock):
+    run_actions_mock.return_value = {
+        'A': {
+            'results': [
+                {
+                    'foo': 'bar'
+                }
+            ]
+        },
+        'B': {
+            'results': [
+                {
+                    'foo': 'bar'
+                }
+            ]
+        }
+    }
+
+    test_state = defaultdict(dict)
+    test_actions = [
+        {
+            'name': 'A',
+            'params': {
+                'foo': 'bar'
+            }
+        },
+        {
+            'name': 'B',
+            'params': {
+                'foo': 'bar'
+            }
+        }
+    ]
+
+    results = testing.run_actions_series(
+        actions=test_actions,
+        state=test_state,
+        test_name='Test1',
+        hostnames=['alpha'],
+        seconds_between_actions=0
+    )
+
+    assert results == {
+        'A': {
+            'outputs': {},
+            'results': [
+                {
+                    'foo': 'bar'
+                }
+            ]
+        },
+        'B': {
+            'outputs': {},
+            'results': [
+                {
+                    'foo': 'bar'
+                }
+            ]
+        }
+    }
+
+
+@patch('cicada2.engine.testing.run_actions')
+def test_run_actions_series_multiple_actions_multiple_hosts(run_actions_mock):
+    run_actions_mock.return_value = {
+        'A': {
+            'results': [
+                {
+                    'foo': 'bar'
+                }
+            ]
+        },
+        'B': {
+            'results': [
+                {
+                    'foo': 'bar'
+                }
+            ]
+        }
+    }
+
+    test_state = defaultdict(dict)
+    test_actions = [
+        {
+            'name': 'A',
+            'params': {
+                'foo': 'bar'
+            }
+        },
+        {
+            'name': 'B',
+            'params': {
+                'foo': 'bar'
+            }
+        }
+    ]
+
+    results = testing.run_actions_series(
+        actions=test_actions,
+        state=test_state,
+        test_name='Test1',
+        hostnames=['alpha', 'bravo'],
+        seconds_between_actions=0
+    )
+
+    assert results == {
+        'A': {
+            'outputs': {},
+            'results': [
+                {
+                    'foo': 'bar'
+                },
+                {
+                    'foo': 'bar'
+                }
+            ]
+        },
+        'B': {
+            'outputs': {},
+            'results': [
+                {
+                    'foo': 'bar'
+                },
+                {
+                    'foo': 'bar'
+                }
+            ]
+        }
+    }
+
+
+@patch('cicada2.engine.testing.run_actions')
+def test_run_actions_series_one_action_multiple_hosts(run_actions_mock):
+    run_actions_mock.return_value = {
+        'A': {
+            'results': [
+                {
+                    'foo': 'bar'
+                }
+            ]
+        }
+    }
+
+    test_state = defaultdict(dict)
+    test_actions = [
+        {
+            'name': 'A',
+            'params': {
+                'foo': 'bar'
+            }
+        }
+    ]
+
+    results = testing.run_actions_series(
+        actions=test_actions,
+        state=test_state,
+        test_name='Test1',
+        hostnames=['alpha', 'bravo'],
+        seconds_between_actions=0
+    )
+
+    assert results == {
+        'A': {
+            'outputs': {},
+            'results': [
+                {
+                    'foo': 'bar'
+                }
+            ]
+        }
+    }
+
+
+@patch('cicada2.engine.testing.run_asserts')
+def test_run_asserts_parallel(run_asserts_mock: Mock):
+    run_asserts_mock.return_value = {
+        'A': [AssertResult(passed=True, actual='', expected='', description='')]
+    }
+
+    test_state = defaultdict(dict)
+    test_asserts = [
+        {
+            'name': 'A',
+            'type': 'SQLAssert'
+        }
+    ]
+
+    results = testing.run_asserts_parallel(
+        asserts=test_asserts,
+        state=test_state,
+        test_name='foo',
+        hostnames=['alpha', 'bravo'],
+        seconds_between_asserts=0
+    )
+
+    assert results == {
+        'A': [
+            AssertResult(passed=True, actual='', expected='', description=''),
+            AssertResult(passed=True, actual='', expected='', description='')
+        ]
     }
 
 

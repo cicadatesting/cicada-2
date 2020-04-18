@@ -1,13 +1,36 @@
-from typing import Dict, Any
+from typing import Any
 
 import yaml
 import jinja2
 
 
-from cicada2.engine.errors import ValidationError
+from cicada2.shared.errors import ValidationError
 
 
-def render_section(section: dict, state: dict, **kwargs: Any) -> dict:
+def render_section(section: dict, state: dict, **kwargs: dict) -> dict:
+    """
+    Renders the 'template' section of a config block and replaces the key with the rendered yaml
+
+    Example:
+        Before:
+            foo: bar
+            template: >
+                fizz: buzz
+
+        After:
+            foo: bar
+            fizz: buzz
+            template: >
+                fizz: buzz
+
+    Args:
+        section: Section to render (presumably has a template section)
+        state: State to use in rendering section
+        **kwargs: Other keys to provide to section during render
+
+    Returns:
+        Current section combined with rendered template data (will retain template string for future use)
+    """
     try:
         template = jinja2.Environment(
             loader=jinja2.BaseLoader,

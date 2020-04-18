@@ -1,7 +1,6 @@
 import logging
 
 
-# TODO: move to shared
 LOG_FORMAT = "%(asctime)s | %(levelname)-8s | %(name)s:%(funcName)s -- %(message)s"
 DATE_FORMAT = "%m-%d %H:%M"
 

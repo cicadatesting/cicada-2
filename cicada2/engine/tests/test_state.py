@@ -99,15 +99,15 @@ def test_create_result_name():
     result_names = set()
 
     result_names.add(
-        state.create_result_name('A', result_names)
+        state.create_item_name('A', result_names)
     )
 
     result_names.add(
-        state.create_result_name('A', result_names)
+        state.create_item_name('A', result_names)
     )
 
     result_names.add(
-        state.create_result_name('B', result_names)
+        state.create_item_name('B', result_names)
     )
 
     assert len(result_names) == 3

@@ -8,24 +8,36 @@ from cicada2.engine.state import (
     combine_keys,
     combine_data_by_key,
     combine_datas,
-    create_result_name
+    create_item_name
 )
-from cicada2.engine.types import Action, ActionsData, ActionResult, Output
+from cicada2.shared.types import Action, ActionsData, ActionResult, Output
 
 
 def run_actions(actions: List[Action], state: dict, hostname: str, seconds_between_actions: float) -> ActionsData:
+    """
+    Runs a list of actions assigned to a single runner
+
+    Args:
+        actions: List of actions to run
+        state: Incoming state to use in rendering actions
+        hostname: Address of runner
+        seconds_between_actions: Seconds to wait between running next action in list
+
+    Returns:
+        ActionsData per action provided
+    """
     def infinite_defaultdict():
         return defaultdict(infinite_defaultdict)
 
     data: ActionsData = infinite_defaultdict()
 
-    for action in actions:
+    for i, action in enumerate(actions):
         rendered_action: Action = render_section(action, state)
 
         action_name: str = rendered_action.get('name')
 
         if action_name is None:
-            action_name: str = create_result_name(rendered_action['type'], data)
+            action_name: str = create_item_name(rendered_action['type'], data)
 
         assert 'params' in rendered_action, f"Action {action_name} is missing property 'params'"
 
@@ -63,12 +75,24 @@ def run_actions(actions: List[Action], state: dict, hostname: str, seconds_betwe
             else:
                 data[action_name]['outputs'][rendered_output['name']] = [rendered_output['value']]
 
-        time.sleep(seconds_between_actions)
+        if i != len(actions) - 1:
+            # Only wait if there is another action
+            time.sleep(seconds_between_actions)
 
     return data
 
 
 def combine_action_data(combined_data: ActionsData, action_data: ActionsData) -> ActionsData:
+    """
+    Combine outputs and results with existing state or of multiple run_action results
+
+    Args:
+        combined_data: Initial data that has already been combined (or empty)
+        action_data: Action data from a single run_action result
+
+    Returns:
+        Existing data combined with one runner's run_action result (does not overwrite combined_data)
+    """
     combined_keys: Set[str] = combine_keys(combined_data, action_data)
 
     return {

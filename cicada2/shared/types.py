@@ -58,6 +58,7 @@ Statuses: object = Dict[str, Union[AssertResult, List[AssertResult]]]
 
 class TestConfig(TypedDict):
     name: str
+    timeout: Optional[float]  # NOTE: possibly take in ms instead of fraction of seconds
     runIfFailedDependency: Optional[bool]
     description: Optional[str]  # TODO: add to report
     runner: Optional[str]

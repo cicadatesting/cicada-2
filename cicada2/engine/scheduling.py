@@ -7,10 +7,10 @@ from typing import Dict, List, Optional
 from dask.distributed import Client, Future
 
 from cicada2.engine.config import INITIAL_STATE_FILE, TASK_TYPE, REPORTS_FOLDER, TESTS_FOLDER
-from cicada2.engine.loading import load_tests_tree, create_test_task, create_test_runners
-from cicada2.engine.logs import get_logger
+from cicada2.engine.loading import load_tests_tree
+from cicada2.shared.logs import get_logger
 from cicada2.engine.reporting import render_report
-from cicada2.engine.types import TestSummary
+from cicada2.shared.types import TestSummary
 
 
 LOGGER = get_logger('scheduling')
@@ -105,7 +105,8 @@ def run_tests(
                     test_summary = TestSummary(
                         error='skipped',
                         remaining_asserts=[],
-                        completed_cycles=0
+                        completed_cycles=0,
+                        duration=0
                     )
 
                     test_statuses[test_name] = client.submit(

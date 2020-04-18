@@ -3,7 +3,7 @@
 ## Summary
 {%- set successful = [] %}
 {%- set failed = [] %}
-{%- for test_name in state %}
+{%- for test_name in state if test_name != 'globals' %}
     {%- set summary = state[test_name].get('summary') %}
     {%- if summary['error'] or summary['remaining_asserts']|length > 0 %}
         {%- do failed.append(test_name) %}

@@ -4,6 +4,7 @@ tests:
   - name: add_members
     description: add 100 new members
     runner: RESTRunner
+    # timeout
     # runnerCount (number of instances)
     # cycles (number of times to run each action and assert)
     # secondsBetweenCycles
