@@ -18,8 +18,8 @@ def combine_keys(dict_a: dict, dict_b: dict) -> Set[str]:
 
 
 def combine_data_by_key(
-        combined_outputs: Dict[str, Union[List[Any], Any]],
-        output: Dict[str, Union[List[Any], Any]]
+    combined_outputs: Dict[str, Union[List[Any], Any]],
+    output: Dict[str, Union[List[Any], Any]],
 ) -> Dict[str, Union[List[Any], Any]]:
     """
     Combine lists in two multimaps
@@ -39,7 +39,9 @@ def combine_data_by_key(
     }
 
 
-def combine_datas(data_a: Union[List[Any], Any], data_b: Union[List[Any], Any]) -> Union[List[Any], Any]:
+def combine_datas(
+    data_a: Union[List[Any], Any], data_b: Union[List[Any], Any]
+) -> Union[List[Any], Any]:
     """
     Combines data where either may be versioned (a list) or merged (a single element)
 
@@ -62,14 +64,16 @@ def combine_datas(data_a: Union[List[Any], Any], data_b: Union[List[Any], Any]) 
     """
     if data_a and data_b:
         # Assert both are lists or not lists
-        assert isinstance(data_a, List) == isinstance(data_b, List), (
-            f"Cannot combine versioned and non-versioned data: {data_a} + {data_b}"
-        )
+        assert isinstance(data_a, List) == isinstance(
+            data_b, List
+        ), f"Cannot combine versioned and non-versioned data: {data_a} + {data_b}"
 
     if (
-            (data_a and data_b and not isinstance(data_a, List) and not isinstance(data_b, List))
-            or (data_b and not data_a and not isinstance(data_b, List))
-    ):
+        data_a
+        and data_b
+        and not isinstance(data_a, List)
+        and not isinstance(data_b, List)
+    ) or (data_b and not data_a and not isinstance(data_b, List)):
         return data_b
     elif data_a and not data_b and not isinstance(data_a, List):
         return data_a
@@ -89,8 +93,6 @@ def create_item_name(item_type: str, item_names: Iterable[str]) -> str:
     Returns:
         Translated item name
     """
-    name_index = len(
-        [name for name in item_names if name.startswith(item_type)]
-    )
+    name_index = len([name for name in item_names if name.startswith(item_type)])
 
     return f"{item_type}{name_index}"

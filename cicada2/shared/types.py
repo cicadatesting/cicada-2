@@ -12,7 +12,9 @@ class Output(TypedDict):
 
 class Action(TypedDict):
     type: str
-    name: Optional[str]  # NOTE: should this be set in the background if type is set but not name?
+    name: Optional[
+        str
+    ]  # NOTE: should this be set in the background if type is set but not name?
     template: Optional[str]
     excecutionsPerCycle: Optional[int]
     secondsBetweenExecutions: Optional[float]

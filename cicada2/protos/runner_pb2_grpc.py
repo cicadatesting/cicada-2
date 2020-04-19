@@ -6,76 +6,77 @@ from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
 class RunnerStub(object):
-  # missing associated documentation comment in .proto file
-  pass
+    # missing associated documentation comment in .proto file
+    pass
 
-  def __init__(self, channel):
-    """Constructor.
+    def __init__(self, channel):
+        """Constructor.
 
     Args:
       channel: A grpc.Channel.
     """
-    self.Action = channel.unary_unary(
-        '/cicada_2.Runner/Action',
-        request_serializer=cicada2_dot_protos_dot_runner__pb2.ActionRequest.SerializeToString,
-        response_deserializer=cicada2_dot_protos_dot_runner__pb2.ActionReply.FromString,
+        self.Action = channel.unary_unary(
+            "/cicada_2.Runner/Action",
+            request_serializer=cicada2_dot_protos_dot_runner__pb2.ActionRequest.SerializeToString,
+            response_deserializer=cicada2_dot_protos_dot_runner__pb2.ActionReply.FromString,
         )
-    self.Assert = channel.unary_unary(
-        '/cicada_2.Runner/Assert',
-        request_serializer=cicada2_dot_protos_dot_runner__pb2.AssertRequest.SerializeToString,
-        response_deserializer=cicada2_dot_protos_dot_runner__pb2.AssertReply.FromString,
+        self.Assert = channel.unary_unary(
+            "/cicada_2.Runner/Assert",
+            request_serializer=cicada2_dot_protos_dot_runner__pb2.AssertRequest.SerializeToString,
+            response_deserializer=cicada2_dot_protos_dot_runner__pb2.AssertReply.FromString,
         )
-    self.Healthcheck = channel.unary_unary(
-        '/cicada_2.Runner/Healthcheck',
-        request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
-        response_deserializer=cicada2_dot_protos_dot_runner__pb2.HealthcheckReply.FromString,
+        self.Healthcheck = channel.unary_unary(
+            "/cicada_2.Runner/Healthcheck",
+            request_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
+            response_deserializer=cicada2_dot_protos_dot_runner__pb2.HealthcheckReply.FromString,
         )
 
 
 class RunnerServicer(object):
-  # missing associated documentation comment in .proto file
-  pass
-
-  def Action(self, request, context):
     # missing associated documentation comment in .proto file
     pass
-    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-    context.set_details('Method not implemented!')
-    raise NotImplementedError('Method not implemented!')
 
-  def Assert(self, request, context):
-    # missing associated documentation comment in .proto file
-    pass
-    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-    context.set_details('Method not implemented!')
-    raise NotImplementedError('Method not implemented!')
+    def Action(self, request, context):
+        # missing associated documentation comment in .proto file
+        pass
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
 
-  def Healthcheck(self, request, context):
-    # missing associated documentation comment in .proto file
-    pass
-    context.set_code(grpc.StatusCode.UNIMPLEMENTED)
-    context.set_details('Method not implemented!')
-    raise NotImplementedError('Method not implemented!')
+    def Assert(self, request, context):
+        # missing associated documentation comment in .proto file
+        pass
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
+
+    def Healthcheck(self, request, context):
+        # missing associated documentation comment in .proto file
+        pass
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details("Method not implemented!")
+        raise NotImplementedError("Method not implemented!")
 
 
 def add_RunnerServicer_to_server(servicer, server):
-  rpc_method_handlers = {
-      'Action': grpc.unary_unary_rpc_method_handler(
-          servicer.Action,
-          request_deserializer=cicada2_dot_protos_dot_runner__pb2.ActionRequest.FromString,
-          response_serializer=cicada2_dot_protos_dot_runner__pb2.ActionReply.SerializeToString,
-      ),
-      'Assert': grpc.unary_unary_rpc_method_handler(
-          servicer.Assert,
-          request_deserializer=cicada2_dot_protos_dot_runner__pb2.AssertRequest.FromString,
-          response_serializer=cicada2_dot_protos_dot_runner__pb2.AssertReply.SerializeToString,
-      ),
-      'Healthcheck': grpc.unary_unary_rpc_method_handler(
-          servicer.Healthcheck,
-          request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
-          response_serializer=cicada2_dot_protos_dot_runner__pb2.HealthcheckReply.SerializeToString,
-      ),
-  }
-  generic_handler = grpc.method_handlers_generic_handler(
-      'cicada_2.Runner', rpc_method_handlers)
-  server.add_generic_rpc_handlers((generic_handler,))
+    rpc_method_handlers = {
+        "Action": grpc.unary_unary_rpc_method_handler(
+            servicer.Action,
+            request_deserializer=cicada2_dot_protos_dot_runner__pb2.ActionRequest.FromString,
+            response_serializer=cicada2_dot_protos_dot_runner__pb2.ActionReply.SerializeToString,
+        ),
+        "Assert": grpc.unary_unary_rpc_method_handler(
+            servicer.Assert,
+            request_deserializer=cicada2_dot_protos_dot_runner__pb2.AssertRequest.FromString,
+            response_serializer=cicada2_dot_protos_dot_runner__pb2.AssertReply.SerializeToString,
+        ),
+        "Healthcheck": grpc.unary_unary_rpc_method_handler(
+            servicer.Healthcheck,
+            request_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+            response_serializer=cicada2_dot_protos_dot_runner__pb2.HealthcheckReply.SerializeToString,
+        ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+        "cicada_2.Runner", rpc_method_handlers
+    )
+    server.add_generic_rpc_handlers((generic_handler,))

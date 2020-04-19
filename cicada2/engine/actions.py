@@ -8,12 +8,14 @@ from cicada2.engine.state import (
     combine_keys,
     combine_data_by_key,
     combine_datas,
-    create_item_name
+    create_item_name,
 )
 from cicada2.shared.types import Action, ActionsData, ActionResult, Output
 
 
-def run_actions(actions: List[Action], state: dict, hostname: str, seconds_between_actions: float) -> ActionsData:
+def run_actions(
+    actions: List[Action], state: dict, hostname: str, seconds_between_actions: float
+) -> ActionsData:
     """
     Runs a list of actions assigned to a single runner
 
@@ -26,6 +28,7 @@ def run_actions(actions: List[Action], state: dict, hostname: str, seconds_betwe
     Returns:
         ActionsData per action provided
     """
+
     def infinite_defaultdict():
         return defaultdict(infinite_defaultdict)
 
@@ -34,46 +37,54 @@ def run_actions(actions: List[Action], state: dict, hostname: str, seconds_betwe
     for i, action in enumerate(actions):
         rendered_action: Action = render_section(action, state)
 
-        action_name: str = rendered_action.get('name')
+        action_name: str = rendered_action.get("name")
 
         if action_name is None:
-            action_name: str = create_item_name(rendered_action['type'], data)
+            action_name: str = create_item_name(rendered_action["type"], data)
 
-        assert 'params' in rendered_action, f"Action {action_name} is missing property 'params'"
+        assert (
+            "params" in rendered_action
+        ), f"Action {action_name} is missing property 'params'"
 
-        executions_per_cycle: int = rendered_action.get('executionsPerCycle', 1)
+        executions_per_cycle: int = rendered_action.get("executionsPerCycle", 1)
         action_results: List[ActionResult] = []
 
         for _ in range(executions_per_cycle):
             execution_output: ActionResult = send_action(hostname, rendered_action)
             action_results.append(execution_output)
 
-            time.sleep(rendered_action.get('secondsBetweenExecutions', 0))
+            time.sleep(rendered_action.get("secondsBetweenExecutions", 0))
 
-        store_action_versions = rendered_action.get('storeVersions', True)
+        store_action_versions = rendered_action.get("storeVersions", True)
 
         if not store_action_versions and action_results:
-            data[action_name]['results'] = action_results[-1]
+            data[action_name]["results"] = action_results[-1]
         else:
-            data[action_name]['results'] = action_results
+            data[action_name]["results"] = action_results
 
-        for output in rendered_action.get('outputs', []):
+        for output in rendered_action.get("outputs", []):
             rendered_output: Output = render_section(
-                section=output,
-                state=state,
-                results=action_results
+                section=output, state=state, results=action_results
             )
 
-            assert 'name' in rendered_output, "Output section must have parameter 'name'"
-            assert 'value' in rendered_output, "Output section must have parameter 'value'"
+            assert (
+                "name" in rendered_output
+            ), "Output section must have parameter 'name'"
+            assert (
+                "value" in rendered_output
+            ), "Output section must have parameter 'value'"
 
             # NOTE: support updating outputs in globals section?
-            store_output_versions = rendered_output.get('storeVersions', False)
+            store_output_versions = rendered_output.get("storeVersions", False)
 
             if not store_output_versions:
-                data[action_name]['outputs'][rendered_output['name']] = rendered_output['value']
+                data[action_name]["outputs"][rendered_output["name"]] = rendered_output[
+                    "value"
+                ]
             else:
-                data[action_name]['outputs'][rendered_output['name']] = [rendered_output['value']]
+                data[action_name]["outputs"][rendered_output["name"]] = [
+                    rendered_output["value"]
+                ]
 
         if i != len(actions) - 1:
             # Only wait if there is another action
@@ -82,7 +93,9 @@ def run_actions(actions: List[Action], state: dict, hostname: str, seconds_betwe
     return data
 
 
-def combine_action_data(combined_data: ActionsData, action_data: ActionsData) -> ActionsData:
+def combine_action_data(
+    combined_data: ActionsData, action_data: ActionsData
+) -> ActionsData:
     """
     Combine outputs and results with existing state or of multiple run_action results
 
@@ -97,14 +110,14 @@ def combine_action_data(combined_data: ActionsData, action_data: ActionsData) ->
 
     return {
         key: {
-            'results': combine_datas(
-                combined_data.get(key, {}).get('results', []),
-                action_data.get(key, {}).get('results', [])
+            "results": combine_datas(
+                combined_data.get(key, {}).get("results", []),
+                action_data.get(key, {}).get("results", []),
             ),
-            'outputs': combine_data_by_key(
-                combined_data.get(key, {}).get('outputs', {}),
-                action_data.get(key, {}).get('outputs', {})
-            )
+            "outputs": combine_data_by_key(
+                combined_data.get(key, {}).get("outputs", {}),
+                action_data.get(key, {}).get("outputs", {}),
+            ),
         }
         for key in combined_keys
     }

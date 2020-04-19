@@ -7,35 +7,23 @@ from cicada2.runners.rest_runner import runner
 
 
 def test_parse_action_params_auth():
-    params = {
-        'url': 'xyz.com',
-        'username': 'foo',
-        'password': 'bar'
-    }
+    params = {"url": "xyz.com", "username": "foo", "password": "bar"}
 
     parsed_params = runner.parse_action_params(params)
 
-    assert parsed_params['auth'] == HTTPBasicAuth(
-        username='foo',
-        password='bar'
-    )
+    assert parsed_params["auth"] == HTTPBasicAuth(username="foo", password="bar")
 
 
 def test_parse_action_params_auth_missing():
-    params = {
-        'url': 'xyz.com',
-        'username': 'foo'
-    }
+    params = {"url": "xyz.com", "username": "foo"}
 
     parsed_params = runner.parse_action_params(params)
 
-    assert parsed_params['auth'] is None
+    assert parsed_params["auth"] is None
 
 
 def test_parse_response_body_successful():
-    response_body = {
-        'foo': 'bar'
-    }
+    response_body = {"foo": "bar"}
 
     response = Mock()
     response.text = json.dumps(response_body)
@@ -48,9 +36,7 @@ def test_parse_response_body_successful():
 
 
 def test_action_params_problems_successful():
-    params = {
-        'url': 'xyz.com'
-    }
+    params = {"url": "xyz.com"}
 
     problems = runner.action_params_problems(params=params)
 
@@ -64,34 +50,23 @@ def test_action_params_problems_no_url():
 
 
 def test_assert_dicts_passed_all_required():
-    test_dict = {
-        'foo': 'bar'
-    }
+    test_dict = {"foo": "bar"}
 
     passed, description = runner.assert_dicts(
-        expected=test_dict,
-        actual=test_dict,
-        all_required=True
+        expected=test_dict, actual=test_dict, all_required=True
     )
 
     assert passed
-    assert description == 'passed'
+    assert description == "passed"
 
 
 def test_assert_dicts_failed_all_required():
-    expected_dict = {
-        'foo': 'bar'
-    }
+    expected_dict = {"foo": "bar"}
 
-    actual_dict = {
-        'foo': 'bar',
-        'fizz': 'buzz'
-    }
+    actual_dict = {"foo": "bar", "fizz": "buzz"}
 
     passed, description = runner.assert_dicts(
-        expected=expected_dict,
-        actual=actual_dict,
-        all_required=True
+        expected=expected_dict, actual=actual_dict, all_required=True
     )
 
     assert not passed
@@ -99,38 +74,25 @@ def test_assert_dicts_failed_all_required():
 
 
 def test_assert_dicts_passed_subset():
-    expected_dict = {
-        'foo': 'bar'
-    }
+    expected_dict = {"foo": "bar"}
 
-    actual_dict = {
-        'foo': 'bar',
-        'fizz': 'buzz'
-    }
+    actual_dict = {"foo": "bar", "fizz": "buzz"}
 
     passed, description = runner.assert_dicts(
-        expected=expected_dict,
-        actual=actual_dict,
-        all_required=False
+        expected=expected_dict, actual=actual_dict, all_required=False
     )
 
     assert passed
-    assert description == 'passed'
+    assert description == "passed"
 
 
 def test_assert_dicts_failed_subset():
-    expected_dict = {
-        'foo': 'bar'
-    }
+    expected_dict = {"foo": "bar"}
 
-    actual_dict = {
-        'fizz': 'buzz'
-    }
+    actual_dict = {"fizz": "buzz"}
 
     passed, description = runner.assert_dicts(
-        expected=expected_dict,
-        actual=actual_dict,
-        all_required=False
+        expected=expected_dict, actual=actual_dict, all_required=False
     )
 
     assert not passed
@@ -139,13 +101,9 @@ def test_assert_dicts_failed_subset():
 
 def test_assert_params_problems_no_url():
     assert_params = {
-        'method': 'GET',
-        'expected': 200,
-        'actionParams': {
-            'headers': {
-                'foo': 'bar'
-            }
-        }
+        "method": "GET",
+        "expected": 200,
+        "actionParams": {"headers": {"foo": "bar"}},
     }
 
     problems = runner.assert_params_problems(assert_params)
@@ -154,11 +112,11 @@ def test_assert_params_problems_no_url():
 
 
 def test_assert_params_problems_no_action_params():
-    assert_params = {
-        'method': 'GET',
-        'expected': 200
-    }
+    assert_params = {"method": "GET", "expected": 200}
 
     problems = runner.assert_params_problems(assert_params)
 
-    assert problems == ["Missing 'actionParams' in assert params", 'Missing "url" in action params']
+    assert problems == [
+        "Missing 'actionParams' in assert params",
+        'Missing "url" in action params',
+    ]

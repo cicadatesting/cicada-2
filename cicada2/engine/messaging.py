@@ -9,7 +9,7 @@ from cicada2.protos import runner_pb2, runner_pb2_grpc
 from cicada2.shared.types import ActionResult, AssertResult
 
 
-LOGGER = get_logger('messaging')
+LOGGER = get_logger("messaging")
 
 # NOTE: stream action requests and results for multiple executions?
 # NOTE: support for non-json types with encoding param?
@@ -19,8 +19,7 @@ def send_action(runner_address: str, action: dict) -> Optional[ActionResult]:
     with grpc.insecure_channel(runner_address) as channel:
         stub = runner_pb2_grpc.RunnerStub(channel)
         request = runner_pb2.ActionRequest(
-            type=action['type'],
-            params=json.dumps(action['params']).encode('utf-8')
+            type=action["type"], params=json.dumps(action["params"]).encode("utf-8")
         )
 
         try:
@@ -39,8 +38,7 @@ def send_assert(runner_address: str, asrt: dict) -> AssertResult:
     with grpc.insecure_channel(runner_address) as channel:
         stub = runner_pb2_grpc.RunnerStub(channel)
         request = runner_pb2.AssertRequest(
-            type=asrt['type'],
-            params=json.dumps(asrt['params']).encode('utf-8')
+            type=asrt["type"], params=json.dumps(asrt["params"]).encode("utf-8")
         )
 
         try:
@@ -50,16 +48,13 @@ def send_assert(runner_address: str, asrt: dict) -> AssertResult:
                 passed=response.passed,
                 actual=response.actual,
                 expected=response.expected,
-                description=response.description
+                description=response.description,
             )
         except grpc.RpcError as err:
             LOGGER.warning(f"Received {err.code()} during send_assert: {err}")
 
             return AssertResult(
-                passed=False,
-                actual=None,
-                expected=None,
-                description=err.details()
+                passed=False, actual=None, expected=None, description=err.details()
             )
 
 

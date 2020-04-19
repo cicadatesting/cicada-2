@@ -3,211 +3,124 @@ from unittest.mock import patch
 from cicada2.engine import actions
 
 
-@patch('cicada2.engine.actions.send_action')
+@patch("cicada2.engine.actions.send_action")
 def test_run_actions(send_action_mock):
-    send_action_mock.return_value = {
-        'foo': 'bar'
-    }
+    send_action_mock.return_value = {"foo": "bar"}
 
     test_actions = [
         {
-            'type': 'POST',
-            'executionsPerCycle': 2,
-            'params': {
-                'foo': 'bar'
-            },
-            'outputs': [
-                {
-                    'name': 'A',
-                    'value': 'xyz'
-                }
-            ]
+            "type": "POST",
+            "executionsPerCycle": 2,
+            "params": {"foo": "bar"},
+            "outputs": [{"name": "A", "value": "xyz"}],
         },
-        {
-            'name': 'X',
-            'params': {
-                'fizz': 'buzz'
-            }
-        }
+        {"name": "X", "params": {"fizz": "buzz"}},
     ]
 
-    actions_data = actions.run_actions(test_actions, {}, '', 0)
+    actions_data = actions.run_actions(test_actions, {}, "", 0)
 
-    assert actions_data['POST0']['results'] == [{'foo': 'bar'}, {'foo': 'bar'}]
-    assert actions_data['POST0']['outputs']['A'] == 'xyz'
-    assert actions_data['X']['results'] == [{'foo': 'bar'}]
+    assert actions_data["POST0"]["results"] == [{"foo": "bar"}, {"foo": "bar"}]
+    assert actions_data["POST0"]["outputs"]["A"] == "xyz"
+    assert actions_data["X"]["results"] == [{"foo": "bar"}]
 
 
-@patch('cicada2.engine.actions.send_action')
+@patch("cicada2.engine.actions.send_action")
 def test_run_actions_errored_call(send_action_mock):
-    send_action_mock.side_effect = [
-        {
-            'foo': 'bar'
-        },
-        {},
-        {}
-    ]
+    send_action_mock.side_effect = [{"foo": "bar"}, {}, {}]
 
     test_actions = [
         {
-            'type': 'POST',
-            'executionsPerCycle': 2,
-            'params': {
-                'foo': 'bar'
-            },
-            'outputs': [
-                {
-                    'name': 'A',
-                    'value': 'xyz'
-                }
-            ]
+            "type": "POST",
+            "executionsPerCycle": 2,
+            "params": {"foo": "bar"},
+            "outputs": [{"name": "A", "value": "xyz"}],
         },
-        {
-            'name': 'X',
-            'params': {
-                'fizz': 'buzz'
-            }
-        }
+        {"name": "X", "params": {"fizz": "buzz"}},
     ]
 
-    actions_data = actions.run_actions(test_actions, {}, '', 0)
+    actions_data = actions.run_actions(test_actions, {}, "", 0)
 
-    assert actions_data['POST0']['results'] == [{'foo': 'bar'}, {}]
-    assert actions_data['POST0']['outputs']['A'] == 'xyz'
-    assert actions_data['X']['results'] == [{}]
+    assert actions_data["POST0"]["results"] == [{"foo": "bar"}, {}]
+    assert actions_data["POST0"]["outputs"]["A"] == "xyz"
+    assert actions_data["X"]["results"] == [{}]
 
 
-@patch('cicada2.engine.actions.send_action')
+@patch("cicada2.engine.actions.send_action")
 def test_run_actions_non_versioned(send_action_mock):
-    send_action_mock.return_value = {
-        'foo': 'bar'
-    }
+    send_action_mock.return_value = {"foo": "bar"}
 
     test_actions = [
         {
-            'type': 'POST',
-            'executionsPerCycle': 2,
-            'storeVersions': False,
-            'params': {
-                'foo': 'bar'
-            },
-            'outputs': [
-                {
-                    'name': 'A',
-                    'value': 'xyz',
-                    'storeVersions': True
-                }
-            ]
+            "type": "POST",
+            "executionsPerCycle": 2,
+            "storeVersions": False,
+            "params": {"foo": "bar"},
+            "outputs": [{"name": "A", "value": "xyz", "storeVersions": True}],
         },
-        {
-            'name': 'X',
-            'params': {
-                'fizz': 'buzz'
-            }
-        }
+        {"name": "X", "params": {"fizz": "buzz"}},
     ]
 
-    actions_data = actions.run_actions(test_actions, {}, '', 0)
+    actions_data = actions.run_actions(test_actions, {}, "", 0)
 
-    assert actions_data['POST0']['results'] == {'foo': 'bar'}
-    assert actions_data['POST0']['outputs']['A'] == ['xyz']
-    assert actions_data['X']['results'] == [{'foo': 'bar'}]
+    assert actions_data["POST0"]["results"] == {"foo": "bar"}
+    assert actions_data["POST0"]["outputs"]["A"] == ["xyz"]
+    assert actions_data["X"]["results"] == [{"foo": "bar"}]
 
 
 def test_combine_action_data():
     current_actions_data = {
-        'POST0': {
-            'results': [
-                {
-                    'foo': 'bar'
-                },
-                {
-                    'foo': 'bar'
-                }
-            ],
-            'outputs': {
-                'A': ['xyz']
-            }
+        "POST0": {
+            "results": [{"foo": "bar"}, {"foo": "bar"}],
+            "outputs": {"A": ["xyz"]},
         }
     }
 
     new_actions_data = {
-        'POST0': {
-            'results': [
-                {
-                    'foo': 'bar'
-                },
-                {
-                    'foo': 'bar'
-                }
-            ],
-            'outputs': {
-                'A': ['xyz']
-            }
+        "POST0": {
+            "results": [{"foo": "bar"}, {"foo": "bar"}],
+            "outputs": {"A": ["xyz"]},
         },
-        'X': {
-            'results': [
-                {
-                    'foo': 'bar'
-                }
-            ]
-        }
+        "X": {"results": [{"foo": "bar"}]},
     }
 
-    combined_actions_data = actions.combine_action_data(current_actions_data, new_actions_data)
+    combined_actions_data = actions.combine_action_data(
+        current_actions_data, new_actions_data
+    )
 
-    assert combined_actions_data['POST0']['results'] == [
-        {'foo': 'bar'},
-        {'foo': 'bar'},
-        {'foo': 'bar'},
-        {'foo': 'bar'}
+    assert combined_actions_data["POST0"]["results"] == [
+        {"foo": "bar"},
+        {"foo": "bar"},
+        {"foo": "bar"},
+        {"foo": "bar"},
     ]
 
-    assert combined_actions_data['POST0']['outputs']['A'] == ['xyz', 'xyz']
-    assert combined_actions_data['X']['results'] == [{'foo': 'bar'}]
+    assert combined_actions_data["POST0"]["outputs"]["A"] == ["xyz", "xyz"]
+    assert combined_actions_data["X"]["results"] == [{"foo": "bar"}]
 
 
 def test_combine_action_data_error():
     current_actions_data = {
-        'POST0': {
-            'results': [
-                {
-                    'foo': 'bar'
-                },
-                {
-                    'foo': 'bar'
-                }
-            ],
-            'outputs': {
-                'A': ['xyz']
-            }
+        "POST0": {
+            "results": [{"foo": "bar"}, {"foo": "bar"}],
+            "outputs": {"A": ["xyz"]},
         }
     }
 
     new_actions_data = {
-        'POST0': {
-            'results': [{}, {}],
-            'outputs': {
-                'A': ['xyz']
-            }
-        },
-        'X': {
-            'results': [
-                {
-                    'foo': 'bar'
-                }
-            ]
-        }
+        "POST0": {"results": [{}, {}], "outputs": {"A": ["xyz"]}},
+        "X": {"results": [{"foo": "bar"}]},
     }
 
-    combined_actions_data = actions.combine_action_data(current_actions_data, new_actions_data)
+    combined_actions_data = actions.combine_action_data(
+        current_actions_data, new_actions_data
+    )
 
-    assert combined_actions_data['POST0']['results'] == [
-        {'foo': 'bar'},
-        {'foo': 'bar'},
+    assert combined_actions_data["POST0"]["results"] == [
+        {"foo": "bar"},
+        {"foo": "bar"},
         {},
-        {}
+        {},
     ]
 
-    assert combined_actions_data['POST0']['outputs']['A'] == ['xyz', 'xyz']
-    assert combined_actions_data['X']['results'] == [{'foo': 'bar'}]
+    assert combined_actions_data["POST0"]["outputs"]["A"] == ["xyz", "xyz"]
+    assert combined_actions_data["X"]["results"] == [{"foo": "bar"}]

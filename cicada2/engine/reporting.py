@@ -3,7 +3,9 @@ import os
 import jinja2
 
 
-TEMPLATES_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
+TEMPLATES_DIRECTORY = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "templates"
+)
 
 # TODO: include more test/assert/action config information
 # NOTE: possibly add support for displaying erred calls in non versioned results
@@ -11,10 +13,10 @@ TEMPLATES_DIRECTORY = os.path.join(os.path.dirname(os.path.abspath(__file__)), '
 
 
 def render_report(
-        state: dict,
-        templates_directory: str = TEMPLATES_DIRECTORY,
-        template_file: str = 'report.md',
-        **kwargs: dict
+    state: dict,
+    templates_directory: str = TEMPLATES_DIRECTORY,
+    template_file: str = "report.md",
+    **kwargs: dict
 ) -> str:
     """
     Performs jinja2 render on an entire report file with provided state dictionary
@@ -30,10 +32,7 @@ def render_report(
     """
     template = jinja2.Environment(
         loader=jinja2.FileSystemLoader(searchpath=templates_directory),
-        extensions=['jinja2.ext.do']
+        extensions=["jinja2.ext.do"],
     ).get_template(template_file)
 
-    return template.render(
-        state=state,
-        **kwargs
-    )
+    return template.render(state=state, **kwargs)

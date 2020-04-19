@@ -3,6 +3,16 @@ type: docker
 name: default
 
 steps:
+  - name: format
+    image: python:3.8
+    commands:
+      - pip install black
+      - black cicada2
+  - name: lint
+    image: python:3.8
+    commands:
+      - pip install pylint
+      - pylint cicada2
   - name: test
     image: python:3.8
     commands:

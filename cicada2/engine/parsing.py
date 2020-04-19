@@ -1,5 +1,3 @@
-from typing import Any
-
 import yaml
 import jinja2
 
@@ -33,9 +31,8 @@ def render_section(section: dict, state: dict, **kwargs: dict) -> dict:
     """
     try:
         template = jinja2.Environment(
-            loader=jinja2.BaseLoader,
-            extensions=['jinja2.ext.do']
-        ).from_string(section.get('template', ''))
+            loader=jinja2.BaseLoader, extensions=["jinja2.ext.do"]
+        ).from_string(section.get("template", ""))
 
         rendered_template_string = template.render(state=state, **kwargs)
     except (jinja2.TemplateError, jinja2.TemplateSyntaxError) as exc:

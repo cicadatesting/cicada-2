@@ -44,12 +44,12 @@ class AssertParams(TypedDict):
 
 
 def parse_action_params(params: ActionParams) -> RequestParams:
-    url = params['url']
-    headers = params.get('headers')
-    query_params = params.get('queryParams')
-    body = params.get('body')
-    username = params.get('username')
-    password = params.get('password')
+    url = params["url"]
+    headers = params.get("headers")
+    query_params = params.get("queryParams")
+    body = params.get("body")
+    username = params.get("username")
+    password = params.get("password")
 
     if username and password:
         auth = HTTPBasicAuth(username, password)
@@ -58,11 +58,11 @@ def parse_action_params(params: ActionParams) -> RequestParams:
     # TODO: support for oauth
 
     return {
-        'url': url,
-        'headers': headers,
-        'json': body,
-        'params': query_params,
-        'auth': auth
+        "url": url,
+        "headers": headers,
+        "json": body,
+        "params": query_params,
+        "auth": auth,
     }
 
 
@@ -74,13 +74,13 @@ def parse_response_body(response: requests.Response) -> Tuple[str, dict]:
         return response.text, {}
     except AttributeError:
         # Response text is empty
-        return '', {}
+        return "", {}
 
 
 def action_params_problems(params: ActionParams) -> List[str]:
     problems = []
 
-    if 'url' not in params:
+    if "url" not in params:
         problems.append('Missing "url" in action params')
 
     return problems
@@ -102,7 +102,7 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
     # TODO: unit test for errors raised
 
     try:
-        if action_type in ['GET', 'DELETE', 'POST', 'PATCH', 'PUT']:
+        if action_type in ["GET", "DELETE", "POST", "PATCH", "PUT"]:
             start = datetime.now()
             response = requests.request(method=action_type, **request_params)
             end = datetime.now()
@@ -114,31 +114,27 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
     text, body = parse_response_body(response)
 
     return {
-        'status_code': response.status_code,
-        'headers': dict(response.headers),
-        'body': body,
-        'text': text,
-        'runtime': (end - start).microseconds / 1000
+        "status_code": response.status_code,
+        "headers": dict(response.headers),
+        "body": body,
+        "text": text,
+        "runtime": (end - start).microseconds / 1000,
     }
 
 
 def assert_params_problems(params: AssertParams) -> List[str]:
     problems = []
 
-    if 'method' not in params:
+    if "method" not in params:
         problems.append("Missing 'method' in assert params")
 
-    if 'actionParams' not in params:
+    if "actionParams" not in params:
         problems.append("Missing 'actionParams' in assert params")
 
-    if 'expected' not in params:
+    if "expected" not in params:
         problems.append("Missing 'expected' in assert params")
 
-    problems.extend(
-        action_params_problems(
-            params.get('actionParams', {})
-        )
-    )
+    problems.extend(action_params_problems(params.get("actionParams", {})))
 
     return problems
 
@@ -149,34 +145,34 @@ def run_assert(assert_type: str, params: AssertParams) -> AssertResult:
     if params_problems:
         raise ValueError(f"Params invalid: {', '.join(params_problems)}")
 
-    action_response = run_action(params['method'], params['actionParams'])
-    expected = params['expected']
+    action_response = run_action(params["method"], params["actionParams"])
+    expected = params["expected"]
 
-    if assert_type == 'Headers':
-        actual = action_response['headers']
-
-        passed, description = assert_dicts(
-            expected=expected,
-            actual=actual,
-            all_required=params.get('allRequired', False)
-        )
-    elif assert_type == 'JSON':
-        actual = action_response['body']
+    if assert_type == "Headers":
+        actual = action_response["headers"]
 
         passed, description = assert_dicts(
             expected=expected,
             actual=actual,
-            all_required=params.get('allRequired', False)
+            all_required=params.get("allRequired", False),
         )
-    elif assert_type == 'StatusCode':
-        actual = action_response['status_code']
+    elif assert_type == "JSON":
+        actual = action_response["body"]
+
+        passed, description = assert_dicts(
+            expected=expected,
+            actual=actual,
+            all_required=params.get("allRequired", False),
+        )
+    elif assert_type == "StatusCode":
+        actual = action_response["status_code"]
 
         passed = expected == actual
 
         if not passed:
             description = f"expected status code {expected}, got {actual}"
         else:
-            description = 'passed'
+            description = "passed"
     else:
         raise ValueError(f"Assert type {assert_type} is invalid")
 
@@ -184,5 +180,5 @@ def run_assert(assert_type: str, params: AssertParams) -> AssertResult:
         passed=passed,
         expected=str(expected),
         actual=str(actual),
-        description=description
+        description=description,
     )
