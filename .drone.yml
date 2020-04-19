@@ -9,3 +9,22 @@ steps:
     - pip install -r requirements.txt
     - pip install pytest
     - pytest
+  - name: build
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/engine.dockerfile
+      repo: jeremyaherzog/cicada-2-engine
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - 0.0.0
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+    when:
+      branch:
+        - master
+      event:
+        - push
