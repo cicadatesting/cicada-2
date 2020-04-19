@@ -20,6 +20,6 @@ def get_logger(name: str = "logger", log_file: str = None):
         fh = logging.FileHandler(log_file)
         fh.setFormatter(logging.Formatter(LOG_FORMAT, datefmt=DATE_FORMAT))
         logger.addHandler(fh)
-        logger.debug(f"Initialized file logger to {log_file}")
+        logger.debug("Initialized file logger to %s", log_file)
 
     return logger

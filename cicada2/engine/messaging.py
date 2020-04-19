@@ -26,9 +26,9 @@ def send_action(runner_address: str, action: dict) -> Optional[ActionResult]:
             response: runner_pb2.ActionReply = stub.Action(request)
             return json.loads(response.outputs)
         except json.JSONDecodeError as err:
-            LOGGER.warning(f"Runner did not return JSON encoded action response")
+            LOGGER.warning("Runner did not return JSON encoded action response")
         except grpc.RpcError as err:
-            LOGGER.warning(f"Received {err.code()} during send_action: {err}")
+            LOGGER.warning("Received %s during send_action: %s", err.code(), err)
 
         # TODO: unit test for None return
         return None
@@ -51,7 +51,7 @@ def send_assert(runner_address: str, asrt: dict) -> AssertResult:
                 description=response.description,
             )
         except grpc.RpcError as err:
-            LOGGER.warning(f"Received {err.code()} during send_assert: {err}")
+            LOGGER.warning("Received %s during send_assert: %s", err.code(), err)
 
             return AssertResult(
                 passed=False, actual=None, expected=None, description=err.details()
@@ -67,5 +67,5 @@ def runner_healthcheck(runner_address: str) -> bool:
             response = stub.Healthcheck(Empty())
             return response.ready
         except grpc.RpcError as err:
-            LOGGER.warning(f"Received {err.code()} during healthcheck: {err}")
+            LOGGER.warning("Received %s during healthcheck: %s", err.code(), err)
             return False

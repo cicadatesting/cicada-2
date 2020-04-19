@@ -4,6 +4,7 @@ from cicada2.engine import reporting
 
 
 def test_render_report():
+    # pylint: disable=line-too-long
     test_state = {
         "test-name": {
             "actions": {

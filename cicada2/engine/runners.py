@@ -114,7 +114,7 @@ def create_docker_container(
         except docker.errors.NotFound:
             if create_network:
                 client.networks.create(network)
-                LOGGER.info(f"Created docker network {network}")
+                LOGGER.info("Created docker network %s", network)
             else:
                 raise ValidationError(f"Docker network {network} not configured")
     except docker.errors.APIError as err:
@@ -135,7 +135,7 @@ def create_docker_container(
     except docker.errors.APIError as err:
         raise RuntimeError(f"Unable to create container: {err}")
 
-    LOGGER.debug(f"healthchecking container {container.name}")
+    LOGGER.debug("healthchecking container %s", container.name)
 
     if container_is_healthy(f"{container_id}:50051"):
         return container
@@ -176,7 +176,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
 
             for _ in range(test_config.get("runnerCount", 1)):
                 container = create_docker_container(client, image, env, run_id)
-                LOGGER.info(f"successfully created container {container.name}")
+                LOGGER.info("successfully created container %s", container.name)
                 containers.append(container)
 
             try:
@@ -189,11 +189,11 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
             except (AssertionError, ValueError, TypeError, RuntimeError) as err:
                 # NOTE: May need to fine tune exception types
                 LOGGER.error(
-                    f"Error running test {test_config['name']}: {err}", exc_info=True
+                    "Error running test %s: %s", test_config['name'], err, exc_info=True
                 )
 
                 for container in containers:
-                    LOGGER.debug(f"Stopping runner {container.name}")
+                    LOGGER.debug("Stopping runner %s", container.name)
                     container.stop(timeout=3)
 
                 new_state = {
@@ -208,11 +208,11 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                 }
 
             for container in containers:
-                LOGGER.debug(f"Stopping runner {container.name}")
+                LOGGER.debug("Stopping runner %s", container.name)
                 container.stop(timeout=3)
         except (AssertionError, ValueError, TypeError, RuntimeError) as err:
             LOGGER.error(
-                f"Error creating test {test_config['name']}: {err}", exc_info=True
+                "Error creating test %s: %s", test_config['name'], err, exc_info=True
             )
             new_state = {
                 test_config["name"]: {

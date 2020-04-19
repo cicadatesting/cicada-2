@@ -67,7 +67,7 @@ def run_tests(
     # NOTE: possibly have run ID in globals
     run_id = f"cicada-2-run-{str(uuid.uuid4())[:8]}"
 
-    LOGGER.info(f"Starting run {run_id}")
+    LOGGER.info("Starting run %s", run_id)
     test_configs, test_runners, test_dependencies = load_tests_tree(
         tests_folder, tasks_type, run_id
     )
@@ -117,6 +117,7 @@ def run_tests(
                         duration=0,
                     )
 
+                    # pylint: disable=undefined-loop-variable
                     test_statuses[test_name] = client.submit(
                         lambda: {**state, **{test_name: {"summary": test_summary}}}
                     )
@@ -128,7 +129,7 @@ def run_tests(
         # NOTE: Possibly launch tasks with wait on completed
         time.sleep(1)
 
-    LOGGER.debug(f"test statuses: {test_statuses}")
+    LOGGER.debug("test statuses: %s", test_statuses)
 
     os.makedirs(reports_location, exist_ok=True)
     final_state = {}

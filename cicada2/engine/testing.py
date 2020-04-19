@@ -6,7 +6,7 @@ from itertools import cycle
 from typing import Dict, List
 
 from dask import bag
-from dask.distributed import Future, get_client, Variable, wait, Client
+from dask.distributed import Future, get_client, Variable, wait
 
 from cicada2.engine.actions import run_actions, combine_action_data
 from cicada2.engine.asserts import get_remaining_asserts, run_asserts
@@ -405,7 +405,7 @@ def run_test_with_timeout(
         timeout_signal_name=timeout_signal_name,
     )
 
-    LOGGER.debug(f"Test duration config: {duration} seconds")
+    LOGGER.debug("Test duration config: %d seconds", duration)
 
     def distributed_timeout():
         # If a timeout from a previous test did not complete, it will keep running (it cannot be canceled)
@@ -424,14 +424,18 @@ def run_test_with_timeout(
     wait([run_test_task, timeout_task], return_when="FIRST_COMPLETED")
     end = datetime.now()
 
-    LOGGER.debug(f"Test {test_config['name']} took {(end - start).seconds} seconds")
+    LOGGER.debug(
+        "Test %s took %d seconds",
+        test_config["name"],
+        (end - start).seconds
+    )
 
     if run_test_task.done():
         keep_going.set(False)
         return run_test_task.result()
     elif timeout_task.done():
         LOGGER.debug(timeout_task)
-        LOGGER.info(f"Test {test_config['name']} timed out")
+        LOGGER.info("Test %s timed out", test_config['name'])
         # NOTE: add timed out to summary?
         keep_going.set(False)
         return run_test_task.result()

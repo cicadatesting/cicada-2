@@ -43,7 +43,7 @@ def test_contains_rows_fail_1():
 
     actual_rows = [{"foo": "bar"}, {"foo": "alpha"}]
 
-    passed, description = runner.contains_rows(expected_rows, actual_rows)
+    passed, _ = runner.contains_rows(expected_rows, actual_rows)
 
     assert not passed
 
