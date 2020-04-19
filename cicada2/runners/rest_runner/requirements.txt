@@ -1,0 +1,4 @@
+requests
+grpcio
+protobuf
+typing_extensions

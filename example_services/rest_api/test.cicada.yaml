@@ -3,7 +3,7 @@ version: 0.0
 tests:
   - name: add_members
     description: add 100 new members
-    runner: RESTRunner
+    runner: rest-runner
     # timeout
     # runnerCount (number of instances)
     # cycles (number of times to run each action and assert)
@@ -22,17 +22,17 @@ tests:
         executionsPerCycle: 100 # execute 100 times before moving onto next action
         # secondsBetweenExecutions
         params:
-          url: "http://host.docker.internal:8080/members"
+          url: "http://api:8080/members"
           body:
             name: jeff
   - name: update_ages
     description: update ages of new members
-    runner: SQLRunner
+    runner: sql-runner
     dependencies:
       - add_members
     config:
       # NOTE: possibly add feature to render inline without template section
-      connectionString: postgresql://postgres:admin@host.docker.internal:5432/postgres
+      connectionString: postgresql://postgres:admin@db:5432/postgres
     # Run each action, then check each assert. Repeat actions until all asserts have passed
     actions:
       - type: SQLQuery
@@ -63,7 +63,7 @@ tests:
         params:
           method: SQLQuery
           actionParams:
-            query: "select count(*) as cnt from my_members where name='jeff2'"
+            query: "select count(*) as cnt from members where name='jeff2'"
           expected:
             rows:
               - cnt: 100

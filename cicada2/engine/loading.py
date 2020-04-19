@@ -71,6 +71,7 @@ def load_test_config(
         Test configs, runners and dependencies for test file
     """
     with open(test_filename, 'r') as test_file:
+        # TODO: add test filename to report
         main_tests_config: FileTestsConfig = yaml.load(test_file, Loader=yaml.FullLoader)
 
         test_configs = {}
@@ -110,7 +111,7 @@ def load_tests_tree(
     test_dependencies = {}
 
     for root, _, files in os.walk(tests_folder):
-        for file in files:
+        for file in [file for file in files if file.endswith('.cicada.yaml')]:
             test_filepath = os.path.abspath(os.path.join(root, file))
             test_file_configs, test_file_runners, test_file_dependencies = load_test_config(
                 test_filepath,

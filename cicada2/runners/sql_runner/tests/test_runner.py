@@ -1,4 +1,4 @@
-from cicada2.runners.SQLRunner import runner
+from cicada2.runners.sql_runner import runner
 
 
 def test_contains_rows():

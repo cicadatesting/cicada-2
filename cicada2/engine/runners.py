@@ -31,10 +31,10 @@ def runner_to_image(runner_name: str) -> Optional[str]:
     Returns:
         Docker image for runner
     """
-    if runner_name == 'RESTRunner':
+    if runner_name == 'rest-runner':
         # TODO: update to remote name after pushed
         return 'rest-runner'
-    elif runner_name == 'SQLRunner':
+    elif runner_name == 'sql-runner':
         return 'sql-runner'
 
     return None

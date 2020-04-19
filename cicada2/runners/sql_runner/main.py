@@ -3,13 +3,13 @@ from concurrent import futures
 import json
 
 import grpc
-from grpc_status import rpc_status
 
 from cicada2.protos import runner_pb2, runner_pb2_grpc
-from cicada2.runners.RESTRunner import runner
+from cicada2.runners.sql_runner import runner
 
 
-class RESTRunnerServer(runner_pb2_grpc.RunnerServicer):
+# TODO: need a nicer way to test runners individually
+class SQLRunnerServer(runner_pb2_grpc.RunnerServicer):
     def Action(self, request, context):
         try:
             outputs = runner.run_action(
@@ -39,22 +39,21 @@ class RESTRunnerServer(runner_pb2_grpc.RunnerServicer):
                 params=json.loads(request.params)
             )
 
-            # NOTE: should this use shared NamedTuple and convert in run_assert?
             return runner_pb2.AssertReply(
-                passed=result.passed,
-                expected=result.expected,
-                actual=result.actual,
-                description=result.description
+                passed=result['passed'],
+                expected=result.get('expected'),
+                actual=result.get('actual'),
+                description=result.get('description')
             )
         except ValueError as e:
             context.abort(
                 code=grpc.StatusCode.INVALID_ARGUMENT,
-                details=e
+                details=str(e)
             )
         except RuntimeError as e:
             context.abort(
                 code=grpc.StatusCode.UNAVAILABLE,
-                details=e
+                details=str(e)
             )
 
     def Healthcheck(self, request, context):
@@ -64,7 +63,7 @@ class RESTRunnerServer(runner_pb2_grpc.RunnerServicer):
 def main():
     server = grpc.server(futures.ThreadPoolExecutor())
 
-    runner_pb2_grpc.add_RunnerServicer_to_server(RESTRunnerServer(), server)
+    runner_pb2_grpc.add_RunnerServicer_to_server(SQLRunnerServer(), server)
 
     server.add_insecure_port('[::]:50051')
     server.start()
