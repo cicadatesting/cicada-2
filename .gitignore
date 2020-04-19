@@ -4,4 +4,5 @@
 .env
 dask-worker-space
 *__pycache__
+*__init__.pyc
 *.pytest_cache
