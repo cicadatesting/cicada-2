@@ -1,13 +1,15 @@
 .PHONY=build-engine,build-env,build-runner,run-env,proto-compile
 
+DOCKER_PROVIDER=jeremyaherzog
+
 build-engine:
-	docker build -f dockerfiles/engine.dockerfile -t cicada-2-engine .
+	docker build -f dockerfiles/engine.dockerfile -t ${DOCKER_PROVIDER}/cicada-2-engine .
 
 build-env:
-	docker build -f dockerfiles/env.dockerfile -t cicada-2-env .
+	docker build -f dockerfiles/env.dockerfile -t ${DOCKER_PROVIDER}/cicada-2-env .
 
 build-runner:
-	docker build -f dockerfiles/${RUNNER_NAME}.dockerfile -t ${RUNNER_NAME} .
+	docker build -f dockerfiles/${RUNNER_NAME}.dockerfile -t ${DOCKER_PROVIDER}/cicada-2-${RUNNER_NAME} .
 
 run-env:
 	docker run -it --rm \

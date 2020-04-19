@@ -9,11 +9,49 @@ steps:
     - pip install -r requirements.txt
     - pip install pytest
     - pytest
-  - name: build
+  - name: build-engine
     image: plugins/docker
     settings:
       dockerfile: dockerfiles/engine.dockerfile
       repo: jeremyaherzog/cicada-2-engine
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - 0.0.0  # NOTE: possibly derive from branch name/pr name or something when doing releases
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+    when:
+      branch:
+        - master
+      event:
+        - push
+  - name: build-rest-runner
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/rest-runner.dockerfile
+      repo: jeremyaherzog/cicada-2-rest-runner
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - 0.0.0
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+    when:
+      branch:
+        - master
+      event:
+        - push
+  - name: build-sql-runner
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/sql-runner.dockerfile
+      repo: jeremyaherzog/cicada-2-sql-runner
       username:
         from_secret: DOCKER_USERNAME
       password:
