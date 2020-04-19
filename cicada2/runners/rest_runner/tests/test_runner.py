@@ -3,7 +3,7 @@ from unittest.mock import Mock
 
 from requests.auth import HTTPBasicAuth
 
-from cicada2.runners.RESTRunner import runner
+from cicada2.runners.rest_runner import runner
 
 
 def test_parse_action_params_auth():
