@@ -3,8 +3,8 @@
 ## Overview
 
 Cicada is a tool for automating functional, or black-box style tests
-on multiple microservices. It currently supports testing for
-REST API's and Postgres databases.
+on multiple microservices using gRPC and containerized runners.
+It currently supports testing for REST API's and Postgres databases.
 
 ## Running
 
