@@ -1,15 +1,13 @@
 .PHONY=build-engine,build-env,build-runner,run-env,proto-compile
 
-DOCKER_PROVIDER=jeremyaherzog
-
 build-engine:
-	docker build -f dockerfiles/engine.dockerfile -t ${DOCKER_PROVIDER}/cicada-2-engine .
+	docker build -f dockerfiles/engine.dockerfile -t jeremyaherzog/cicada-2-engine .
 
 build-env:
-	docker build -f dockerfiles/env.dockerfile -t ${DOCKER_PROVIDER}/cicada-2-env .
+	docker build -f dockerfiles/env.dockerfile -t jeremyaherzog/cicada-2-env .
 
 build-runner:
-	docker build -f dockerfiles/${RUNNER_NAME}.dockerfile -t ${DOCKER_PROVIDER}/cicada-2-${RUNNER_NAME} .
+	docker build -f dockerfiles/${RUNNER_NAME}.dockerfile -t jeremyaherzog/cicada-2-${RUNNER_NAME} .
 
 run-env:
 	docker run -it --rm \
@@ -19,6 +17,12 @@ run-env:
 		-v $(shell pwd):/opt \
 		cicada-2-env \
 		/bin/bash
+
+lint:
+	python3 -m pylint cicada2
+
+test:
+	python3 -m pytest cicada2
 
 proto-compile:
 	python3 -m grpc_tools.protoc -I . \
