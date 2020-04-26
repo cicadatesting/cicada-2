@@ -14,7 +14,7 @@ services:
     depends_on:
       - db
   api:
-    image: example-rest-api
+    build: .
     ports:
       - 8080:8080
     depends_on:

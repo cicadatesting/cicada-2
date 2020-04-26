@@ -1,0 +1,7 @@
+{
+  "docs": {
+    "Introduction": ["quickstart", "tests", "state", "actionsasserts"],
+    "API": ["test", "action", "assert", "config"],
+    "Runners": ["rest-runner", "sql-runner"]
+  }
+}

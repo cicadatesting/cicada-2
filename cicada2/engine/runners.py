@@ -120,7 +120,9 @@ def create_docker_container(
     except docker.errors.APIError as err:
         raise RuntimeError(f"Unable to configure docker network: {err}")
 
-    container_id = f"{image}-{str(uuid.uuid4())[:8]}"
+    # Parse the part after the last repository path ('/') before the tag (':')
+    runner_type = f"{image.split('/')[-1].split(':')[0]}"
+    container_id = f"{runner_type}-{str(uuid.uuid4())[:8]}"
 
     try:
         # Start container (will pull image if necessary)

@@ -41,7 +41,6 @@ Makefile:
 ```bash
 cd example_services/rest_api
 
-make build
 make run
 
 make clean

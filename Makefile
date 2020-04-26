@@ -24,6 +24,9 @@ lint:
 test:
 	python3 -m pytest cicada2
 
+clean:
+	docker container stop $(docker container ls -q --filter cicada-2-runner)
+
 proto-compile:
 	python3 -m grpc_tools.protoc -I . \
 		--python_out=. \

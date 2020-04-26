@@ -14,7 +14,7 @@ class Action(TypedDict):
     type: str
     name: Optional[
         str
-    ]  # NOTE: should this be set in the background if type is set but not name?
+    ]  # TODO: Set in the background if type is set but not name
     template: Optional[str]
     excecutionsPerCycle: Optional[int]
     secondsBetweenExecutions: Optional[float]
@@ -59,18 +59,23 @@ Statuses: object = Dict[str, Union[AssertResult, List[AssertResult]]]
 
 
 class TestConfig(TypedDict):
-    name: str
+    name: str  # TODO: validate against a regex
     timeout: Optional[float]  # NOTE: possibly take in ms instead of fraction of seconds
+    cycles: int
     runIfFailedDependency: Optional[bool]
     description: Optional[str]  # TODO: add to report
     runner: Optional[str]
     runnerCount: Optional[str]
     image: Optional[str]
+    config: Dict[str, str]
     actions: Optional[List[Action]]
     asserts: Optional[List[Assert]]
     secondsBetweenCycles: Optional[float]
     secondsBetweenActions: Optional[float]
     secondsBetweenAsserts: Optional[float]
+    dependencies: List[str]
+    actionDistributionStrategy: str
+    assertDistributionStrategy: str
 
 
 class TestSummary(TypedDict):

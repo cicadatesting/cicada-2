@@ -1,7 +1,4 @@
-.PHONY=build,run,clean
-
-build:
-	docker build -t example-rest-api .
+.PHONY=services,run,clean
 
 services:
 	docker-compose up api

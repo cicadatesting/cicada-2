@@ -353,7 +353,11 @@ def run_test(
         remaining_cycles -= 1
         completed_cycles += 1
 
-        time.sleep(test_config.get("secondsBetweenCycles", 1))
+        # Wait between cycles if test is to continue running
+        if continue_running(
+            asserts, remaining_cycles, state[test_config["name"]].get("asserts", {})
+        ):
+            time.sleep(test_config.get("secondsBetweenCycles", 1))
 
     # TODO: just have assert names in remaining asserts
     state[test_config["name"]]["summary"] = TestSummary(
