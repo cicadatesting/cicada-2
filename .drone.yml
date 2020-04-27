@@ -6,15 +6,17 @@ steps:
   - name: publish-docs
     image: node:14
     environment:
-      GIT_USER:
-        from_secret: GIT_USER
+      GIT_EMAIL: jeremyaherzog@gmail.com
+      GIT_USER: herzo175
       GIT_PASSWORD:
         from_secret: GIT_PASSWORD
     commands:
-      - git config credential.helper '!f() { sleep 1; echo "username=${GIT_USER}"; echo "password=${GIT_PASSWORD}"; }; f'
+      - git config --global user.name "${GIT_USER}"
+      - git config --global user.email "${GIT_EMAIL}"
+      - echo "machine github.com login ${GIT_USER} password ${GIT_TOKEN}" > ~/.netrc
       - cd docsite/website
       - npm install
-      - npm run publish-gh-pages
+      - GIT_USER="${GIT_USER}" npm run publish-gh-pages
     when:
       branch:
         - master
