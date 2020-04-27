@@ -11,6 +11,7 @@ steps:
       GIT_PASSWORD:
         from_secret: GIT_PASSWORD
     commands:
+      - git config credential.helper '!f() { sleep 1; echo "username=${GIT_USER}"; echo "password=${GIT_PASSWORD}"; }; f'
       - cd docsite/website
       - npm install
       - npm run publish-gh-pages
