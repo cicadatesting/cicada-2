@@ -135,7 +135,7 @@ class Index extends React.Component {
         {[
           {
             content:
-              'Spin up a swarm of test runners to make sure your system can operate at scale',
+              'Multiple built-in runners to test common services with the option to add your own',
             image: `${baseUrl}img/undraw_operating_system.svg`,
             imageAlign: 'left',
             title: 'Covers Complex Use Cases',
