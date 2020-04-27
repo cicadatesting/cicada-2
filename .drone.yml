@@ -11,12 +11,12 @@ steps:
       GIT_PASSWORD:
         from_secret: GIT_PASSWORD
     commands:
-      - git config --global user.name "${GIT_USER}"
-      - git config --global user.email "${GIT_EMAIL}"
-      - echo "machine github.com login ${GIT_USER} password ${GIT_TOKEN}" > ~/.netrc
+      - git config --global user.name $GIT_USER
+      - git config --global user.email $GIT_EMAIL
+      - echo "machine github.com login $GIT_USER password GIT_PASSWORD > ~/.netrc
       - cd docsite/website
       - npm install
-      - GIT_USER="${GIT_USER}" npm run publish-gh-pages
+      - GIT_USER=$GIT_USER npm run publish-gh-pages
     when:
       branch:
         - master
