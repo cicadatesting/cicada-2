@@ -3,6 +3,22 @@ type: docker
 name: default
 
 steps:
+  - name: publish-docs
+    image: node:14
+    environment:
+      GIT_USER:
+        from_secret: GIT_USER
+      GIT_PASSWORD:
+        from_secret: GIT_PASSWORD
+    commands:
+      - cd docsite/website
+      - npm install
+      - npm run publish-gh-pages
+    when:
+      branch:
+        - master
+      event:
+        - push
   - name: format
     image: python:3.8
     commands:
