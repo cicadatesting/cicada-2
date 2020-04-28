@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-db2762ec
+* Run ID: cicada-2-run-89a362c3
 * Successful Tests: 2
 * Failed Tests: 0
 
@@ -11,7 +11,7 @@
 2. [update_ages](#update_ages)
 * #### add_members
     - Description: add 100 new members
-    - Duration: 1 seconds
+    - Duration: 0 seconds
     - Completed Cycles: 1
     - Remaining Asserts: 0
     - Error: None
@@ -23,18 +23,18 @@
                 ```json
                 {
                   "body": {
-                    "id": 200,
+                    "id": 100,
                     "name": "jeff"
                   },
                   "headers": {
                     "Content-Length": "35",
                     "Content-Type": "application/json",
-                    "Date": "Mon, 27 Apr 2020 22:20:49 GMT",
+                    "Date": "Tue, 28 Apr 2020 00:54:47 GMT",
                     "Server": "Werkzeug/1.0.1 Python/3.8.2"
                   },
-                  "runtime": 6.533,
+                  "runtime": 5.317,
                   "status_code": 200,
-                  "text": "{\n  \"id\": 200, \n  \"name\": \"jeff\"\n}\n"
+                  "text": "{\n  \"id\": 100, \n  \"name\": \"jeff\"\n}\n"
                 }
                 ```
 ---
@@ -46,15 +46,6 @@
     - Remaining Asserts: 0
     - Error: None
     - Actions:
-        * SQLQuery0
-            - Number of Calls: 1
-            - Failed Calls: 0
-            - Result
-                ```json
-                {
-                  "rows": []
-                }
-                ```
         * SQLQuery1
             - Number of Calls: 1
             - Failed Calls: 0
@@ -69,6 +60,15 @@
                     ```json
                     1
                     ```
+        * SQLQuery0
+            - Number of Calls: 1
+            - Failed Calls: 0
+            - Result
+                ```json
+                {
+                  "rows": []
+                }
+                ```
     - Asserts:
         * EqualsRows0
             - Number of Calls: 1

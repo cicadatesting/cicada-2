@@ -3,7 +3,6 @@ from typing import Dict, List
 
 from cicada2.engine.messaging import send_assert
 from cicada2.engine.parsing import render_section
-from cicada2.engine.state import create_item_name
 from cicada2.shared.types import Assert, AssertResult, Statuses
 
 
@@ -28,10 +27,7 @@ def run_asserts(
         # TODO: support executions per cycle
         rendered_assert: Assert = render_section(asrt, state)
 
-        assert_name: str = rendered_assert.get("name")
-
-        if assert_name is None:
-            assert_name = create_item_name(rendered_assert["type"], results)
+        assert_name = rendered_assert.get("name")
 
         if rendered_assert["type"] == "NullAssert":
             # NOTE: possibly add template free way of computing passed
@@ -76,10 +72,7 @@ def get_remaining_asserts(asserts: List[Assert], statuses: Statuses) -> List[Ass
     asserts_by_name: Dict[str, Assert] = {}
 
     for asrt in asserts:
-        assert_name: str = asrt.get("name")
-
-        if assert_name is None:
-            assert_name = create_item_name(asrt["type"], asserts_by_name)
+        assert_name = asrt.get("name")
 
         asserts_by_name[assert_name] = asrt
 

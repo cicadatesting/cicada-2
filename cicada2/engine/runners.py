@@ -200,7 +200,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                 new_state = {
                     test_config["name"]: {
                         "summary": TestSummary(
-                            description=test_config.get('description'),
+                            description=test_config.get("description"),
                             error=str(err),
                             completed_cycles=0,
                             remaining_asserts=[],
@@ -219,7 +219,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
             new_state = {
                 test_config["name"]: {
                     "summary": TestSummary(
-                        description=test_config.get('description'),
+                        description=test_config.get("description"),
                         error=str(err),
                         completed_cycles=0,
                         remaining_asserts=[],

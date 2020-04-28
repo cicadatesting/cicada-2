@@ -11,7 +11,7 @@ from dask.distributed import Future, get_client, Variable, wait
 from cicada2.engine.actions import run_actions, combine_action_data
 from cicada2.engine.asserts import get_remaining_asserts, run_asserts
 from cicada2.shared.logs import get_logger
-from cicada2.engine.state import combine_data_by_key
+from cicada2.engine.state import combine_data_by_key, create_item_name
 from cicada2.shared.types import (
     Action,
     ActionsData,
@@ -267,10 +267,37 @@ def run_test(
     # NOTE: possibly use infinite default dict
     state = defaultdict(dict, incoming_state)
 
-    # Validate tests before running
-    # NOTE: may be a good use of walrus operator
-    action_names = [a.get("name") for a in actions if a.get("name")]
-    assert_names = [a.get("name") for a in asserts if a.get("name")]
+    # Validate test before running
+    action_names = []
+    assert_names = []
+
+    for action in actions:
+        assert (
+            "type" in action
+        ), f"Action in test '{test_config['name']}' is missing property 'type'"
+
+        action_name = action.get("name")
+
+        if action_name is None:
+            action_name = create_item_name(action["type"], action_names)
+
+        # NOTE: sets action name if not set
+        action["name"] = action_name
+        action_names.append(action_name)
+
+    for asrt in asserts:
+        assert (
+            "type" in asrt
+        ), f"Assert in test '{test_config['name']}' is missing property 'type'"
+
+        assert_name = asrt.get("name")
+
+        if assert_name is None:
+            assert_name = create_item_name(asrt["type"], assert_names)
+
+        # NOTE: sets assert name if not set
+        asrt["name"] = assert_name
+        assert_names.append(assert_name)
 
     assert hostnames, "Must have at least one host to run tests"
     assert len(set(action_names)) == len(
@@ -279,16 +306,6 @@ def run_test(
     assert len(set(assert_names)) == len(
         assert_names
     ), "Assert names if specified must be unique"
-
-    for action in actions:
-        assert (
-            "type" in action
-        ), f"Action in test '{test_config['name']}' is missing property 'type'"
-
-    for asrt in asserts:
-        assert (
-            "type" in asrt
-        ), f"Assert in test '{test_config['name']}' is missing property 'type'"
 
     start_time = datetime.now()
 
@@ -359,13 +376,14 @@ def run_test(
         ):
             time.sleep(test_config.get("secondsBetweenCycles", 1))
 
-    # TODO: just have assert names in remaining asserts
+    remaining_asserts = get_remaining_asserts(
+        asserts, state[test_config["name"]].get("asserts", {})
+    )
+
     state[test_config["name"]]["summary"] = TestSummary(
-        description=test_config.get('description'),
+        description=test_config.get("description"),
         completed_cycles=completed_cycles,
-        remaining_asserts=get_remaining_asserts(
-            asserts, state[test_config["name"]].get("asserts", {})
-        ),
+        remaining_asserts=[asrt["name"] for asrt in remaining_asserts],
         error=None,
         duration=(datetime.now() - start_time).seconds
     )

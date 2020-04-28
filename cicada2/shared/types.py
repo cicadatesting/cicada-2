@@ -14,7 +14,7 @@ class Action(TypedDict):
     type: str
     name: Optional[
         str
-    ]  # TODO: Set in the background if type is set but not name
+    ]
     template: Optional[str]
     excecutionsPerCycle: Optional[int]
     secondsBetweenExecutions: Optional[float]
@@ -81,7 +81,7 @@ class TestConfig(TypedDict):
 class TestSummary(TypedDict):
     description: Optional[str]
     completed_cycles: int
-    remaining_asserts: List[Assert]
+    remaining_asserts: List[str]
     error: Optional[str]
     duration: int
 

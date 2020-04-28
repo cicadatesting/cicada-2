@@ -111,7 +111,7 @@ def run_tests(
                     "runIfFailedDependency", False
                 ):
                     test_summary = TestSummary(
-                        description=test_configs[test_name].get('description'),
+                        description=test_configs[test_name].get("description"),
                         error="skipped",
                         remaining_asserts=[],
                         completed_cycles=0,

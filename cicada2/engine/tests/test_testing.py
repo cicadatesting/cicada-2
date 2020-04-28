@@ -66,7 +66,7 @@ def test_continue_running_asserts_failed_unlimited_second_run():
 
 
 def test_continue_running_asserts_passed_limited_second_run():
-    test_asserts = [{"type": "RESTAssert"}]
+    test_asserts = [{"type": "RESTAssert", "name": "RESTAssert0"}]
 
     assert_statuses = {
         "RESTAssert0": [
@@ -80,7 +80,7 @@ def test_continue_running_asserts_passed_limited_second_run():
 
 
 def test_continue_running_asserts_passed_unlimited_second_run():
-    test_asserts = [{"type": "RESTAssert"}]
+    test_asserts = [{"type": "RESTAssert", "name": "RESTAssert0"}]
 
     assert_statuses = {
         "RESTAssert0": [
@@ -474,7 +474,7 @@ def test_run_tests_limited_cycles(run_asserts_series_mock: Mock):
                 "completed_cycles": 2,
                 "error": None,
                 "duration": 0,
-                "remaining_asserts": [{"name": "A", "type": "SQLAssert", "params": {}}],
+                "remaining_asserts": ["A"],
             },
         }
     }

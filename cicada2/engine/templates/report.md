@@ -28,7 +28,7 @@
     - Description: {{ summary['description'] }}
     - Duration: {{ summary['duration'] }} seconds
     - Completed Cycles: {{ summary['completed_cycles'] }}
-    - Remaining Asserts: {{ summary['remaining_asserts']|length }}
+    - Remaining Asserts: {{ summary['remaining_asserts']|join(', ') }}
     - Error: {{ summary['error'] }}
     {%- set actions = state[test_name].get('actions') %}
     {%- if actions is not none %}

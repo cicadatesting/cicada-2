@@ -8,7 +8,6 @@ from cicada2.engine.state import (
     combine_keys,
     combine_data_by_key,
     combine_datas,
-    create_item_name,
 )
 from cicada2.shared.types import Action, ActionsData, ActionResult, Output
 
@@ -37,10 +36,7 @@ def run_actions(
     for i, action in enumerate(actions):
         rendered_action: Action = render_section(action, state)
 
-        action_name: str = rendered_action.get("name")
-
-        if action_name is None:
-            action_name: str = create_item_name(rendered_action["type"], data)
+        action_name = rendered_action.get("name")
 
         assert (
             "params" in rendered_action

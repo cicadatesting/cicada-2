@@ -10,6 +10,7 @@ def test_run_actions(send_action_mock):
     test_actions = [
         {
             "type": "POST",
+            "name": "POST0",
             "executionsPerCycle": 2,
             "params": {"foo": "bar"},
             "outputs": [{"name": "A", "value": "xyz"}],
@@ -31,6 +32,7 @@ def test_run_actions_errored_call(send_action_mock):
     test_actions = [
         {
             "type": "POST",
+            "name": "POST0",
             "executionsPerCycle": 2,
             "params": {"foo": "bar"},
             "outputs": [{"name": "A", "value": "xyz"}],
@@ -52,6 +54,7 @@ def test_run_actions_non_versioned(send_action_mock):
     test_actions = [
         {
             "type": "POST",
+            "name": "POST0",
             "executionsPerCycle": 2,
             "storeVersions": False,
             "params": {"foo": "bar"},
