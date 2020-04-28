@@ -361,12 +361,13 @@ def run_test(
 
     # TODO: just have assert names in remaining asserts
     state[test_config["name"]]["summary"] = TestSummary(
+        description=test_config.get('description'),
         completed_cycles=completed_cycles,
         remaining_asserts=get_remaining_asserts(
             asserts, state[test_config["name"]].get("asserts", {})
         ),
         error=None,
-        duration=(datetime.now() - start_time).seconds,
+        duration=(datetime.now() - start_time).seconds
     )
 
     return state

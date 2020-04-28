@@ -63,7 +63,7 @@ class TestConfig(TypedDict):
     timeout: Optional[float]  # NOTE: possibly take in ms instead of fraction of seconds
     cycles: int
     runIfFailedDependency: Optional[bool]
-    description: Optional[str]  # TODO: add to report
+    description: Optional[str]
     runner: Optional[str]
     runnerCount: Optional[str]
     image: Optional[str]
@@ -79,6 +79,7 @@ class TestConfig(TypedDict):
 
 
 class TestSummary(TypedDict):
+    description: Optional[str]
     completed_cycles: int
     remaining_asserts: List[Assert]
     error: Optional[str]

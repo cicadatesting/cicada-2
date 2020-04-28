@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-c6573a1a
+* Run ID: cicada-2-run-db2762ec
 * Successful Tests: 2
 * Failed Tests: 0
 
@@ -10,6 +10,7 @@
 1. [add_members](#add_members)
 2. [update_ages](#update_ages)
 * #### add_members
+    - Description: add 100 new members
     - Duration: 1 seconds
     - Completed Cycles: 1
     - Remaining Asserts: 0
@@ -22,28 +23,38 @@
                 ```json
                 {
                   "body": {
-                    "id": 100,
+                    "id": 200,
                     "name": "jeff"
                   },
                   "headers": {
                     "Content-Length": "35",
                     "Content-Type": "application/json",
-                    "Date": "Tue, 21 Apr 2020 03:21:42 GMT",
+                    "Date": "Mon, 27 Apr 2020 22:20:49 GMT",
                     "Server": "Werkzeug/1.0.1 Python/3.8.2"
                   },
-                  "runtime": 4.859,
+                  "runtime": 6.533,
                   "status_code": 200,
-                  "text": "{\n  \"id\": 100, \n  \"name\": \"jeff\"\n}\n"
+                  "text": "{\n  \"id\": 200, \n  \"name\": \"jeff\"\n}\n"
                 }
                 ```
 ---
 
 * #### update_ages
-    - Duration: 1 seconds
+    - Description: update ages of new members
+    - Duration: 0 seconds
     - Completed Cycles: 1
     - Remaining Asserts: 0
     - Error: None
     - Actions:
+        * SQLQuery0
+            - Number of Calls: 1
+            - Failed Calls: 0
+            - Result
+                ```json
+                {
+                  "rows": []
+                }
+                ```
         * SQLQuery1
             - Number of Calls: 1
             - Failed Calls: 0
@@ -58,15 +69,6 @@
                     ```json
                     1
                     ```
-        * SQLQuery0
-            - Number of Calls: 1
-            - Failed Calls: 0
-            - Result
-                ```json
-                {
-                  "rows": []
-                }
-                ```
     - Asserts:
         * EqualsRows0
             - Number of Calls: 1

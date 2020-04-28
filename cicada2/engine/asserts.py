@@ -25,7 +25,7 @@ def run_asserts(
     results: Statuses = {}
 
     for i, asrt in enumerate(asserts):
-        # TODO: support actions per cycle
+        # TODO: support executions per cycle
         rendered_assert: Assert = render_section(asrt, state)
 
         assert_name: str = rendered_assert.get("name")

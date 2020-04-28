@@ -7,6 +7,7 @@ def test_render_report():
     # pylint: disable=line-too-long
     test_state = {
         "test-name": {
+            "description": "a test",
             "actions": {
                 "POST0": {
                     "results": [{"status_code": 200}],

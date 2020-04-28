@@ -420,6 +420,7 @@ def test_run_tests_unlimited_cycles(run_asserts_series_mock: Mock):
                 ]
             },
             "summary": {
+                "description": None,
                 "completed_cycles": 3,
                 "error": None,
                 "duration": 0,
@@ -469,6 +470,7 @@ def test_run_tests_limited_cycles(run_asserts_series_mock: Mock):
                 ]
             },
             "summary": {
+                "description": None,
                 "completed_cycles": 2,
                 "error": None,
                 "duration": 0,

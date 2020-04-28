@@ -123,6 +123,8 @@ Cicada will load all of the tests and create this DAG:
                         check-jeff-added
 ```
 
+<!--TODO: diagram to ascii with automatic center aligned code-->
+
 In this scenario, `add-member` and `add-team` can run in parallel, while
 `add-jeff-to-team` waits. Once both tests have finished, `add-jeff-to-team`
 will run, followed by `check-jeff-added`

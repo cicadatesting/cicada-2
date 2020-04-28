@@ -32,7 +32,6 @@ def runner_to_image(runner_name: str) -> Optional[str]:
         Docker image for runner
     """
     if runner_name == "rest-runner":
-        # TODO: update to remote name after pushed
         return "jeremyaherzog/cicada-2-rest-runner"
     elif runner_name == "sql-runner":
         return "jeremyaherzog/cicada-2-sql-runner"
@@ -201,6 +200,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                 new_state = {
                     test_config["name"]: {
                         "summary": TestSummary(
+                            description=test_config.get('description'),
                             error=str(err),
                             completed_cycles=0,
                             remaining_asserts=[],
@@ -219,6 +219,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
             new_state = {
                 test_config["name"]: {
                     "summary": TestSummary(
+                        description=test_config.get('description'),
                         error=str(err),
                         completed_cycles=0,
                         remaining_asserts=[],
