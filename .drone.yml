@@ -9,9 +9,9 @@ steps:
       - pip install black
       - black cicada2
   - name: lint
-    image: python:3.7
+    image: python:3.8
     commands:
-      - pip install pylint
+      - pip install pylint==2.4.4
       - pylint cicada2
   - name: test
     image: python:3.8
