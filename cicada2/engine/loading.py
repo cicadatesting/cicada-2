@@ -1,4 +1,5 @@
 import os
+import re
 from typing import Dict, List, Iterable
 import yaml
 
@@ -80,6 +81,11 @@ def load_test_config(test_filename: str, task_type: str, run_id: str) -> TestRun
             assert (
                 "name" in test_config
             ), f"Test {test_config} is missing the property 'name'"
+
+            assert re.match(
+                "^[a-zA-Z0-9_-]+$", test_config["name"]
+            ), f"Test name '{test_config['name']}' does not match '^[a-zA-Z0-9_-]+$'"
+
             test_configs[test_config["name"]] = test_config
 
         test_runners = create_test_runners(test_configs.values(), task_type, run_id)

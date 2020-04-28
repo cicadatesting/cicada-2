@@ -190,7 +190,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
             except (AssertionError, ValueError, TypeError, RuntimeError) as err:
                 # NOTE: May need to fine tune exception types
                 LOGGER.error(
-                    "Error running test %s: %s", test_config['name'], err, exc_info=True
+                    "Error running test %s: %s", test_config["name"], err, exc_info=True
                 )
 
                 for container in containers:
@@ -214,7 +214,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                 container.stop(timeout=3)
         except (AssertionError, ValueError, TypeError, RuntimeError) as err:
             LOGGER.error(
-                "Error creating test %s: %s", test_config['name'], err, exc_info=True
+                "Error creating test %s: %s", test_config["name"], err, exc_info=True
             )
             new_state = {
                 test_config["name"]: {

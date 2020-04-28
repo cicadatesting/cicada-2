@@ -72,7 +72,7 @@ def test_get_remaining_asserts():
         {"name": "A"},
         {"type": "B", "name": "B0"},
         {"type": "B", "name": "B1"},
-        {"type": "C", "name": "C0"}
+        {"type": "C", "name": "C0"},
     ]
 
     statuses = {

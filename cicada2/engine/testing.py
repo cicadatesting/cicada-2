@@ -385,7 +385,7 @@ def run_test(
         completed_cycles=completed_cycles,
         remaining_asserts=[asrt["name"] for asrt in remaining_asserts],
         error=None,
-        duration=(datetime.now() - start_time).seconds
+        duration=(datetime.now() - start_time).seconds,
     )
 
     return state
@@ -447,18 +447,14 @@ def run_test_with_timeout(
     wait([run_test_task, timeout_task], return_when="FIRST_COMPLETED")
     end = datetime.now()
 
-    LOGGER.debug(
-        "Test %s took %d seconds",
-        test_config["name"],
-        (end - start).seconds
-    )
+    LOGGER.debug("Test %s took %d seconds", test_config["name"], (end - start).seconds)
 
     if run_test_task.done():
         keep_going.set(False)
         return run_test_task.result()
     elif timeout_task.done():
         LOGGER.debug(timeout_task)
-        LOGGER.info("Test %s timed out", test_config['name'])
+        LOGGER.info("Test %s timed out", test_config["name"])
         # NOTE: add timed out to summary?
         keep_going.set(False)
         return run_test_task.result()

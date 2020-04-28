@@ -12,9 +12,7 @@ class Output(TypedDict):
 
 class Action(TypedDict):
     type: str
-    name: Optional[
-        str
-    ]
+    name: Optional[str]
     template: Optional[str]
     excecutionsPerCycle: Optional[int]
     secondsBetweenExecutions: Optional[float]
@@ -59,7 +57,7 @@ Statuses: object = Dict[str, Union[AssertResult, List[AssertResult]]]
 
 
 class TestConfig(TypedDict):
-    name: str  # TODO: validate against a regex
+    name: str
     timeout: Optional[float]  # NOTE: possibly take in ms instead of fraction of seconds
     cycles: int
     runIfFailedDependency: Optional[bool]

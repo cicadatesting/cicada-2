@@ -12,7 +12,7 @@
     - Description: 
     - Duration: 4 seconds
     - Completed Cycles: 12
-    - Remaining Asserts: 1
+    - Remaining Asserts: foo
     - Error: None
     - Actions:
         * POST0
