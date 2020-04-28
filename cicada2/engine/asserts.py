@@ -24,32 +24,39 @@ def run_asserts(
     results: Statuses = {}
 
     for i, asrt in enumerate(asserts):
-        # TODO: support executions per cycle
         rendered_assert: Assert = render_section(asrt, state)
 
         assert_name = rendered_assert.get("name")
+        executions_per_cycle = rendered_assert.get("executionsPerCycle", 1)
+        assert_results: List[AssertResult] = []
 
         if rendered_assert["type"] == "NullAssert":
-            # NOTE: possibly add template free way of computing passed
-            assert_result = AssertResult(
-                passed=rendered_assert.get("passed", False),
-                actual=rendered_assert.get("actual", ""),
-                expected=rendered_assert.get("expected", ""),
-                description=rendered_assert.get("description", ""),
-            )
+            for _ in range(executions_per_cycle):
+                # NOTE: possibly add template free way of computing passed
+                assert_results.append(
+                    AssertResult(
+                        passed=rendered_assert.get("passed", False),
+                        actual=rendered_assert.get("actual", ""),
+                        expected=rendered_assert.get("expected", ""),
+                        description=rendered_assert.get("description", ""),
+                    )
+                )
         else:
             assert (
                 "params" in rendered_assert
             ), f"Assert {assert_name} is missing property 'params'"
 
-            assert_result = send_assert(hostname, rendered_assert)
+            for _ in range(executions_per_cycle):
+                assert_results.append(
+                    send_assert(hostname, rendered_assert)
+                )
 
         save_assert_versions = rendered_assert.get("storeVersions", True)
 
         if not save_assert_versions:
-            results[assert_name] = assert_result
+            results[assert_name] = assert_results[-1]
         else:
-            results[assert_name] = [assert_result]
+            results[assert_name] = assert_results
 
         if i != len(asserts) - 1:
             # Only wait if there is another assert

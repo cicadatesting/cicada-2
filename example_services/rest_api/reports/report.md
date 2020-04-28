@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-89a362c3
+* Run ID: cicada-2-run-d63f634e
 * Successful Tests: 2
 * Failed Tests: 0
 
@@ -13,7 +13,7 @@
     - Description: add 100 new members
     - Duration: 0 seconds
     - Completed Cycles: 1
-    - Remaining Asserts: 0
+    - Remaining Asserts: 
     - Error: None
     - Actions:
         * POST0
@@ -29,10 +29,10 @@
                   "headers": {
                     "Content-Length": "35",
                     "Content-Type": "application/json",
-                    "Date": "Tue, 28 Apr 2020 00:54:47 GMT",
+                    "Date": "Tue, 28 Apr 2020 01:52:41 GMT",
                     "Server": "Werkzeug/1.0.1 Python/3.8.2"
                   },
-                  "runtime": 5.317,
+                  "runtime": 4.452,
                   "status_code": 200,
                   "text": "{\n  \"id\": 100, \n  \"name\": \"jeff\"\n}\n"
                 }
@@ -43,7 +43,7 @@
     - Description: update ages of new members
     - Duration: 0 seconds
     - Completed Cycles: 1
-    - Remaining Asserts: 0
+    - Remaining Asserts: 
     - Error: None
     - Actions:
         * SQLQuery1

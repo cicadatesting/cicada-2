@@ -1,6 +1,8 @@
 from typing import Any, Callable, Dict, List, NamedTuple, Optional, Union
 from typing_extensions import TypedDict
 
+# TODO: investigate dataclass usage
+
 
 class Output(TypedDict):
     name: str
@@ -36,6 +38,7 @@ ActionsData = Dict[str, ActionData]
 class Assert(TypedDict):
     name: Optional[str]
     type: str
+    executionsPerCycle: Optional[int]
     params: Optional[dict]
     template: Optional[str]
     passed: Optional[bool]

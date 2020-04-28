@@ -82,6 +82,7 @@ def load_test_config(test_filename: str, task_type: str, run_id: str) -> TestRun
                 "name" in test_config
             ), f"Test {test_config} is missing the property 'name'"
 
+            # NOTE: may be worth validating other names or skipping regex validation altogether
             assert re.match(
                 "^[a-zA-Z0-9_-]+$", test_config["name"]
             ), f"Test name '{test_config['name']}' does not match '^[a-zA-Z0-9_-]+$'"
