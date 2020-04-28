@@ -20,7 +20,7 @@ def test_run_asserts(mock_send_assert):
 
     assert statuses["A"] == [
         AssertResult(passed=True, actual="foo", expected="foo", description="good"),
-        AssertResult(passed=True, actual="foo", expected="foo", description="good")
+        AssertResult(passed=True, actual="foo", expected="foo", description="good"),
     ]
 
     assert statuses["B"] == [

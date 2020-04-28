@@ -47,9 +47,7 @@ def run_asserts(
             ), f"Assert {assert_name} is missing property 'params'"
 
             for _ in range(executions_per_cycle):
-                assert_results.append(
-                    send_assert(hostname, rendered_assert)
-                )
+                assert_results.append(send_assert(hostname, rendered_assert))
 
         save_assert_versions = rendered_assert.get("storeVersions", True)
 
