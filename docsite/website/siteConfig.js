@@ -100,7 +100,7 @@ const siteConfig = {
 
   // Show documentation's last update time.
   // enableUpdateTime: true,
-  gaTrackingId: 'UA-164919423-1'
+  gaTrackingId: 'UA-164919423-1',
 
   // You may provide arbitrary config keys to be used as needed by your
   // template. For example, if you need your repo's URL...
