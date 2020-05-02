@@ -1,0 +1,35 @@
+{
+  "globals": {},
+  "send-messages": {
+    "actions": {
+      "Send0": {
+        "results": [
+          {
+            "messages_sent": 1,
+            "messages_received": null,
+            "errors": [],
+            "runtime": 296
+          }
+        ],
+        "outputs": {}
+      }
+    },
+    "asserts": {
+      "FindMessage0": [
+        {
+          "passed": true,
+          "actual": "{'topic': 'messages', 'key': 'foo', 'value': 'bar'}",
+          "expected": "{'key': 'foo', 'value': 'bar'}",
+          "description": "passed"
+        }
+      ]
+    },
+    "summary": {
+      "description": "Send a message to service",
+      "completed_cycles": 1,
+      "remaining_asserts": [],
+      "error": null,
+      "duration": 0
+    }
+  }
+}

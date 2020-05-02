@@ -35,6 +35,8 @@ def runner_to_image(runner_name: str) -> Optional[str]:
         return "jeremyaherzog/cicada-2-rest-runner"
     elif runner_name == "sql-runner":
         return "jeremyaherzog/cicada-2-sql-runner"
+    elif runner_name == "kafka-runner":
+        return "jeremyaherzog/cicada-2-kafka-runner"
 
     return None
 

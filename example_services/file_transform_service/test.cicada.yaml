@@ -1,0 +1,25 @@
+description: Example file transform test
+version: 0.0
+tests:
+  - name: send-messages
+    description: Send a message to service
+    runner: kafka-runner
+    actions:
+      - type: Send
+        params:
+          servers:
+            - kafka:9092
+          topic: messages
+          messages:
+            - key: foo
+              value: bar
+    asserts:
+      - type: FindMessage
+        params:
+          actionParams:
+            servers:
+              - kafka:9092
+            topic: messages
+          expected:
+            key: foo
+            value: bar
