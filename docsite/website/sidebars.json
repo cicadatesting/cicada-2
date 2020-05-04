@@ -1,6 +1,6 @@
 {
   "docs": {
-    "Introduction": ["quickstart", "tests", "state", "actionsasserts"],
+    "Introduction": ["quickstart", "tests", "state", "actionsasserts", "runners", "reports"],
     "API": ["test", "action", "assert", "config"],
     "Runners": ["rest-runner", "sql-runner"]
   }
