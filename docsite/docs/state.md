@@ -56,7 +56,7 @@ For example, let's say we wanted to make sure the API returns the Jeff that was 
   description: Checks that API returns new Jeff
   dependencies:
     - add-member
-  runner: sql-runner
+  runner: rest-runner
   asserts:
     - type: JSON
       template: >
