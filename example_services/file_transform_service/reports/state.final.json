@@ -8,7 +8,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 296
+            "runtime": 2
           }
         ],
         "outputs": {}
@@ -18,8 +18,8 @@
       "FindMessage0": [
         {
           "passed": true,
-          "actual": "{'topic': 'messages', 'key': 'foo', 'value': 'bar'}",
-          "expected": "{'key': 'foo', 'value': 'bar'}",
+          "actual": "{'topic': 'outbound-files', 'key': 'fizz', 'value': 'buzz'}",
+          "expected": "{'key': 'fizz', 'value': 'buzz'}",
           "description": "passed"
         }
       ]

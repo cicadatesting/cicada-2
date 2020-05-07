@@ -4,12 +4,12 @@ tests:
   - name: send-messages
     description: Send a message to service
     runner: kafka-runner
+    config:
+      servers: kafka:9092
     actions:
       - type: Send
         params:
-          servers:
-            - kafka:9092
-          topic: messages
+          topic: inbound-files
           messages:
             - key: foo
               value: bar
@@ -17,9 +17,7 @@ tests:
       - type: FindMessage
         params:
           actionParams:
-            servers:
-              - kafka:9092
-            topic: messages
+            topic: outbound-files
           expected:
-            key: foo
-            value: bar
+            key: fizz
+            value: buzz

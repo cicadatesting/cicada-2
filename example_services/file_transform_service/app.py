@@ -13,7 +13,7 @@ def main():
 
     # consume message off stream
     consumer = kafka.KafkaConsumer(
-        "inbound_files", bootstrap_servers=["kafka:9092"]
+        "inbound-files", bootstrap_servers=["kafka:9092"]
     )
 
     producer = kafka.KafkaProducer(
@@ -29,7 +29,7 @@ def main():
             message.value)
         )
 
-        producer.send("outbound_files", key=b"fizz", value=b"buzz")
+        producer.send("outbound-files", key=b"fizz", value=b"buzz")
 
 
 if __name__ == "__main__":

@@ -1,4 +1,5 @@
-import time
+from os import getenv
+from contextlib import contextmanager
 from datetime import datetime
 from typing import List, Optional
 from typing_extensions import TypedDict
@@ -39,81 +40,106 @@ class AssertParams(TypedDict):
     expected: KafkaMessage
 
 
-def run_action(action_type: str, params: ActionParams) -> ActionResponse:
+@contextmanager
+def configure_consumer(topic: str, offset: str) -> KafkaMessage:
+    bootstrap_servers = [server.strip() for server in getenv("RUNNER_SERVERS").split(",")]
+    key_encoding = getenv("RUNNER_KEY_ENCODING", "utf-8")
+    value_encoding = getenv("RUNNER_VALUE_ENCODING", "utf-8")
 
-    if action_type == "Send":
-        # TODO: support username password auth
-        producer = KafkaProducer(
-            bootstrap_servers=params["servers"],
-            key_serializer=lambda k: k.encode(params.get("key_encoding", "utf-8")),
-            value_serializer=lambda v: v.encode(params.get("value_encoding", "utf-8")),
-        )
+    consumer = KafkaConsumer(
+        topic,
+        bootstrap_servers=bootstrap_servers,
+        key_deserializer=lambda k: k.decode(key_encoding),
+        value_deserializer=lambda v: v.decode(value_encoding),
+        auto_offset_reset=offset
+    )
 
-        failed_messages = []
-        start = datetime.now()
+    try:
+        yield consumer
+    finally:
+        consumer.close()
 
-        for message in params.get("messages", []):
-            topic = message.get("topic") or params["topic"]
-            key = message.get("key") or params.get("key")
-            value = message["value"]
 
-            def errback(err):
-                print(err)
-                failed_messages.append(err)
+@contextmanager
+def configure_producer() -> KafkaProducer:
+    print(f"runner servers: {getenv('RUNNER_SERVERS')}")
 
-            producer.send(
-                topic=topic,
-                key=key,
-                value=value
-            ).add_errback(errback)
+    bootstrap_servers = [server.strip() for server in getenv("RUNNER_SERVERS").split(",")]
+    key_encoding = getenv("RUNNER_KEY_ENCODING", "utf-8")
+    value_encoding = getenv("RUNNER_VALUE_ENCODING", "utf-8")
 
-        end = datetime.now()
+    # TODO: support username password auth
+    producer = KafkaProducer(
+        bootstrap_servers=bootstrap_servers,
+        key_serializer=lambda k: k.encode(key_encoding),
+        value_serializer=lambda v: v.encode(value_encoding),
+    )
+
+    try:
+        yield producer
+    finally:
         producer.close()
 
-        return ActionResponse(
-            messages_sent=len(params.get("messages")) - len(failed_messages),
-            messages_received=None,
-            errors=failed_messages,
-            runtime=int((end - start).microseconds / 1000),
-        )
+
+def run_action(action_type: str, params: ActionParams) -> ActionResponse:
+    print(params)
+
+    if action_type == "Send":
+        with configure_producer() as producer:
+            failed_messages = []
+            start = datetime.now()
+
+            for message in params.get("messages", []):
+                topic = message.get("topic") or params["topic"]
+                key = message.get("key") or params.get("key")
+                value = message["value"]
+
+                def errback(err):
+                    print(err)
+                    failed_messages.append(err)
+
+                producer.send(
+                    topic=topic,
+                    key=key,
+                    value=value
+                ).add_errback(errback)
+
+            end = datetime.now()
+
+            print(f"failed messages: {failed_messages}")
+
+            return ActionResponse(
+                messages_sent=len(params.get("messages")) - len(failed_messages),
+                messages_received=None,
+                errors=failed_messages,
+                runtime=int((end - start).microseconds / 1000),
+            )
     elif action_type == "Receive":
-        # TODO: group id
-        consumer = KafkaConsumer(
-            params["topic"],
-            bootstrap_servers=params["servers"],
-            key_deserializer=lambda k: k.decode(params.get("key_encoding", "utf-8")),
-            value_deserializer=lambda v: v.decode(params.get("value_encoding", "utf-8")),
-            auto_offset_reset=params.get("offset", "earliest")
-        )
+        with configure_consumer(params["topic"], params.get("offset", "earliest")) as consumer:
+            start = datetime.now()
 
-        start = datetime.now()
-        received_messages = consumer.poll(
-            timeout_ms=params.get("timeout_ms", 5000),
-            max_records=params.get("max_records")
-        )
+            received_messages = consumer.poll(
+                timeout_ms=params.get("timeout_ms", 5000),
+                max_records=params.get("max_records")
+            )
+    
+            end = datetime.now()
 
-        end = datetime.now()
-        consumer.close()  # NOTE: possibly wrap with `with` clause
-
-        return ActionResponse(
-            messages_sent=None,
-            messages_received=[
-                KafkaMessage(topic=params["topic"], key=msg.key, value=msg.value)
-                for msg_list in received_messages.values()
-                for msg in msg_list
-            ],
-            errors=None,
-            runtime=int((end - start).microseconds / 1000),
-        )
-
+            return ActionResponse(
+                messages_sent=None,
+                messages_received=[
+                    KafkaMessage(topic=params["topic"], key=msg.key, value=msg.value)
+                    for msg_list in received_messages.values()
+                    for msg in msg_list
+                ],
+                errors=None,
+                runtime=int((end - start).microseconds / 1000),
+            )
     else:
         raise ValueError(f"Action type {action_type} is invalid")
 
 
 def run_assert(assert_type: str, params: AssertParams) -> AssertResult:
-
-    print(f"Assert type: {assert_type}")
-    print(f"Params: {params}")
 
     if assert_type == "FindMessage":
         messages = run_action("Receive", params["actionParams"])
