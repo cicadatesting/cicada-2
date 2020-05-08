@@ -1,13 +1,18 @@
 from os import getenv
 from contextlib import contextmanager
 from datetime import datetime
-from typing import List, Optional
+from typing import Dict, List, Optional
 from typing_extensions import TypedDict
 
 from kafka import KafkaConsumer, KafkaProducer
+from kafka.errors import KafkaError
 
 from cicada2.shared.asserts import assert_dicts
 from cicada2.shared.types import AssertResult
+from cicada2.shared.logs import get_logger
+
+
+LOGGER = get_logger()
 
 
 class KafkaMessage(TypedDict):
@@ -40,19 +45,37 @@ class AssertParams(TypedDict):
     expected: KafkaMessage
 
 
+def extract_auth_parameters() -> Dict[str, str]:
+    return {
+        "security_protocol": getenv("RUNNER_SECURITY_PROTOCOL", "PLAINTEXT"),
+        "sasl_mechanism": getenv("RUNNER_SASL_MECHANISM"),
+        "sasl_plain_username": getenv("RUNNER_SASL_USERNAME"),
+        "sasl_plain_password": getenv("RUNNER_SASL_PASSWORD"),
+        "sasl_kerberos_service_name": getenv("SASL_KERBEROS_SERVICE_NAME", "kafka"),
+        "sasl_kerberos_domain_name": getenv("SASL_KERBEROS_DOMAIN_NAME"),
+        "sasl_oauth_token_provider": getenv("SASL_OAUTH_TOKEN_PROVIDER"),
+    }
+
+
 @contextmanager
 def configure_consumer(topic: str, offset: str) -> KafkaMessage:
-    bootstrap_servers = [server.strip() for server in getenv("RUNNER_SERVERS").split(",")]
+    bootstrap_servers = [
+        server.strip() for server in getenv("RUNNER_SERVERS").split(",")
+    ]
     key_encoding = getenv("RUNNER_KEY_ENCODING", "utf-8")
     value_encoding = getenv("RUNNER_VALUE_ENCODING", "utf-8")
 
-    consumer = KafkaConsumer(
-        topic,
-        bootstrap_servers=bootstrap_servers,
-        key_deserializer=lambda k: k.decode(key_encoding),
-        value_deserializer=lambda v: v.decode(value_encoding),
-        auto_offset_reset=offset
-    )
+    try:
+        consumer = KafkaConsumer(
+            topic,
+            bootstrap_servers=bootstrap_servers,
+            key_deserializer=lambda k: k.decode(key_encoding),
+            value_deserializer=lambda v: v.decode(value_encoding),
+            auto_offset_reset=offset,
+            **extract_auth_parameters(),
+        )
+    except KafkaError as err:
+        raise RuntimeError(f"Unable to create kafka consumer: {err}")
 
     try:
         yield consumer
@@ -62,18 +85,23 @@ def configure_consumer(topic: str, offset: str) -> KafkaMessage:
 
 @contextmanager
 def configure_producer() -> KafkaProducer:
-    print(f"runner servers: {getenv('RUNNER_SERVERS')}")
+    LOGGER.debug("runner servers: %s", getenv("RUNNER_SERVERS"))
 
-    bootstrap_servers = [server.strip() for server in getenv("RUNNER_SERVERS").split(",")]
+    bootstrap_servers = [
+        server.strip() for server in getenv("RUNNER_SERVERS").split(",")
+    ]
     key_encoding = getenv("RUNNER_KEY_ENCODING", "utf-8")
     value_encoding = getenv("RUNNER_VALUE_ENCODING", "utf-8")
 
-    # TODO: support username password auth
-    producer = KafkaProducer(
-        bootstrap_servers=bootstrap_servers,
-        key_serializer=lambda k: k.encode(key_encoding),
-        value_serializer=lambda v: v.encode(value_encoding),
-    )
+    try:
+        producer = KafkaProducer(
+            bootstrap_servers=bootstrap_servers,
+            key_serializer=lambda k: k.encode(key_encoding),
+            value_serializer=lambda v: v.encode(value_encoding),
+            **extract_auth_parameters(),
+        )
+    except KafkaError as err:
+        raise RuntimeError(f"Unable to create kafka producer: {err}")
 
     try:
         yield producer
@@ -82,7 +110,7 @@ def configure_producer() -> KafkaProducer:
 
 
 def run_action(action_type: str, params: ActionParams) -> ActionResponse:
-    print(params)
+    LOGGER.debug("Called run action with params: %s", params)
 
     if action_type == "Send":
         with configure_producer() as producer:
@@ -95,18 +123,13 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
                 value = message["value"]
 
                 def errback(err):
-                    print(err)
+                    LOGGER.warning("Error sending message: %s", err)
                     failed_messages.append(err)
 
-                producer.send(
-                    topic=topic,
-                    key=key,
-                    value=value
-                ).add_errback(errback)
+                producer.send(topic=topic, key=key, value=value).add_errback(errback)
 
+            producer.flush()
             end = datetime.now()
-
-            print(f"failed messages: {failed_messages}")
 
             return ActionResponse(
                 messages_sent=len(params.get("messages")) - len(failed_messages),
@@ -115,14 +138,16 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
                 runtime=int((end - start).microseconds / 1000),
             )
     elif action_type == "Receive":
-        with configure_consumer(params["topic"], params.get("offset", "earliest")) as consumer:
+        with configure_consumer(
+            params["topic"], params.get("offset", "earliest")
+        ) as consumer:
             start = datetime.now()
 
             received_messages = consumer.poll(
                 timeout_ms=params.get("timeout_ms", 5000),
-                max_records=params.get("max_records")
+                max_records=params.get("max_records"),
             )
-    
+
             end = datetime.now()
 
             return ActionResponse(
@@ -145,21 +170,19 @@ def run_assert(assert_type: str, params: AssertParams) -> AssertResult:
         messages = run_action("Receive", params["actionParams"])
 
         for message in messages["messages_received"]:
-            print(f"received message: {message}")
-
             if assert_dicts(params["expected"], message):
                 return AssertResult(
                     actual=str(message),
                     expected=str(params["expected"]),
                     passed=True,
-                    description="passed"
+                    description="passed",
                 )
 
         return AssertResult(
             actual=None,
             expected=str(params["expected"]),
             passed=False,
-            description=f"No message found matching {params['expected']}"
+            description=f"No message found matching {params['expected']}",
         )
 
     raise ValueError(f"Assert type {assert_type} is invalid")
