@@ -52,7 +52,7 @@ def extract_client_config() -> Dict[str, Union[Optional[str], bool]]:
         "aws_access_key_id": getenv("RUNNER_ACCESSKEYID"),
         "aws_secret_access_key": getenv("RUNNER_SECRETACCESSKEY"),
         "aws_session_token": getenv("RUNNER_SESSIONTOKEN"),
-        "use_ssl": os.getenv("CREATE_NETWORK", "true").lower() in ["true", "y", "yes"],
+        "use_ssl": getenv("CREATE_NETWORK", "true").lower() in ["true", "y", "yes"],
     }
 
 

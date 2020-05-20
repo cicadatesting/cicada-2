@@ -8,17 +8,35 @@ steps:
     commands:
       - pip install black
       - black cicada2
+    when:
+      branch:
+        - master
+        - dev
+      event:
+        - push
   - name: lint
     image: python:3.8
     commands:
       - pip install pylint==2.4.4
       - pylint cicada2
+    when:
+      branch:
+        - master
+        - dev
+      event:
+        - push
   - name: test
     image: python:3.8
     commands:
     - pip install -r requirements.txt
     - pip install pytest
     - pytest
+    when:
+      branch:
+        - master
+        - dev
+      event:
+        - push
   - name: build-engine
     image: plugins/docker
     settings:
