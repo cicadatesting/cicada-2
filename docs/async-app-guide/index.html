@@ -1,0 +1,402 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>Async App Guide · Cicada</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="In this guide, you&#x27;ll create tests for a service that receives messages from"/><meta name="docsearch:language" content="en"/><meta property="og:title" content="Async App Guide · Cicada"/><meta property="og:type" content="website"/><meta property="og:url" content="https://herzo175.github.io/cicada-2/"/><meta property="og:description" content="In this guide, you&#x27;ll create tests for a service that receives messages from"/><meta property="og:image" content="https://herzo175.github.io/cicada-2/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/cicada-2/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-164919423-1', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/cicada-2/js/scrollSpy.js"></script><link rel="stylesheet" href="/cicada-2/css/main.css"/><script src="/cicada-2/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/cicada-2/"><img class="logo" src="/cicada-2/img/favicon.ico" alt="Cicada"/><h2 class="headerTitleWithLogo">Cicada</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/cicada-2/docs/quickstart" target="_self">Docs</a></li><li class="siteNavGroupActive"><a href="/cicada-2/docs/rest-api-guide" target="_self">Guides</a></li><li class="siteNavGroupActive"><a href="/cicada-2/docs/test" target="_self">API</a></li><li class="siteNavGroupActive"><a href="/cicada-2/docs/rest-runner" target="_self">Runners</a></li><li class=""><a href="/cicada-2/help" target="_self">Help</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Guides</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Guides</h3><ul class=""><li class="navListItem"><a class="navItem" href="/cicada-2/docs/rest-api-guide">REST API Guide</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/cicada-2/docs/async-app-guide">Async App Guide</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul class=""><li class="navListItem"><a class="navItem" href="/cicada-2/docs/quickstart">Quickstart</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/tests">Tests</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/state">State</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/actionsasserts">Actions and Asserts</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/runners">Runners</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/reports">Reports</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">API</h3><ul class=""><li class="navListItem"><a class="navItem" href="/cicada-2/docs/test">Test</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/action">Action</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/assert">Assert</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/config">Config</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Runners</h3><ul class=""><li class="navListItem"><a class="navItem" href="/cicada-2/docs/rest-runner">REST Runner</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/sql-runner">SQL Runner</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/kafka-runner">Kafka Runner</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/s3-runner">S3 Runner</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">Async App Guide</h1></header><article><div><span><p>In this guide, you'll create tests for a service that receives messages from
+a Kafka server and modifies files on S3.</p>
+<h2><a class="anchor" aria-hidden="true" id="app"></a><a href="#app" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>App</h2>
+<p>First, we'll need to create a Kafka server and S3 compatible data store. We'll
+use minio as the S3 server and docker-compose to start them:</p>
+<p><code>docker-compose.yml</code></p>
+<pre><code class="hljs css language-yaml"><span class="hljs-attr">version:</span> <span class="hljs-string">'3'</span>
+<span class="hljs-attr">services:</span>
+  <span class="hljs-attr">zookeeper:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">bitnami/zookeeper:latest</span>
+    <span class="hljs-attr">ports:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-number">2181</span><span class="hljs-string">:2181</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">ALLOW_ANONYMOUS_LOGIN=yes</span>
+  <span class="hljs-attr">kafka:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">bitnami/kafka:latest</span>
+    <span class="hljs-attr">depends_on:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">zookeeper</span>
+    <span class="hljs-attr">ports:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-number">9092</span><span class="hljs-string">:9092</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-number">29092</span><span class="hljs-string">:29092</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">ALLOW_PLAINTEXT_LISTENER=yes</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,PLAINTEXT_HOST://:29092</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092</span>
+  <span class="hljs-attr">s3:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">minio/minio:latest</span>
+    <span class="hljs-attr">ports:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-number">9000</span><span class="hljs-string">:9000</span>
+    <span class="hljs-attr">command:</span> <span class="hljs-string">server</span> <span class="hljs-string">/data</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">MINIO_REGION_NAME=local</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">MINIO_ACCESS_KEY=EXAMPLE_ACCESS_KEY</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">MINIO_SECRET_KEY=EXAMPLE_SECRET_KEY</span>
+</code></pre>
+<p>Run <code>docker-compose up</code> to start the services and make sure all 3 are running.</p>
+<p>Next, we'll need to create a client that connects to Kafka and S3:</p>
+<p><code>app.py</code></p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">import</span> time
+
+<span class="hljs-keyword">import</span> boto3
+<span class="hljs-keyword">import</span> kafka
+<span class="hljs-keyword">from</span> kafka.errors <span class="hljs-keyword">import</span> NoBrokersAvailable
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
+    consumer = <span class="hljs-literal">None</span>
+    producer = <span class="hljs-literal">None</span>
+    sleep_time = <span class="hljs-number">1</span>
+
+    <span class="hljs-comment"># Exponential backoff to connect to brokers</span>
+    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">5</span>):
+        <span class="hljs-keyword">try</span>:
+            consumer = kafka.KafkaConsumer(<span class="hljs-string">"inbound-files"</span>, bootstrap_servers=[<span class="hljs-string">"kafka:9092"</span>])
+            producer = kafka.KafkaProducer(bootstrap_servers=[<span class="hljs-string">"kafka:9092"</span>])
+            <span class="hljs-keyword">break</span>
+        <span class="hljs-keyword">except</span> NoBrokersAvailable:
+            print(<span class="hljs-string">f"waiting <span class="hljs-subst">{sleep_time}</span> seconds for brokers"</span>)
+            time.sleep(sleep_time)
+            sleep_time *= <span class="hljs-number">2</span>
+
+    <span class="hljs-keyword">if</span> consumer <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span> <span class="hljs-keyword">or</span> producer <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:
+        <span class="hljs-keyword">raise</span> RuntimeError(<span class="hljs-string">"Timed out waiting for message brokers"</span>)
+
+    print(<span class="hljs-string">"Connected to brokers!"</span>)
+
+    s3_client = boto3.client(
+        <span class="hljs-string">"s3"</span>,
+        region_name=<span class="hljs-string">"local"</span>,
+        endpoint_url=<span class="hljs-string">"http://s3:9000"</span>,
+        aws_access_key_id=<span class="hljs-string">"EXAMPLE_ACCESS_KEY"</span>,
+        aws_secret_access_key=<span class="hljs-string">"EXAMPLE_SECRET_KEY"</span>,
+    )
+
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">"__main__"</span>:
+    main()
+</code></pre>
+<pre><code class="hljs css language-requirements.txt">kafka-python==<span class="hljs-number">2.0</span><span class="hljs-number">.1</span>
+boto3
+pyyaml
+</code></pre>
+<p><code>Dockerfile</code></p>
+<pre><code class="hljs css language-Dockerfile"><span class="hljs-keyword">FROM</span> python:<span class="hljs-number">3.8</span>-slim-buster
+
+<span class="hljs-keyword">WORKDIR</span><span class="bash"> /app</span>
+
+<span class="hljs-keyword">ADD</span><span class="bash"> requirements.txt .</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> pip install -r requirements.txt</span>
+
+<span class="hljs-keyword">ADD</span><span class="bash"> app.py .</span>
+
+<span class="hljs-keyword">ENTRYPOINT</span><span class="bash"> [<span class="hljs-string">"python"</span>, <span class="hljs-string">"-u"</span>, <span class="hljs-string">"app.py"</span>]</span>
+</code></pre>
+<p><code>docker-compose.yml</code></p>
+<pre><code class="hljs css language-yaml"><span class="hljs-attr">services:</span>
+  <span class="hljs-string">...</span>
+  <span class="hljs-attr">service:</span>
+    <span class="hljs-attr">build:</span> <span class="hljs-string">.</span>
+    <span class="hljs-attr">depends_on:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">kafka</span>
+</code></pre>
+<p>This app connects to Kafka and S3 specified in the <code>docker-compose.yml</code> file
+and exits. Run <code>docker-compose up</code> again and ensure it exits successfully.</p>
+<h2><a class="anchor" aria-hidden="true" id="tests"></a><a href="#tests" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Tests</h2>
+<p>Once we can confirm the app can connect to Kafka and S3, it's time to begin
+sending messages to it. First, add the following to the app:</p>
+<p><code>app.py</code></p>
+<pre><code class="hljs css language-python">...
+def main()
+    ...
+    s3_client = ...
+
+    # consume message off stream and process
+    for message in consumer:
+        print(
+            "%s:%d:%d: key=%s value=%s"
+            % (
+                message.topic,
+                message.partition,
+                message.offset,
+                message.key,
+                message.value,
+            )
+        )
+
+        producer.send("outbound-files", key=bytes(file_key, "utf-8"))
+    ...
+</code></pre>
+<p>This will print the contents of a message received in the stream and send a
+message to a stream called <code>outbound-files</code> with the same message key.</p>
+<p>For our test, we will be sending 3 messages to the stream in a batch and
+checking that the app processes them successfully.</p>
+<p>One way to specify the messages is through the <code>globals</code> section of the
+state container defined before the test begins. Create a directory called
+<code>test_data</code> and add a file called <code>initial.json</code> to it:</p>
+<p><code>initial.json</code></p>
+<pre><code class="hljs css language-json">{
+  <span class="hljs-attr">"globals"</span>: {
+    <span class="hljs-attr">"transform_files"</span>: [<span class="hljs-string">"file_a"</span>, <span class="hljs-string">"file_b"</span>, <span class="hljs-string">"file_c"</span>]
+  }
+}
+</code></pre>
+<p>Next, use the globals section (The structure is completely up to the user)
+to create a test that sends the messages:</p>
+<p><code>test.cicada.yaml</code></p>
+<pre><code class="hljs css language-yaml"><span class="hljs-attr">description:</span> <span class="hljs-string">Example</span> <span class="hljs-string">file</span> <span class="hljs-string">transform</span> <span class="hljs-string">test</span>
+<span class="hljs-attr">tests:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">send-messages</span>
+    <span class="hljs-attr">description:</span> <span class="hljs-string">Send</span> <span class="hljs-string">a</span> <span class="hljs-string">message</span> <span class="hljs-string">to</span> <span class="hljs-string">service</span>
+    <span class="hljs-attr">runner:</span> <span class="hljs-string">kafka-runner</span>
+    <span class="hljs-attr">config:</span>
+      <span class="hljs-attr">servers:</span> <span class="hljs-string">kafka:9092</span>
+    <span class="hljs-attr">template:</span> <span class="hljs-string">&gt;
+      actions:
+        {% for tf in state["globals"]["transform_files"] %}
+        - type: Send
+          params:
+            topic: inbound-files
+            messages:
+              - key: {{ tf }}
+        {% endfor %}
+      asserts:
+        {% for tf in state["globals"]["transform_files"] %}
+        - type: FindMessage
+          params:
+            actionParams:
+              topic: outbound-files
+            expected:
+              key: {{ tf }}
+        {% endfor %}
+</span></code></pre>
+<p>Using the <code>template</code> section of the test, we can create 3 actions and asserts
+for the <code>transform_files</code> to send and receive messages from different streams.</p>
+<p>Finally, add the following to the docker compose file:</p>
+<p><code>docker-compose.yml</code></p>
+<pre><code class="hljs css language-yaml"><span class="hljs-attr">services:</span>
+  <span class="hljs-string">...</span>
+  <span class="hljs-attr">cicada:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">jeremyaherzog/cicada-2-engine</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">CONTAINER_NETWORK=file_transform_service_default</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">INITIAL_STATE_FILE=/initial-data/initial.json</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">WORKDIR=${WORKDIR}</span>
+    <span class="hljs-attr">volumes:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">/var/run/docker.sock:/var/run/docker.sock</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">.:/tests</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./reports:/reports</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./test_data:/initial-data</span>
+    <span class="hljs-attr">depends_on:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">service</span>
+</code></pre>
+<p>This will start cicada with the other services and mount the initial data file
+in the cicada container as well as tell it to load into state.</p>
+<p>Run <code>docker-compose up</code> again and ensure cicada runs successfully (by checking
+the report in <code>reports/report.md</code>)</p>
+<h2><a class="anchor" aria-hidden="true" id="business-logic"></a><a href="#business-logic" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Business Logic</h2>
+<p>Let's add some more functionality to the app. For this use case, we want the
+app to receive a message through Kafka, locate a file in S3 with that file key,
+and convert it from YAML to JSON.</p>
+<p>Add the following to the app:</p>
+<p><code>app.py</code></p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">import</span> json
+<span class="hljs-keyword">import</span> yaml
+
+...
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span><span class="hljs-params">()</span>:</span>
+    ...
+    <span class="hljs-keyword">for</span> message <span class="hljs-keyword">in</span> consumer:
+        ...
+        file_key = message.key.decode(<span class="hljs-string">"utf-8"</span>)
+
+        <span class="hljs-comment"># get file from s3 by key</span>
+        file = s3_client.get_object(
+            Bucket=<span class="hljs-string">"file-transform-service"</span>, Key=<span class="hljs-string">f"<span class="hljs-subst">{file_key}</span>.yaml"</span>
+        )
+
+        contents = file[<span class="hljs-string">"Body"</span>].read().decode(<span class="hljs-string">"utf-8"</span>)
+
+        <span class="hljs-comment"># transform file contents (yaml format) to JSON</span>
+        mapping = yaml.safe_load(contents)
+
+        <span class="hljs-comment"># save new file contents and send completed message</span>
+        s3_client.put_object(
+            Bucket=<span class="hljs-string">"file-transform-service"</span>,
+            Key=<span class="hljs-string">f"<span class="hljs-subst">{file_key}</span>.json"</span>,
+            Body=bytes(json.dumps(mapping), <span class="hljs-string">"utf-8"</span>),
+        )
+...
+</code></pre>
+<p>Next, we'll want to seed S3 to make sure there are YAML files available to
+the app. We can do this by uploading them through Cicada.</p>
+<p>First, create 3 files, <code>file_a.yaml</code>, <code>file_b.yaml</code>, and <code>file_c.yaml</code>. They
+should follow this format:</p>
+<p><code>file_{x}.yaml</code></p>
+<pre><code class="hljs css language-yaml"><span class="hljs-string">foo_{x}:</span> <span class="hljs-string">bar_{x}</span>
+<span class="hljs-string">fizz_{x}:</span> <span class="hljs-string">buzz_{x}</span>
+</code></pre>
+<p>Next, use Cicada to upload them (place before <code>send-messages</code>):</p>
+<p><code>test.cicada.yaml</code></p>
+<pre><code class="hljs css language-yaml"><span class="hljs-attr">tests:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">seed</span>
+    <span class="hljs-attr">description:</span> <span class="hljs-string">create</span> <span class="hljs-string">test</span> <span class="hljs-string">bucket</span>
+    <span class="hljs-attr">runner:</span> <span class="hljs-string">s3-runner</span>
+    <span class="hljs-attr">config:</span>
+      <span class="hljs-attr">accessKeyID:</span> <span class="hljs-string">EXAMPLE_ACCESS_KEY</span>
+      <span class="hljs-attr">secretAccessKey:</span> <span class="hljs-string">EXAMPLE_SECRET_KEY</span>
+      <span class="hljs-attr">region:</span> <span class="hljs-string">local</span>
+      <span class="hljs-attr">endpointURL:</span> <span class="hljs-string">http://s3:9000</span>
+    <span class="hljs-attr">template:</span> <span class="hljs-string">&gt;
+      volumes:
+        - source: {{ getenv("WORKDIR") }}/test_data
+          destination: /test_data
+      actions:
+        - type: cb
+          params:
+            bucketName: file-transform-service
+        {% for tf in state["globals"]["transform_files"] %}
+        - type: put
+          params:
+            sourcePath: /test_data/{{ tf }}.yaml
+            destinationPath: s3://file-transform-service/{{ tf }}.yaml
+        {% endfor %}
+</span>    <span class="hljs-string">...</span>
+</code></pre>
+<p>This will mount the tests into the runner's <code>test_data</code> folder (location can be
+anywhere user specified) and creates the bucket as well as 3 upload actions
+for each of the files.</p>
+<p>Finally, we'll want to check that the app creates JSON versions of the input
+files. One way of doing this is to create 3 of the expected output files and
+compare the ones created to these controls.</p>
+<p>Create the following files: <code>test_a.json</code>, <code>test_b.json</code>, <code>test_c.json</code>. They
+should follow this format:</p>
+<p><code>test_{x}.json</code></p>
+<pre><code class="hljs css language-json">{<span class="hljs-attr">"foo_{x}"</span>: <span class="hljs-string">"bar_{x}"</span>, <span class="hljs-attr">"fizz_{x}"</span>: <span class="hljs-string">"buzz_{x}"</span>}
+</code></pre>
+<p>Finally, add an assertion to the test to compare the files:</p>
+<p><code>test.cicada.yaml</code></p>
+<pre><code class="hljs css language-yaml"><span class="hljs-attr">tests:</span>
+  <span class="hljs-string">...</span>
+
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">check-file-transform</span>
+    <span class="hljs-attr">description:</span> <span class="hljs-string">Check</span> <span class="hljs-string">that</span> <span class="hljs-string">file</span> <span class="hljs-string">has</span> <span class="hljs-string">been</span> <span class="hljs-string">updated</span>
+    <span class="hljs-attr">runner:</span> <span class="hljs-string">s3-runner</span>
+    <span class="hljs-attr">config:</span>
+      <span class="hljs-attr">accessKeyID:</span> <span class="hljs-string">EXAMPLE_ACCESS_KEY</span>
+      <span class="hljs-attr">secretAccessKey:</span> <span class="hljs-string">EXAMPLE_SECRET_KEY</span>
+      <span class="hljs-attr">region:</span> <span class="hljs-string">local</span>
+      <span class="hljs-attr">endpointURL:</span> <span class="hljs-string">http://s3:9000</span>
+    <span class="hljs-attr">template:</span> <span class="hljs-string">&gt;
+      volumes:
+        - source: {{ getenv("WORKDIR") }}/test_data
+          destination: /test_data
+      asserts:
+        {% for tf in state["globals"]["transform_files"] %}
+        - type: FilesEqual
+          params:
+            path: s3://file-transform-service/{{ tf }}.json
+            expected: /test_data/{{ tf }}.json
+        {% endfor %}
+</span>    <span class="hljs-attr">dependencies:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">send-messages</span>
+</code></pre>
+<p>This test will use the template to create 3 <code>FilesEqual</code> asserts, one for each
+of the expected files.</p>
+<p>Once ready, run <code>docker-compose up</code>. The asserts should pass, indicating that
+the files were uploaded and transformed. You can also double check the files
+using the Minio UI.</p>
+<p>Excellent! We're almost there! The last step is to clean up our bucket. Simply
+add the following to the test file:</p>
+<p><code>test.cicada.yaml</code></p>
+<pre><code class="hljs css language-yaml"><span class="hljs-attr">tests:</span>
+    <span class="hljs-string">...</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">teardown</span>
+    <span class="hljs-attr">description:</span> <span class="hljs-string">Delete</span> <span class="hljs-string">temporary</span> <span class="hljs-string">S3</span> <span class="hljs-string">bucket</span>
+    <span class="hljs-attr">runner:</span> <span class="hljs-string">s3-runner</span>
+    <span class="hljs-attr">config:</span>
+      <span class="hljs-attr">accessKeyID:</span> <span class="hljs-string">EXAMPLE_ACCESS_KEY</span>
+      <span class="hljs-attr">secretAccessKey:</span> <span class="hljs-string">EXAMPLE_SECRET_KEY</span>
+      <span class="hljs-attr">region:</span> <span class="hljs-string">local</span>
+      <span class="hljs-attr">endpointURL:</span> <span class="hljs-string">http://s3:9000</span>
+    <span class="hljs-attr">actions:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">type:</span> <span class="hljs-string">rm</span>
+        <span class="hljs-attr">params:</span>
+          <span class="hljs-attr">path:</span> <span class="hljs-string">s3://file-transform-service</span>
+          <span class="hljs-attr">recursive:</span> <span class="hljs-literal">true</span>
+    <span class="hljs-attr">dependencies:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">check-file-transform</span>
+</code></pre>
+<p>This will recursively delete objects in the bucket we created,
+<code>file-transform-service</code>, including the bucket itself</p>
+<p>Once verifying the test finishes successfully and the bucket was removed in the
+Minio UI, pat yourself on the back! You successfully created and tested an
+asynchronous app!</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/cicada-2/docs/rest-api-guide"><span class="arrow-prev">← </span><span>REST API Guide</span></a><a class="docs-next button" href="/cicada-2/docs/quickstart"><span>Quickstart</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#app">App</a></li><li><a href="#tests">Tests</a></li><li><a href="#business-logic">Business Logic</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/cicada-2/" class="nav-home"><img src="/cicada-2/img/favicon.ico" alt="Cicada" width="66" height="58"/></a><div><h5>Docs</h5><a href="/cicada-2/docs/en/quickstart.html">Getting Started</a><a href="/cicada-2/docs/en/test.html">API Reference</a></div><div><h5>More</h5><a href="https://github.com/herzo175/cicada-2">GitHub</a><a class="github-button" href="https://github.com/herzo175/cicada-2" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Cicada</section></footer></div></body></html>
