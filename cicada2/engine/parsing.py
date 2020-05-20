@@ -1,8 +1,8 @@
-import yaml
 import json
-import jinja2
 from os import getenv
 
+import jinja2
+import yaml
 
 from cicada2.shared.errors import ValidationError
 

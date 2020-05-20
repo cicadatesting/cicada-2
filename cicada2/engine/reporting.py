@@ -7,7 +7,7 @@ TEMPLATES_DIRECTORY = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "templates"
 )
 
-# TODO: include more test/assert/action config informationnin
+# TODO: include more test/assert/action config information
 # NOTE: possibly add support for displaying erred calls in non versioned results
 # NOTE: May need to support displaying test duration in ms instead of seconds
 

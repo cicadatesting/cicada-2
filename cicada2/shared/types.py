@@ -38,7 +38,7 @@ ActionsData = Dict[str, ActionData]
 class Assert(TypedDict):
     name: Optional[str]
     type: str
-    executionsPerCycle: Optional[int]  # TODO: add to docs
+    executionsPerCycle: Optional[int]
     params: Optional[dict]
     template: Optional[str]
     passed: Optional[bool]

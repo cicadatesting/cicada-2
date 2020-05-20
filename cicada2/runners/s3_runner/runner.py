@@ -1,9 +1,9 @@
 from os import getenv
 from datetime import datetime
 from typing import Dict, Optional, Union
-from typing_extensions import TypedDict
 from uuid import uuid4
 from filecmp import cmp
+from typing_extensions import TypedDict
 
 import boto3
 from boto3_type_annotations.s3 import Client
@@ -52,7 +52,7 @@ def extract_client_config() -> Dict[str, Union[Optional[str], bool]]:
         "aws_access_key_id": getenv("RUNNER_ACCESSKEYID"),
         "aws_secret_access_key": getenv("RUNNER_SECRETACCESSKEY"),
         "aws_session_token": getenv("RUNNER_SESSIONTOKEN"),
-        "use_ssl": getenv("RUNNER_USESSL", True),
+        "use_ssl": os.getenv("CREATE_NETWORK", "true").lower() in ["true", "y", "yes"],
     }
 
 
@@ -86,6 +86,7 @@ def get_contents(path: str, client: S3FileSystem) -> Optional[str]:
 
 
 def run_action(action_type: str, params: ActionParams) -> Union[ActionResponse, ReadResponse, ExistsResponse]:
+    # pylint: disable=too-many-return-statements,too-many-statements
     if action_type == "write":
         assert "path" in params, "'path' must be specified for action 'write'"
         assert (
