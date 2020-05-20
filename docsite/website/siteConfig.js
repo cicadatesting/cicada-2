@@ -72,7 +72,7 @@ const siteConfig = {
   */
 
   // This copyright info is used in /core/Footer.js and blog RSS/Atom feeds.
-  copyright: `Copyright © ${new Date().getFullYear()} Jeremy Herzog`,
+  copyright: `Copyright © ${new Date().getFullYear()} Cicada`,
   // TODO: linkedin
 
   highlight: {
