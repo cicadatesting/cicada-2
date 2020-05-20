@@ -7,6 +7,7 @@ sidebar_label: Assert
 <pre><code>
 asserts:
   - type: <a href="#type">string</a> (required)
+    executionsPerCycle <a href="#executions-per-cycle">string</a>
     name: <a href="#name">string</a>
     template: <a href="#template">string</a>
     storeVersions: <a href="#store-versions">bool</a>
@@ -18,6 +19,17 @@ asserts:
     description: <a href="#description">string</a>
 </code></pre>
 
+Returns
+
+```python
+{
+    "passed": bool
+    "description": str,
+    "expected": str,
+    "actual": str
+}
+```
+
 ## Assert Params
 
 ### Type
@@ -28,6 +40,11 @@ asserts:
 > If `type` is set to `NullAssert`, the assert results will be populated with
 > the provided values for <a href="#passed">`passed`</a>, <a href="#actual">`actual`</a>,
 > <a href="#expected">`expected`</a>, and <a href="#description">`description`</a>
+
+### Executions Per Cycle
+
+Number of times to execute the assert on a single runner in one cycle. Defaults
+to `1`.
 
 ### Name
 

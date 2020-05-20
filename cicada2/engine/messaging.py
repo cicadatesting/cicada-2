@@ -31,6 +31,7 @@ def send_action(runner_address: str, action: dict) -> Optional[ActionResult]:
             LOGGER.warning("Received %s during send_action: %s", err.code(), err)
 
         # TODO: unit test for None return
+        # TODO: include more information for API failures in report
         return None
 
 

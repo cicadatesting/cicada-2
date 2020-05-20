@@ -1,0 +1,157 @@
+{
+  "globals": {
+    "transform_files": [
+      "file_a",
+      "file_b",
+      "file_c"
+    ]
+  },
+  "seed": {
+    "actions": {
+      "cb0": {
+        "results": [
+          {
+            "runtime": 7
+          }
+        ],
+        "outputs": {}
+      },
+      "put0": {
+        "results": [
+          {
+            "runtime": 13
+          }
+        ],
+        "outputs": {}
+      },
+      "put1": {
+        "results": [
+          {
+            "runtime": 8
+          }
+        ],
+        "outputs": {}
+      },
+      "put2": {
+        "results": [
+          {
+            "runtime": 8
+          }
+        ],
+        "outputs": {}
+      }
+    },
+    "summary": {
+      "description": "create test bucket",
+      "completed_cycles": 1,
+      "remaining_asserts": [],
+      "error": null,
+      "duration": 0
+    }
+  },
+  "send-messages": {
+    "actions": {
+      "Send1": {
+        "results": [
+          {
+            "messages_sent": 1,
+            "messages_received": null,
+            "errors": [],
+            "runtime": 14
+          }
+        ],
+        "outputs": {}
+      },
+      "Send0": {
+        "results": [
+          {
+            "messages_sent": 1,
+            "messages_received": null,
+            "errors": [],
+            "runtime": 86
+          }
+        ],
+        "outputs": {}
+      },
+      "Send2": {
+        "results": [
+          {
+            "messages_sent": 1,
+            "messages_received": null,
+            "errors": [],
+            "runtime": 16
+          }
+        ],
+        "outputs": {}
+      }
+    },
+    "asserts": {
+      "FindMessage2": [
+        {
+          "passed": true,
+          "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
+          "expected": "{'key': 'file_c'}",
+          "description": "passed"
+        }
+      ],
+      "FindMessage1": [
+        {
+          "passed": true,
+          "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
+          "expected": "{'key': 'file_b'}",
+          "description": "passed"
+        }
+      ],
+      "FindMessage0": [
+        {
+          "passed": true,
+          "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
+          "expected": "{'key': 'file_a'}",
+          "description": "passed"
+        }
+      ]
+    },
+    "summary": {
+      "description": "Send a message to service",
+      "completed_cycles": 1,
+      "remaining_asserts": [],
+      "error": null,
+      "duration": 1
+    }
+  },
+  "check-file-transform": {
+    "asserts": {
+      "FilesEqual2": [
+        {
+          "passed": true,
+          "actual": "s3://file-transform-service/file_c.json",
+          "expected": "/test_data/file_c.json",
+          "description": "passed"
+        }
+      ],
+      "FilesEqual1": [
+        {
+          "passed": true,
+          "actual": "s3://file-transform-service/file_b.json",
+          "expected": "/test_data/file_b.json",
+          "description": "passed"
+        }
+      ],
+      "FilesEqual0": [
+        {
+          "passed": true,
+          "actual": "s3://file-transform-service/file_a.json",
+          "expected": "/test_data/file_a.json",
+          "description": "passed"
+        }
+      ]
+    },
+    "summary": {
+      "description": "Check that file has been updated",
+      "completed_cycles": 1,
+      "remaining_asserts": [],
+      "error": null,
+      "duration": 0
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "globals": {
+    "transform_files": [
+      "file_a",
+      "file_b",
+      "file_c"
+    ]
+  },
+  "seed": {
+    "actions": {
+      "cb0": {
+        "results": [
+          {
+            "runtime": 7
+          }
+        ],
+        "outputs": {}
+      },
+      "put0": {
+        "results": [
+          {
+            "runtime": 13
+          }
+        ],
+        "outputs": {}
+      },
+      "put1": {
+        "results": [
+          {
+            "runtime": 8
+          }
+        ],
+        "outputs": {}
+      },
+      "put2": {
+        "results": [
+          {
+            "runtime": 8
+          }
+        ],
+        "outputs": {}
+      }
+    },
+    "summary": {
+      "description": "create test bucket",
+      "completed_cycles": 1,
+      "remaining_asserts": [],
+      "error": null,
+      "duration": 0
+    }
+  }
+}

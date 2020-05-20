@@ -59,15 +59,22 @@ class AssertResult(TypedDict):
 Statuses: object = Dict[str, Union[AssertResult, List[AssertResult]]]
 
 
+class Volume(TypedDict):
+    source: str
+    destination: str
+
+
 class TestConfig(TypedDict):
     name: str
     timeout: Optional[float]  # NOTE: possibly take in ms instead of fraction of seconds
+    template: Optional[str]
     cycles: int
     runIfFailedDependency: Optional[bool]
     description: Optional[str]
     runner: Optional[str]
     runnerCount: Optional[str]
     image: Optional[str]
+    volumes: Optional[List[Volume]]
     config: Dict[str, str]
     actions: Optional[List[Action]]
     asserts: Optional[List[Assert]]

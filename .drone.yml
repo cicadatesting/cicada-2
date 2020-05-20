@@ -8,17 +8,35 @@ steps:
     commands:
       - pip install black
       - black cicada2
+    when:
+      branch:
+        - master
+        - dev
+      event:
+        - push
   - name: lint
     image: python:3.8
     commands:
       - pip install pylint==2.4.4
       - pylint cicada2
+    when:
+      branch:
+        - master
+        - dev
+      event:
+        - push
   - name: test
     image: python:3.8
     commands:
     - pip install -r requirements.txt
     - pip install pytest
     - pytest
+    when:
+      branch:
+        - master
+        - dev
+      event:
+        - push
   - name: build-engine
     image: plugins/docker
     settings:
@@ -29,7 +47,7 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 0.0.0  # NOTE: possibly derive from branch name/pr name or something when doing releases
+        - 0.1.0  # NOTE: possibly derive from branch name/pr name or something when doing releases
         - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
@@ -48,7 +66,7 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 0.0.0
+        - 0.1.0
         - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
@@ -67,7 +85,45 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 0.0.0
+        - 0.1.0
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+    when:
+      branch:
+        - master
+      event:
+        - push
+  - name: build-kafka-runner
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/kafka-runner.dockerfile
+      repo: jeremyaherzog/cicada-2-kafka-runner
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - 0.1.0
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+    when:
+      branch:
+        - master
+      event:
+        - push
+  - name: build-s3-runner
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/s3-runner.dockerfile
+      repo: jeremyaherzog/cicada-2-s3-runner
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - 0.1.0
         - latest
         - ${DRONE_COMMIT_SHA}
     commands: []

@@ -1,0 +1,6 @@
+grpcio
+protobuf
+typing_extensions
+s3fs==0.4.2
+boto3
+boto3_type_annotations

@@ -18,4 +18,4 @@ ADD cicada2/runners/__init__.py cicada2/runners/__init__.py
 EXPOSE 50051
 ENV PYTHONPATH :/app/cicada2
 
-ENTRYPOINT [ "python", "cicada2/runners/sql_runner/main.py" ]
+ENTRYPOINT [ "python", "-u", "cicada2/runners/sql_runner/main.py" ]

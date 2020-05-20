@@ -1,0 +1,5 @@
+{
+  "globals": {
+    "transform_files": ["file_a", "file_b", "file_c"]
+  }
+}

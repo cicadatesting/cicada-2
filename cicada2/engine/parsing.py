@@ -1,6 +1,8 @@
-import yaml
-import jinja2
+import json
+from os import getenv
 
+import jinja2
+import yaml
 
 from cicada2.shared.errors import ValidationError
 
@@ -34,7 +36,9 @@ def render_section(section: dict, state: dict, **kwargs: dict) -> dict:
             loader=jinja2.BaseLoader, extensions=["jinja2.ext.do"]
         ).from_string(section.get("template", ""))
 
-        rendered_template_string = template.render(state=state, **kwargs)
+        rendered_template_string = template.render(
+            state=state, json=json, getenv=getenv, **kwargs
+        )
     except (jinja2.TemplateError, jinja2.TemplateSyntaxError) as exc:
         raise ValidationError(f"Template section is invalid: {exc}")
 

@@ -8,4 +8,5 @@ docker
 jinja2
 psycopg2
 sqlalchemy
+pyyaml
 typing_extensions

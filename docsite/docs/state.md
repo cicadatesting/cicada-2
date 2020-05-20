@@ -5,7 +5,8 @@ sidebar_label: State
 ---
 
 The Cicada state container is essentially a giant dictionary that gets tracks
-information generated in each test.
+information generated in each test. You can set the test's inital state using a
+JSON file with the [INITIAL_STATE_FILE](config.md#initial_state_file) setting.
 
 ## Structure
 
@@ -13,6 +14,9 @@ The state container follows this structure:
 
 <pre><code>
 {
+    globals: {
+      ...
+    },
     test-name: {
         actions: {
             action-name: {
@@ -32,13 +36,27 @@ The state container follows this structure:
                 }
             ],
             another-action-name: [...]
+        },
+        summary: {
+          description: Provided test description
+          completed_cycles: Number of times all actions and asserts executed
+          remaining_asserts: List of assert names that did not pass
+          error: Reason test was ended early
+          duration: Time in seconds to complete
         }
-    }
+    },
     another-test-name: {
         ...
     }
 }
 </code></pre>
+
+Each test is added the the state container by ID. Under each test are the
+results of its `actions` and `asserts` as well as the `summary` of that test.
+
+In addition, there is a special area called `globals`. This is used to hold
+config information that can be used in the test templates, such as from the
+initial state file.
 
 > Notice that the test-generated data is stored in lists. This can be changed
 > to produce a single result (and overwrite the previous result) by setting
@@ -88,3 +106,6 @@ will be added to the assert config:
           name: Jeff
           age: 25
 ```
+
+Besides the state container, the template also has access to the `getenv`
+function and the `json` library
