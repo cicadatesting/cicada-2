@@ -1,5 +1,9 @@
 .PHONY=services,run,clean
 
+WORKDIR=$(shell pwd)
+
+export WORKDIR
+
 services:
 	docker-compose up service
 

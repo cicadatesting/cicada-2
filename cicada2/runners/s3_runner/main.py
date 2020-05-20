@@ -5,10 +5,10 @@ import json
 import grpc
 
 from cicada2.protos import runner_pb2, runner_pb2_grpc
-from cicada2.runners.kafka_runner import runner
+from cicada2.runners.s3_runner import runner
 
 
-class KafkaRunnerServer(runner_pb2_grpc.RunnerServicer):
+class S3RunnerServer(runner_pb2_grpc.RunnerServicer):
     def Action(self, request, context):
         try:
             outputs = runner.run_action(
@@ -46,7 +46,7 @@ class KafkaRunnerServer(runner_pb2_grpc.RunnerServicer):
 def main():
     server = grpc.server(futures.ThreadPoolExecutor())
 
-    runner_pb2_grpc.add_RunnerServicer_to_server(KafkaRunnerServer(), server)
+    runner_pb2_grpc.add_RunnerServicer_to_server(S3RunnerServer(), server)
 
     server.add_insecure_port("[::]:50051")
     server.start()

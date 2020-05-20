@@ -1,0 +1,26 @@
+{
+  "globals": {},
+  "create-bucket": {
+    "actions": {
+      "write0": {
+        "results": [
+          null
+        ],
+        "outputs": {}
+      },
+      "cb0": {
+        "results": [
+          null
+        ],
+        "outputs": {}
+      }
+    },
+    "summary": {
+      "description": "create test bucket",
+      "completed_cycles": 1,
+      "remaining_asserts": [],
+      "error": null,
+      "duration": 16
+    }
+  }
+}

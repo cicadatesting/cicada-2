@@ -1,8 +1,9 @@
 import uuid
 import time
-from typing import Dict, Optional
+from typing import Dict, List, Optional
 
 import docker
+from docker.errors import APIError
 
 from cicada2.engine.config import (
     CONTAINER_NETWORK,
@@ -15,7 +16,7 @@ from cicada2.shared.logs import get_logger
 from cicada2.engine.messaging import runner_healthcheck
 from cicada2.engine.parsing import render_section
 from cicada2.engine.testing import run_test_with_timeout
-from cicada2.shared.types import TestConfig, RunnerClosure, TestSummary
+from cicada2.shared.types import TestConfig, RunnerClosure, TestSummary, Volume
 
 
 LOGGER = get_logger("runners")
@@ -37,6 +38,8 @@ def runner_to_image(runner_name: str) -> Optional[str]:
         return "jeremyaherzog/cicada-2-sql-runner"
     elif runner_name == "kafka-runner":
         return "jeremyaherzog/cicada-2-kafka-runner"
+    elif runner_name == "s3-runner":
+        return "jeremyaherzog/cicada-2-s3-runner"
 
     return None
 
@@ -94,6 +97,7 @@ def create_docker_container(
     run_id: str,
     network: str = CONTAINER_NETWORK,
     create_network: bool = CREATE_NETWORK,
+    volumes: List[Volume] = None,
 ):
     """
     Creates and configures docker container for docker runner
@@ -105,6 +109,7 @@ def create_docker_container(
         run_id: cicada run ID (to provide as a tag to the container)
         network: Docker network to add container to
         create_network: Creates the network if not found if set to True
+        volumes: List of absolute paths to directories on local machine to share with runner container
 
     Returns:
         Docker container object
@@ -118,12 +123,19 @@ def create_docker_container(
                 LOGGER.info("Created docker network %s", network)
             else:
                 raise ValidationError(f"Docker network {network} not configured")
-    except docker.errors.APIError as err:
+    except APIError as err:
         raise RuntimeError(f"Unable to configure docker network: {err}")
 
     # Parse the part after the last repository path ('/') before the tag (':')
     runner_type = f"{image.split('/')[-1].split(':')[0]}"
     container_id = f"{runner_type}-{str(uuid.uuid4())[:8]}"
+
+    if not volumes:
+        volume_map = {}
+    else:
+        volume_map = {
+            vol["source"]: {"bind": vol["destination"], "mode": "rw"} for vol in volumes
+        }
 
     try:
         # Start container (will pull image if necessary)
@@ -134,8 +146,9 @@ def create_docker_container(
             environment=env_map,
             network=network,
             labels=["cicada-2-runner", run_id],
+            volumes=volume_map,
         )
-    except docker.errors.APIError as err:
+    except APIError as err:
         raise RuntimeError(f"Unable to create container: {err}")
 
     LOGGER.debug("healthchecking container %s", container.name)
@@ -177,8 +190,10 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
             client: docker.DockerClient = docker.from_env()
             containers = []
 
-            for _ in range(test_config.get("runnerCount", 1)):
-                container = create_docker_container(client, image, env, run_id)
+            for _ in range(rendered_test_config.get("runnerCount", 1)):
+                container = create_docker_container(
+                    client, image, env, run_id, volumes=rendered_test_config.get("volumes")
+                )
                 LOGGER.info("successfully created container %s", container.name)
                 containers.append(container)
 
@@ -202,7 +217,7 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
                 new_state = {
                     test_config["name"]: {
                         "summary": TestSummary(
-                            description=test_config.get("description"),
+                            description=rendered_test_config.get("description"),
                             error=str(err),
                             completed_cycles=0,
                             remaining_asserts=[],

@@ -118,5 +118,40 @@
       "error": null,
       "duration": 1
     }
+  },
+  "check-file-transform": {
+    "asserts": {
+      "FilesEqual2": [
+        {
+          "passed": true,
+          "actual": "s3://file-transform-service/file_c.json",
+          "expected": "/test_data/file_c.json",
+          "description": "passed"
+        }
+      ],
+      "FilesEqual1": [
+        {
+          "passed": true,
+          "actual": "s3://file-transform-service/file_b.json",
+          "expected": "/test_data/file_b.json",
+          "description": "passed"
+        }
+      ],
+      "FilesEqual0": [
+        {
+          "passed": true,
+          "actual": "s3://file-transform-service/file_a.json",
+          "expected": "/test_data/file_a.json",
+          "description": "passed"
+        }
+      ]
+    },
+    "summary": {
+      "description": "Check that file has been updated",
+      "completed_cycles": 1,
+      "remaining_asserts": [],
+      "error": null,
+      "duration": 0
+    }
   }
 }

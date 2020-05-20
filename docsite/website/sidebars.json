@@ -1,7 +1,8 @@
 {
   "docs": {
     "Introduction": ["quickstart", "tests", "state", "actionsasserts"],
+    "Guides": ["rest-api-guide", "async-app-guide"],
     "API": ["test", "action", "assert", "config"],
-    "Runners": ["rest-runner", "sql-runner"]
+    "Runners": ["rest-runner", "sql-runner", "kafka-runner", "s3-runner"]
   }
 }

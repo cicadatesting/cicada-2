@@ -123,9 +123,9 @@ The runner will return a message of this format and store it under `state['check
 
 ```python
 {
-    "passed': True,
+    "passed": True,
     "description": "passed",
-    "expected": 100,
-    "actual": 100
+    "expected": "100",
+    "actual": "100"
 }
 ```

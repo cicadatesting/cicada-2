@@ -15,7 +15,6 @@ tests:
     # Each runner is in a circular queue and gets an action (series)
     # assertDistributionStrategy
     # runIfFailedDependency
-    # TODO: action/assert able to read data from file (For S3 Support)
     actions:
       - type: POST
         # name (POST0 if not specified)
@@ -25,8 +24,8 @@ tests:
           url: "http://api:8080/members"
           body:
             name: jeff
-  - name: update_ages
-    description: update ages of new members
+  - name: update_names
+    description: update names of new members
     runner: sql-runner
     dependencies:
       - add_members
@@ -49,9 +48,9 @@ tests:
         outputs:
           # Used to add state outside of runners 
           - name: index
-            isGlobal: false # if global, store as state['index'] or something, else, state['update_ages']['actions']['SQLQuery0']['index']
+            isGlobal: false # if global, store as state['index'] or something, else, state['update_names']['actions']['SQLQuery0']['index']
             template: >
-              {% set index = state.get('update_ages', {}).get('actions', {}).get('SQLQuery1', {}).get('outputs', {}).get('index') %}
+              {% set index = state.get('update_names', {}).get('actions', {}).get('SQLQuery1', {}).get('outputs', {}).get('index') %}
               {% if index is none %}
                 {% set index = 1 %}
               {% else %}

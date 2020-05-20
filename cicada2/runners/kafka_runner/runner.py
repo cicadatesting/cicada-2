@@ -22,12 +22,9 @@ class KafkaMessage(TypedDict):
 
 
 class ActionParams(TypedDict):
-    servers: List[str]
     topic: str
     timeout_ms: Optional[int]
     max_records: Optional[int]
-    key_encoding: Optional[str]
-    value_encoding: Optional[str]
     key: Optional[str]
     messages: Optional[List[KafkaMessage]]
     offset: Optional[str]
@@ -47,13 +44,13 @@ class AssertParams(TypedDict):
 
 def extract_auth_parameters() -> Dict[str, str]:
     return {
-        "security_protocol": getenv("RUNNER_SECURITY_PROTOCOL", "PLAINTEXT"),
-        "sasl_mechanism": getenv("RUNNER_SASL_MECHANISM"),
-        "sasl_plain_username": getenv("RUNNER_SASL_USERNAME"),
-        "sasl_plain_password": getenv("RUNNER_SASL_PASSWORD"),
-        "sasl_kerberos_service_name": getenv("SASL_KERBEROS_SERVICE_NAME", "kafka"),
-        "sasl_kerberos_domain_name": getenv("SASL_KERBEROS_DOMAIN_NAME"),
-        "sasl_oauth_token_provider": getenv("SASL_OAUTH_TOKEN_PROVIDER"),
+        "security_protocol": getenv("RUNNER_SECURITYPROTOCOL", "PLAINTEXT"),
+        "sasl_mechanism": getenv("RUNNER_SASLMECHANISM"),
+        "sasl_plain_username": getenv("RUNNER_SASLUSERNAME"),
+        "sasl_plain_password": getenv("RUNNER_SASLPASSWORD"),
+        "sasl_kerberos_service_name": getenv("RUNNER_SASLKERBEROSSERVICENAME", "kafka"),
+        "sasl_kerberos_domain_name": getenv("RUNNER_SASLKERBEROSDOMAINNAME"),
+        "sasl_oauth_token_provider": getenv("RUNNER_SASLOAUTHTOKENPROVIDER"),
     }
 
 
@@ -62,15 +59,15 @@ def configure_consumer(topic: str, offset: str) -> KafkaMessage:
     bootstrap_servers = [
         server.strip() for server in getenv("RUNNER_SERVERS").split(",")
     ]
-    key_encoding = getenv("RUNNER_KEY_ENCODING", "utf-8")
-    value_encoding = getenv("RUNNER_VALUE_ENCODING", "utf-8")
+    key_encoding = getenv("RUNNER_KEYENCODING", "utf-8")
+    value_encoding = getenv("RUNNER_VALUEENCODING", "utf-8")
 
     try:
         consumer = KafkaConsumer(
             topic,
             bootstrap_servers=bootstrap_servers,
-            key_deserializer=lambda k: k.decode(key_encoding),
-            value_deserializer=lambda v: v.decode(value_encoding),
+            key_deserializer=lambda k: k.decode(key_encoding) if k else k,
+            value_deserializer=lambda v: v.decode(value_encoding) if v else v,
             auto_offset_reset=offset,
             **extract_auth_parameters(),
         )
@@ -85,19 +82,17 @@ def configure_consumer(topic: str, offset: str) -> KafkaMessage:
 
 @contextmanager
 def configure_producer() -> KafkaProducer:
-    LOGGER.debug("runner servers: %s", getenv("RUNNER_SERVERS"))
-
     bootstrap_servers = [
         server.strip() for server in getenv("RUNNER_SERVERS").split(",")
     ]
-    key_encoding = getenv("RUNNER_KEY_ENCODING", "utf-8")
-    value_encoding = getenv("RUNNER_VALUE_ENCODING", "utf-8")
+    key_encoding = getenv("RUNNER_KEYENCODING", "utf-8")
+    value_encoding = getenv("RUNNER_VALUEENCODING", "utf-8")
 
     try:
         producer = KafkaProducer(
             bootstrap_servers=bootstrap_servers,
-            key_serializer=lambda k: k.encode(key_encoding),
-            value_serializer=lambda v: v.encode(value_encoding),
+            key_serializer=lambda k: k.encode(key_encoding) if k else k,
+            value_serializer=lambda v: v.encode(value_encoding) if v else v,
             **extract_auth_parameters(),
         )
     except KafkaError as err:
@@ -110,7 +105,6 @@ def configure_producer() -> KafkaProducer:
 
 
 def run_action(action_type: str, params: ActionParams) -> ActionResponse:
-    LOGGER.debug("Called run action with params: %s", params)
 
     if action_type == "Send":
         with configure_producer() as producer:
@@ -118,9 +112,11 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
             start = datetime.now()
 
             for message in params.get("messages", []):
+                assert message.get("topic") or "topic" in params, "Must specify topic in message or action params"
+
                 topic = message.get("topic") or params["topic"]
                 key = message.get("key") or params.get("key")
-                value = message["value"]
+                value = message.get("value")
 
                 def errback(err):
                     LOGGER.warning("Error sending message: %s", err)
@@ -138,6 +134,8 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
                 runtime=int((end - start).microseconds / 1000),
             )
     elif action_type == "Receive":
+        assert "topic" in params, "Must specify topic in action params"
+
         with configure_consumer(
             params["topic"], params.get("offset", "earliest")
         ) as consumer:

@@ -14,6 +14,7 @@ tests:
     runner: <a href="#runner">string</a>
     runnerCount: <a href="#runner-count">int</a>
     image: <a href="#image">string</a>
+    volumes: List[<a href="#volume">Volume</a>]
     config: <a href="#config">Map</a>
     secondsBetweenCycles: <a href="#seconds-between-cycles">float</a>
     secondsBetweenActions: <a href="#seconds-between-actions">float</a>
@@ -108,6 +109,18 @@ Number of runners to use in test
 ### Image
 
 Run this Docker image if runner is not specified
+
+### Volume
+
+Allows a host directory to be mounted to a runner. Has the following structure:
+
+```yaml
+source: string
+destination: string
+```
+
+Where `source` is the absolute path to a directory on the host machine and
+`destination` is the path inside the container to attach to.
 
 ### Config
 

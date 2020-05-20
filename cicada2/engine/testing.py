@@ -11,6 +11,7 @@ from dask.distributed import Future, get_client, Variable, wait
 from cicada2.engine.actions import run_actions, combine_action_data
 from cicada2.engine.asserts import get_remaining_asserts, run_asserts
 from cicada2.shared.logs import get_logger
+from cicada2.engine.parsing import render_section
 from cicada2.engine.state import combine_data_by_key, create_item_name
 from cicada2.shared.types import (
     Action,
@@ -257,6 +258,9 @@ def run_test(
     Returns:
         New state after running actions and asserts
     """
+    # NOTE: possibly use infinite default dict
+    state = defaultdict(dict, incoming_state)
+
     actions = test_config.get("actions", [])
     asserts = test_config.get("asserts", [])
 
@@ -264,8 +268,6 @@ def run_test(
 
     remaining_cycles = test_config.get("cycles", default_cycles)
     completed_cycles = 0
-    # NOTE: possibly use infinite default dict
-    state = defaultdict(dict, incoming_state)
 
     # Validate test before running
     action_names = []
@@ -311,7 +313,9 @@ def run_test(
 
     # stop if remaining_cycles == 0 or had asserts and no asserts remain
     while continue_running(
-        asserts, remaining_cycles, state[test_config["name"]].get("asserts", {})
+        asserts,
+        remaining_cycles,
+        state[test_config["name"]].get("asserts", {}),
     ):
         # Check if running with a timeout and break if timeout has signaled
         if timeout_signal_name is not None:
@@ -372,7 +376,9 @@ def run_test(
 
         # Wait between cycles if test is to continue running
         if continue_running(
-            asserts, remaining_cycles, state[test_config["name"]].get("asserts", {})
+            asserts,
+            remaining_cycles,
+            state[test_config["name"]].get("asserts", {}),
         ):
             time.sleep(test_config.get("secondsBetweenCycles", 1))
 

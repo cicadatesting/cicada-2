@@ -36,6 +36,7 @@ const siteConfig = {
   // For no header links in the top nav bar -> headerLinks: [],
   headerLinks: [
     {doc: 'quickstart', label: 'Docs'},
+    {doc: 'rest-api-guide', label: 'Guides'},
     {doc: 'test', label: 'API'},
     {doc: 'rest-runner', label: 'Runners'},
     {page: 'help', label: 'Help'},
