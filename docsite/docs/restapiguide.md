@@ -6,6 +6,8 @@ sidebar_label: REST API Guide
 
 In this guide, you'll create tests for an example REST API written with Flask.
 
+[Source code](https://github.com/herzo175/cicada-2/tree/master/example_services/rest_api)
+
 ## App
 
 Here we have a simple API that connects to a Postgres database and has one
