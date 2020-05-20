@@ -7,6 +7,8 @@ sidebar_label: Async App Guide
 In this guide, you'll create tests for a service that receives messages from
 a Kafka server and modifies files on S3.
 
+[Source code](https://github.com/herzo175/cicada-2/tree/master/example_services/file_transform_service)
+
 ## App
 
 First, we'll need to create a Kafka server and S3 compatible data store. We'll
