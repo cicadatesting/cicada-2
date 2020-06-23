@@ -85,7 +85,9 @@ def get_contents(path: str, client: S3FileSystem) -> Optional[str]:
         return fp.read()
 
 
-def run_action(action_type: str, params: ActionParams) -> Union[ActionResponse, ReadResponse, ExistsResponse]:
+def run_action(
+    action_type: str, params: ActionParams
+) -> Union[ActionResponse, ReadResponse, ExistsResponse]:
     # pylint: disable=too-many-return-statements,too-many-statements
     if action_type == "write":
         assert "path" in params, "'path' must be specified for action 'write'"
@@ -113,7 +115,9 @@ def run_action(action_type: str, params: ActionParams) -> Union[ActionResponse, 
         end = datetime.now()
 
         # NOTE: special support JSON files?
-        return ReadResponse(contents=contents, runtime=int((end - start).microseconds / 1000))
+        return ReadResponse(
+            contents=contents, runtime=int((end - start).microseconds / 1000)
+        )
     elif action_type == "exists":
         assert "path" in params, "'path' must be specified for action 'exists'"
 
@@ -124,7 +128,9 @@ def run_action(action_type: str, params: ActionParams) -> Union[ActionResponse, 
         exists = client.exists(path)
         end = datetime.now()
 
-        return ExistsResponse(exists=exists, runtime=int((end - start).microseconds / 1000))
+        return ExistsResponse(
+            exists=exists, runtime=int((end - start).microseconds / 1000)
+        )
     elif action_type == "put":
         assert "sourcePath" in params, "'sourcePath' must be specified for action 'put'"
         assert (

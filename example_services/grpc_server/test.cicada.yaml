@@ -1,0 +1,49 @@
+description: Example file transform test
+version: 0.0
+tests:
+  - name: greeter-requests
+    description: Send requests to greeter service
+    runner: grpc-runner
+    config:
+      servers: kafka:9092
+    template: >
+      volumes:
+        - source: {{ getenv("WORKDIR") }}/protos
+          destination: /incoming_protos
+    actions:
+      - type: BidirectionalStreaming
+        params:
+          proto: app
+          service: Greeter
+          serviceAddress: service:50051
+          method: SayHelloBI
+          requestType: HelloRequest
+          messages:
+            - name: alice
+            - name: bob
+      - type: Unary
+        params:
+          proto: app
+          service: Greeter
+          serviceAddress: service:50051
+          method: SayHelloError
+          requestType: HelloRequest
+          message:
+            name: jeff
+    asserts:
+      - type: ResponseAssert
+        params:
+          actionType: Unary
+          expected:
+            message: "Hello, jeff!"
+          actionParams:
+            proto: app
+            service: Greeter
+            serviceAddress: service:50051
+            method: SayHello
+            requestType: HelloRequest
+            metadata:
+              - key: foo
+                value: bar
+            message:
+              name: jeff

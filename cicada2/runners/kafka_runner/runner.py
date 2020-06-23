@@ -112,7 +112,9 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
             start = datetime.now()
 
             for message in params.get("messages", []):
-                assert message.get("topic") or "topic" in params, "Must specify topic in message or action params"
+                assert (
+                    message.get("topic") or "topic" in params
+                ), "Must specify topic in message or action params"
 
                 topic = message.get("topic") or params["topic"]
                 key = message.get("key") or params.get("key")

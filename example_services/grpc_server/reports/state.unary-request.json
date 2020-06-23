@@ -1,0 +1,39 @@
+{
+  "globals": {},
+  "unary-request": {
+    "actions": {
+      "Unary0": {
+        "results": [
+          {
+            "response": {
+              "message": "Hello, jeff!"
+            }
+          }
+        ],
+        "outputs": {}
+      },
+      "BidirectionalStreaming0": {
+        "results": [
+          {
+            "response": [
+              {
+                "message": "Hello, alice!"
+              },
+              {
+                "message": "Hello, bob!"
+              }
+            ]
+          }
+        ],
+        "outputs": {}
+      }
+    },
+    "summary": {
+      "description": "Send a unary request to service",
+      "completed_cycles": 1,
+      "remaining_asserts": [],
+      "error": null,
+      "duration": 0
+    }
+  }
+}

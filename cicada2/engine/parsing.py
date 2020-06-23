@@ -1,4 +1,5 @@
 import json
+import base64
 from os import getenv
 
 import jinja2
@@ -37,7 +38,7 @@ def render_section(section: dict, state: dict, **kwargs: dict) -> dict:
         ).from_string(section.get("template", ""))
 
         rendered_template_string = template.render(
-            state=state, json=json, getenv=getenv, **kwargs
+            state=state, json=json, getenv=getenv, base64=base64, **kwargs
         )
     except (jinja2.TemplateError, jinja2.TemplateSyntaxError) as exc:
         raise ValidationError(f"Template section is invalid: {exc}")

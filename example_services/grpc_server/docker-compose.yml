@@ -1,0 +1,17 @@
+version: '3'
+services:
+  service:
+    build: .
+    ports:
+      - 50051:50051
+  cicada:
+    image: jeremyaherzog/cicada-2-engine
+    environment:
+      - CONTAINER_NETWORK=grpc_server_default
+      - WORKDIR=${WORKDIR}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/tests
+      - ./reports:/reports
+    depends_on:
+      - service

@@ -40,6 +40,8 @@ def runner_to_image(runner_name: str) -> Optional[str]:
         return "jeremyaherzog/cicada-2-kafka-runner"
     elif runner_name == "s3-runner":
         return "jeremyaherzog/cicada-2-s3-runner"
+    elif runner_name == "grpc-runner":
+        return "jeremyaherzog/cicada-2-grpc-runner"
 
     return None
 
@@ -192,7 +194,11 @@ def run_docker(test_config: TestConfig, run_id: str) -> RunnerClosure:
 
             for _ in range(rendered_test_config.get("runnerCount", 1)):
                 container = create_docker_container(
-                    client, image, env, run_id, volumes=rendered_test_config.get("volumes")
+                    client,
+                    image,
+                    env,
+                    run_id,
+                    volumes=rendered_test_config.get("volumes"),
                 )
                 LOGGER.info("successfully created container %s", container.name)
                 containers.append(container)
