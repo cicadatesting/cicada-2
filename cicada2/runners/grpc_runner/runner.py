@@ -192,8 +192,8 @@ def run_assert(assert_type: str, params: AssertParams) -> AssertResult:
 
 
 def safe_request(
-    func: Callable[[...], GrpcResponse]
-) -> Callable[[...], GrpcResponseSafe]:
+    func: Callable[[Tuple[Any, ...]], GrpcResponse]
+) -> Callable[[Tuple[Any, ...]], GrpcResponseSafe]:
     def wrapper(*args, **kwargs):
         try:
             body, metadata = func(*args, **kwargs)
