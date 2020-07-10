@@ -96,7 +96,7 @@ def test_assert_dicts_failed_subset():
     )
 
     assert not passed
-    assert description == "Expected {'foo': 'bar'} to be in {'fizz': 'buzz'}"
+    assert description == "The following items were not found: {'foo': \"foo not in {'fizz': 'buzz'}\"}"
 
 
 def test_assert_params_problems_no_url():

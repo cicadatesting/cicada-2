@@ -2,19 +2,6 @@
   "globals": {},
   "greeter-requests": {
     "actions": {
-      "Unary0": {
-        "results": [
-          {
-            "response": null,
-            "metadata": null,
-            "error": {
-              "details": "Method not implemented!",
-              "code": "StatusCode.UNIMPLEMENTED"
-            }
-          }
-        ],
-        "outputs": {}
-      },
       "BidirectionalStreaming0": {
         "results": [
           {
@@ -31,6 +18,19 @@
               "retry": "false"
             },
             "error": null
+          }
+        ],
+        "outputs": {}
+      },
+      "Unary0": {
+        "results": [
+          {
+            "response": null,
+            "metadata": null,
+            "error": {
+              "details": "Method not implemented!",
+              "code": "StatusCode.UNIMPLEMENTED"
+            }
           }
         ],
         "outputs": {}

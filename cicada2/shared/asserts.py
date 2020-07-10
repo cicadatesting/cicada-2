@@ -149,6 +149,7 @@ def assert_collections(
 
 
 def assert_element(expected: Any, actual: Any, **kwargs) -> Tuple[bool, str]:
+    # pylint: disable=isinstance-second-argument-not-valid-type
     """
     Checks if two elements are equivalent using the default assertion types
 

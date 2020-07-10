@@ -95,6 +95,7 @@ def validate_action_params(params: ActionParams) -> List[str]:
 
 
 def run_action(action_type: str, params: ActionParams) -> ActionResponse:
+    # pylint: disable=unbalanced-tuple-unpacking
     params_problems = validate_action_params(params)
 
     if params_problems:
@@ -274,7 +275,7 @@ def format_metadata(trailing_metadata: List[Tuple[str, str]]) -> dict:
 
 
 def make_json_safe(value: Any) -> Any:
-    if type(value) == bytes:
+    if isinstance(value, bytes):
         return base64.b64encode(value).decode("utf-8")
 
     return value
