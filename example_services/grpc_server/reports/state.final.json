@@ -2,6 +2,19 @@
   "globals": {},
   "greeter-requests": {
     "actions": {
+      "Unary0": {
+        "results": [
+          {
+            "response": null,
+            "metadata": null,
+            "error": {
+              "details": "Method not implemented!",
+              "code": "StatusCode.UNIMPLEMENTED"
+            }
+          }
+        ],
+        "outputs": {}
+      },
       "BidirectionalStreaming0": {
         "results": [
           {
@@ -21,22 +34,17 @@
           }
         ],
         "outputs": {}
-      },
-      "Unary0": {
-        "results": [
-          {
-            "response": null,
-            "metadata": null,
-            "error": {
-              "details": "Method not implemented!",
-              "code": "StatusCode.UNIMPLEMENTED"
-            }
-          }
-        ],
-        "outputs": {}
       }
     },
     "asserts": {
+      "ResponseAssert1": [
+        {
+          "passed": true,
+          "actual": "{\"message\": \"Hello, jeff!\"}",
+          "expected": "{\"message\": \"Hello, jeff!\"}",
+          "description": "\"passed\""
+        }
+      ],
       "ResponseAssert0": [
         {
           "passed": true,

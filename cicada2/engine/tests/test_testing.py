@@ -121,9 +121,6 @@ def test_continue_running_asserts_failed_limited_second_run():
     )
 
 
-# TODO: functional versions of tests
-
-
 @patch("cicada2.engine.testing.run_actions")
 def test_run_actions_parallel(run_actions_mock: Mock):
     run_actions_mock.return_value = {"A": {"results": [{"foo": "bar"}]}}

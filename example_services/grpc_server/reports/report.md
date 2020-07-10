@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-2a1e60d4
+* Run ID: cicada-2-run-e99d110e
 * Successful Tests: 1
 * Failed Tests: 0
 
@@ -15,6 +15,20 @@
     - Remaining Asserts: 
     - Error: None
     - Actions:
+        * Unary0
+            - Number of Calls: 1
+            - Failed Calls: 0
+            - Result
+                ```json
+                {
+                  "error": {
+                    "code": "StatusCode.UNIMPLEMENTED",
+                    "details": "Method not implemented!"
+                  },
+                  "metadata": null,
+                  "response": null
+                }
+                ```
         * BidirectionalStreaming0
             - Number of Calls: 1
             - Failed Calls: 0
@@ -36,21 +50,18 @@
                   ]
                 }
                 ```
-        * Unary0
+    - Asserts:
+        * ResponseAssert1
             - Number of Calls: 1
             - Failed Calls: 0
-            - Result
                 ```json
                 {
-                  "error": {
-                    "code": "StatusCode.UNIMPLEMENTED",
-                    "details": "Method not implemented!"
-                  },
-                  "metadata": null,
-                  "response": null
+                  "actual": "{\"message\": \"Hello, jeff!\"}",
+                  "description": "\"passed\"",
+                  "expected": "{\"message\": \"Hello, jeff!\"}",
+                  "passed": true
                 }
                 ```
-    - Asserts:
         * ResponseAssert0
             - Number of Calls: 1
             - Failed Calls: 0

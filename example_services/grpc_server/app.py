@@ -35,6 +35,11 @@ class Greeter(app_pb2_grpc.GreeterServicer):
         for request in requests:
             yield app_pb2.HelloReply(message='Hello, %s!' % request.name)
 
+    def SayHelloBytes(self, request, context):
+        name = request.name.decode("utf-8")
+
+        return app_pb2.HelloReply(message=f"Hello, {name}!")
+
 
 def serve():
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))

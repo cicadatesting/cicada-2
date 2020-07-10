@@ -8,6 +8,7 @@ service Greeter {
   rpc SayHelloSS (HelloRequest) returns (stream HelloReply) {}
   rpc SayHelloBI (stream HelloRequest) returns (stream HelloReply) {}
   rpc SayHelloError (HelloRequest) returns (HelloReply) {}
+  rpc SayHelloBytes (HelloRequestBytes) returns (HelloReply) {}
 }
 
 message HelloRequest {
@@ -16,4 +17,8 @@ message HelloRequest {
 
 message HelloReply {
   string message = 1;
+}
+
+message HelloRequestBytes {
+  bytes name = 1;
 }

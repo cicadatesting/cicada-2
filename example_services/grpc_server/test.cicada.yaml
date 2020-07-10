@@ -47,3 +47,17 @@ tests:
                 value: bar
             message:
               name: jeff
+      - type: ResponseAssert
+        template: >
+          params:
+            actionType: Unary
+            expected:
+              message: "Hello, jeff!"
+            actionParams:
+              proto: app
+              service: Greeter
+              serviceAddress: service:50051
+              method: SayHelloBytes
+              requestType: HelloRequestBytes
+              message:
+                name: {{ base64.b64encode("jeff".encode("utf-8")).decode("utf-8") }}
