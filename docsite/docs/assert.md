@@ -86,3 +86,28 @@ Sets assert result's `passed` value to the one provided is using a <a href="#nul
 ### Description
 
 Sets assert result's `description` value to the one provided is using a <a href="#nullassert">`NullAssert`</a>
+
+## Assert Options
+
+Flags passed as keyword arguments to call assert logic with
+
+<pre><code>
+assertOptions:
+  match: <a href="#match">bool</a>
+  all_required: <a href="#all-required">bool</a>
+  ordered: <a href="#ordered">bool</a>
+</code></pre>
+
+### Match
+
+If true, allows strings to match a regex instead of an exact string
+
+### All Required
+
+If true, expects all elements in an expected dictionary to be present in
+the actual dictionary
+
+### Ordered
+
+If true, requires elements in an expected sequence to be in the same order as
+the actual sequence.

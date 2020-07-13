@@ -312,9 +312,7 @@ def run_test(
 
     # stop if remaining_cycles == 0 or had asserts and no asserts remain
     while continue_running(
-        asserts,
-        remaining_cycles,
-        state[test_config["name"]].get("asserts", {}),
+        asserts, remaining_cycles, state[test_config["name"]].get("asserts", {}),
     ):
         # Check if running with a timeout and break if timeout has signaled
         if timeout_signal_name is not None:
@@ -375,9 +373,7 @@ def run_test(
 
         # Wait between cycles if test is to continue running
         if continue_running(
-            asserts,
-            remaining_cycles,
-            state[test_config["name"]].get("asserts", {}),
+            asserts, remaining_cycles, state[test_config["name"]].get("asserts", {}),
         ):
             time.sleep(test_config.get("secondsBetweenCycles", 1))
 

@@ -1,0 +1,65 @@
+{
+  "globals": {},
+  "greeter-requests": {
+    "actions": {
+      "Unary0": {
+        "results": [
+          {
+            "response": null,
+            "metadata": null,
+            "error": {
+              "details": "Method not implemented!",
+              "code": "StatusCode.UNIMPLEMENTED"
+            }
+          }
+        ],
+        "outputs": {}
+      },
+      "BidirectionalStreaming0": {
+        "results": [
+          {
+            "response": [
+              {
+                "message": "Hello, alice!"
+              },
+              {
+                "message": "Hello, bob!"
+              }
+            ],
+            "metadata": {
+              "checksum-bin": "SSBhZ3JlZQ==",
+              "retry": "false"
+            },
+            "error": null
+          }
+        ],
+        "outputs": {}
+      }
+    },
+    "asserts": {
+      "ResponseAssert0": [
+        {
+          "passed": true,
+          "actual": "{\"message\": \"Hello, jeff!\"}",
+          "expected": "{\"message\": \"Hello, jeff!\"}",
+          "description": "\"passed\""
+        }
+      ],
+      "ResponseAssert1": [
+        {
+          "passed": true,
+          "actual": "{\"message\": \"Hello, jeff!\"}",
+          "expected": "{\"message\": \"Hello, jeff!\"}",
+          "description": "\"passed\""
+        }
+      ]
+    },
+    "summary": {
+      "description": "Send requests to greeter service",
+      "completed_cycles": 1,
+      "remaining_asserts": [],
+      "error": null,
+      "duration": 0
+    }
+  }
+}

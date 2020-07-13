@@ -15,7 +15,7 @@ run-env:
 		--network cicada-2 \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v $(shell pwd):/opt \
-		cicada-2-env \
+		jeremyaherzog/cicada-2-env \
 		/bin/bash
 
 lint:
@@ -25,7 +25,7 @@ test:
 	python3 -m pytest cicada2
 
 clean:
-	docker container stop $(docker container ls -q --filter cicada-2-runner)
+	docker container stop $(shell docker ps -q --filter "label=cicada-2-runner")
 
 proto-compile:
 	python3 -m grpc_tools.protoc -I . \

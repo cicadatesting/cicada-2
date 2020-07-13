@@ -42,6 +42,7 @@ def combine_data_by_key(
 def combine_datas(
     data_a: Union[List[Any], Any], data_b: Union[List[Any], Any]
 ) -> Union[List[Any], Any]:
+    # pylint: disable=bad-option-value,isinstance-second-argument-not-valid-type
     """
     Combines data where either may be versioned (a list) or merged (a single element)
 
