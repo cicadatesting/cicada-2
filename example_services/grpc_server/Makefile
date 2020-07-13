@@ -7,7 +7,7 @@ services:
 	docker-compose up service
 
 run:
-	docker-compose up --build --abort-on-container-exit
+	docker-compose up --build --abort-on-container-exit --remove-orphans
 
 clean:
 	docker-compose down --remove-orphans

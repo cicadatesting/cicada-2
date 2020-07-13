@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-e99d110e
+* Run ID: cicada-2-run-7ac6e12f
 * Successful Tests: 1
 * Failed Tests: 0
 
@@ -51,7 +51,7 @@
                 }
                 ```
     - Asserts:
-        * ResponseAssert1
+        * ResponseAssert0
             - Number of Calls: 1
             - Failed Calls: 0
                 ```json
@@ -62,7 +62,7 @@
                   "passed": true
                 }
                 ```
-        * ResponseAssert0
+        * ResponseAssert1
             - Number of Calls: 1
             - Failed Calls: 0
                 ```json

@@ -37,7 +37,7 @@
       }
     },
     "asserts": {
-      "ResponseAssert1": [
+      "ResponseAssert0": [
         {
           "passed": true,
           "actual": "{\"message\": \"Hello, jeff!\"}",
@@ -45,7 +45,7 @@
           "description": "\"passed\""
         }
       ],
-      "ResponseAssert0": [
+      "ResponseAssert1": [
         {
           "passed": true,
           "actual": "{\"message\": \"Hello, jeff!\"}",
