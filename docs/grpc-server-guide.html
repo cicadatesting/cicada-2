@@ -1,0 +1,219 @@
+<!DOCTYPE html><html lang="en"><head><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><title>gRPC Server Guide · Cicada</title><meta name="viewport" content="width=device-width"/><meta name="generator" content="Docusaurus"/><meta name="description" content="In this guide, you&#x27;ll create a gRPC service and test it using the gRPC runner."/><meta name="docsearch:language" content="en"/><meta property="og:title" content="gRPC Server Guide · Cicada"/><meta property="og:type" content="website"/><meta property="og:url" content="https://herzo175.github.io/cicada-2/"/><meta property="og:description" content="In this guide, you&#x27;ll create a gRPC service and test it using the gRPC runner."/><meta property="og:image" content="https://herzo175.github.io/cicada-2/img/undraw_online.svg"/><meta name="twitter:card" content="summary"/><link rel="shortcut icon" href="/cicada-2/img/favicon.ico"/><link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css"/><script>
+              (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+              (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+              m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+              })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+              ga('create', 'UA-164919423-1', 'auto');
+              ga('send', 'pageview');
+            </script><script type="text/javascript" src="https://buttons.github.io/buttons.js"></script><script src="/cicada-2/js/scrollSpy.js"></script><link rel="stylesheet" href="/cicada-2/css/main.css"/><script src="/cicada-2/js/codetabs.js"></script></head><body class="sideNavVisible separateOnPageNav"><div class="fixedHeaderContainer"><div class="headerWrapper wrapper"><header><a href="/cicada-2/"><img class="logo" src="/cicada-2/img/favicon.ico" alt="Cicada"/><h2 class="headerTitleWithLogo">Cicada</h2></a><div class="navigationWrapper navigationSlider"><nav class="slidingNav"><ul class="nav-site nav-site-internal"><li class="siteNavGroupActive"><a href="/cicada-2/docs/quickstart" target="_self">Docs</a></li><li class="siteNavGroupActive"><a href="/cicada-2/docs/rest-api-guide" target="_self">Guides</a></li><li class="siteNavGroupActive"><a href="/cicada-2/docs/test" target="_self">API</a></li><li class="siteNavGroupActive"><a href="/cicada-2/docs/rest-runner" target="_self">Runners</a></li><li class=""><a href="/cicada-2/help" target="_self">Help</a></li></ul></nav></div></header></div></div><div class="navPusher"><div class="docMainWrapper wrapper"><div class="docsNavContainer" id="docsNav"><nav class="toc"><div class="toggleNav"><section class="navWrapper wrapper"><div class="navBreadcrumb wrapper"><div class="navToggle" id="navToggler"><div class="hamburger-menu"><div class="line1"></div><div class="line2"></div><div class="line3"></div></div></div><h2><i>›</i><span>Guides</span></h2><div class="tocToggler" id="tocToggler"><i class="icon-toc"></i></div></div><div class="navGroups"><div class="navGroup"><h3 class="navGroupCategoryTitle">Introduction</h3><ul class=""><li class="navListItem"><a class="navItem" href="/cicada-2/docs/quickstart">Quickstart</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/tests">Tests</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/state">State</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/actionsasserts">Actions and Asserts</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/runners">Runners</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/reports">Reports</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Guides</h3><ul class=""><li class="navListItem"><a class="navItem" href="/cicada-2/docs/rest-api-guide">REST API Guide</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/async-app-guide">Async App Guide</a></li><li class="navListItem navListItemActive"><a class="navItem" href="/cicada-2/docs/grpc-server-guide">gRPC Server Guide</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">API</h3><ul class=""><li class="navListItem"><a class="navItem" href="/cicada-2/docs/test">Test</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/action">Action</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/assert">Assert</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/config">Config</a></li></ul></div><div class="navGroup"><h3 class="navGroupCategoryTitle">Runners</h3><ul class=""><li class="navListItem"><a class="navItem" href="/cicada-2/docs/rest-runner">REST Runner</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/sql-runner">SQL Runner</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/kafka-runner">Kafka Runner</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/s3-runner">S3 Runner</a></li><li class="navListItem"><a class="navItem" href="/cicada-2/docs/grpc-runner">gRPC Runner</a></li></ul></div></div></section></div><script>
+            var coll = document.getElementsByClassName('collapsible');
+            var checkActiveCategory = true;
+            for (var i = 0; i < coll.length; i++) {
+              var links = coll[i].nextElementSibling.getElementsByTagName('*');
+              if (checkActiveCategory){
+                for (var j = 0; j < links.length; j++) {
+                  if (links[j].classList.contains('navListItemActive')){
+                    coll[i].nextElementSibling.classList.toggle('hide');
+                    coll[i].childNodes[1].classList.toggle('rotate');
+                    checkActiveCategory = false;
+                    break;
+                  }
+                }
+              }
+
+              coll[i].addEventListener('click', function() {
+                var arrow = this.childNodes[1];
+                arrow.classList.toggle('rotate');
+                var content = this.nextElementSibling;
+                content.classList.toggle('hide');
+              });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+              createToggler('#navToggler', '#docsNav', 'docsSliderActive');
+              createToggler('#tocToggler', 'body', 'tocActive');
+
+              var headings = document.querySelector('.toc-headings');
+              headings && headings.addEventListener('click', function(event) {
+                var el = event.target;
+                while(el !== headings){
+                  if (el.tagName === 'A') {
+                    document.body.classList.remove('tocActive');
+                    break;
+                  } else{
+                    el = el.parentNode;
+                  }
+                }
+              }, false);
+
+              function createToggler(togglerSelector, targetSelector, className) {
+                var toggler = document.querySelector(togglerSelector);
+                var target = document.querySelector(targetSelector);
+
+                if (!toggler) {
+                  return;
+                }
+
+                toggler.onclick = function(event) {
+                  event.preventDefault();
+
+                  target.classList.toggle(className);
+                };
+              }
+            });
+        </script></nav></div><div class="container mainContainer docsContainer"><div class="wrapper"><div class="post"><header class="postHeader"><h1 id="__docusaurus" class="postHeaderTitle">gRPC Server Guide</h1></header><article><div><span><p>In this guide, you'll create a gRPC service and test it using the gRPC runner.</p>
+<p><a href="https://github.com/herzo175/cicada-2/tree/master/example_services/grpc_server">Source code</a></p>
+<h2><a class="anchor" aria-hidden="true" id="app"></a><a href="#app" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>App</h2>
+<p>First, we'll need to create our gRPC server. We can use the 'hello world'
+example from the gRPC website:</p>
+<p><code>protos/app.proto</code></p>
+<pre><code class="hljs css language-proto">syntax = <span class="hljs-string">"proto3"</span>;
+
+package app;
+<span class="hljs-built_in">
+service </span>Greeter {
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+}
+
+message HelloRequest {
+  string name = 1;
+}
+
+message HelloReply {
+  string message = 1;
+}
+</code></pre>
+<p><code>app.py</code></p>
+<pre><code class="hljs css language-python"><span class="hljs-keyword">from</span> concurrent <span class="hljs-keyword">import</span> futures
+<span class="hljs-keyword">import</span> logging
+
+<span class="hljs-keyword">import</span> grpc
+
+<span class="hljs-keyword">import</span> app_pb2
+<span class="hljs-keyword">import</span> app_pb2_grpc
+
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Greeter</span><span class="hljs-params">(app_pb2_grpc.GreeterServicer)</span>:</span>
+
+    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">SayHello</span><span class="hljs-params">(self, request, context)</span>:</span>
+        <span class="hljs-keyword">return</span> app_pb2.HelloReply(message=<span class="hljs-string">'Hello, %s!'</span> % request.name)
+
+
+<span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">serve</span><span class="hljs-params">()</span>:</span>
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=<span class="hljs-number">10</span>))
+    app_pb2_grpc.add_GreeterServicer_to_server(Greeter(), server)
+    server.add_insecure_port(<span class="hljs-string">'[::]:50051'</span>)
+    server.start()
+    server.wait_for_termination()
+
+
+<span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">'__main__'</span>:
+    logging.basicConfig()
+    serve()
+</code></pre>
+<p><code>Makefile</code></p>
+<pre><code class="hljs css language-Makefile">.PHONY=proto-compile
+
+<span class="hljs-section">proto-compile:</span>
+    python3 -m grpc_tools.protoc -I ./protos \
+        --python_out=. \
+        --grpc_python_out=. \
+        ./protos/app.proto
+</code></pre>
+<p>Run <code>make proto-compile</code> to generate the stubs</p>
+<h2><a class="anchor" aria-hidden="true" id="environment"></a><a href="#environment" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Environment</h2>
+<p>We can use docker-compose to launch our app. To do this, we'll need to create
+a Dockerfile and a compose file.</p>
+<p><code>Dockerfile</code></p>
+<pre><code class="hljs css language-Dockerfile"><span class="hljs-keyword">FROM</span> python:<span class="hljs-number">3.8</span>-slim-buster
+
+<span class="hljs-keyword">WORKDIR</span><span class="bash"> /app</span>
+
+<span class="hljs-keyword">ADD</span><span class="bash"> requirements.txt .</span>
+<span class="hljs-keyword">RUN</span><span class="bash"> pip install -r requirements.txt</span>
+
+<span class="hljs-keyword">ADD</span><span class="bash"> app.py .</span>
+<span class="hljs-keyword">ADD</span><span class="bash"> app_pb2.py .</span>
+<span class="hljs-keyword">ADD</span><span class="bash"> app_pb2_grpc.py .</span>
+
+<span class="hljs-keyword">EXPOSE</span> <span class="hljs-number">50051</span>
+
+<span class="hljs-keyword">ENTRYPOINT</span><span class="bash"> [<span class="hljs-string">"python"</span>, <span class="hljs-string">"-u"</span>, <span class="hljs-string">"/app/app.py"</span>]</span>
+</code></pre>
+<p><code>docker-compose.yml</code></p>
+<pre><code class="hljs"><span class="hljs-symbol">version:</span> <span class="hljs-string">'3'</span>
+<span class="hljs-symbol">services:</span>
+<span class="hljs-symbol">  service:</span>
+<span class="hljs-symbol">    build:</span> .
+<span class="hljs-symbol">    ports:</span>
+      - <span class="hljs-number">50051</span>:<span class="hljs-number">50051</span>
+</code></pre>
+<p><code>Makefile</code></p>
+<pre><code class="hljs css language-Makefile">.PHONY=services,run,clean,proto-compile
+WORKDIR=<span class="hljs-variable">$(<span class="hljs-built_in">shell</span> pwd)</span>
+
+<span class="hljs-keyword">export</span> WORKDIR
+
+...
+
+<span class="hljs-section">services:</span>
+    docker-compose up service
+
+<span class="hljs-section">run:</span>
+    docker-compose up --build --abort-on-container-exit --remove-orphans
+
+<span class="hljs-section">clean:</span>
+    docker-compose down --remove-orphans
+</code></pre>
+<p>Run <code>make run</code> and ensure the service starts properly</p>
+<h2><a class="anchor" aria-hidden="true" id="tests"></a><a href="#tests" aria-hidden="true" class="hash-link"><svg class="hash-link-icon" aria-hidden="true" height="16" version="1.1" viewBox="0 0 16 16" width="16"><path fill-rule="evenodd" d="M4 9h1v1H4c-1.5 0-3-1.69-3-3.5S2.55 3 4 3h4c1.45 0 3 1.69 3 3.5 0 1.41-.91 2.72-2 3.25V8.59c.58-.45 1-1.27 1-2.09C10 5.22 8.98 4 8 4H4c-.98 0-2 1.22-2 2.5S3 9 4 9zm9-3h-1v1h1c1 0 2 1.22 2 2.5S13.98 12 13 12H9c-.98 0-2-1.22-2-2.5 0-.83.42-1.64 1-2.09V6.25c-1.09.53-2 1.84-2 3.25C6 11.31 7.55 13 9 13h4c1.45 0 3-1.69 3-3.5S14.5 6 13 6z"></path></svg></a>Tests</h2>
+<p>Finally, we'll create a test that uses Cicada to invoke the gRPC runner against
+our service. This test will expect the response message to be &quot;Hello, jeff!&quot;.</p>
+<p>Also, make sure to mount the proto files to the <code>incoming_protos</code> folder inside
+the runner</p>
+<p><code>test.cicada.yaml</code></p>
+<pre><code class="hljs css language-yaml"><span class="hljs-attr">description:</span> <span class="hljs-string">Example</span> <span class="hljs-string">gRPC</span> <span class="hljs-string">test</span>
+<span class="hljs-attr">tests:</span>
+  <span class="hljs-bullet">-</span> <span class="hljs-attr">name:</span> <span class="hljs-string">greeter-requests</span>
+    <span class="hljs-attr">description:</span> <span class="hljs-string">Send</span> <span class="hljs-string">requests</span> <span class="hljs-string">to</span> <span class="hljs-string">greeter</span> <span class="hljs-string">service</span>
+    <span class="hljs-attr">runner:</span> <span class="hljs-string">grpc-runner</span>
+    <span class="hljs-attr">template:</span> <span class="hljs-string">&gt;
+      volumes:
+        - source: {{ getenv("WORKDIR") }}/protos
+          destination: /incoming_protos
+</span>    <span class="hljs-attr">asserts:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-attr">type:</span> <span class="hljs-string">ResponseAssert</span>
+        <span class="hljs-attr">params:</span>
+          <span class="hljs-attr">actionType:</span> <span class="hljs-string">Unary</span>
+          <span class="hljs-attr">expected:</span>
+            <span class="hljs-attr">message:</span> <span class="hljs-string">"Hello, jeff!"</span>
+          <span class="hljs-attr">actionParams:</span>
+            <span class="hljs-attr">proto:</span> <span class="hljs-string">app</span>
+            <span class="hljs-attr">service:</span> <span class="hljs-string">Greeter</span>
+            <span class="hljs-attr">serviceAddress:</span> <span class="hljs-string">service:50051</span>
+            <span class="hljs-attr">method:</span> <span class="hljs-string">SayHello</span>
+            <span class="hljs-attr">requestType:</span> <span class="hljs-string">HelloRequest</span>
+            <span class="hljs-attr">message:</span>
+              <span class="hljs-attr">name:</span> <span class="hljs-string">jeff</span>
+</code></pre>
+<p><code>docker-compose.yml</code></p>
+<pre><code class="hljs css language-yaml"><span class="hljs-string">...</span>
+<span class="hljs-attr">services:</span>
+  <span class="hljs-string">...</span>
+  <span class="hljs-attr">cicada:</span>
+    <span class="hljs-attr">image:</span> <span class="hljs-string">jeremyaherzog/cicada-2-engine</span>
+    <span class="hljs-attr">environment:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">CONTAINER_NETWORK=grpc_server_default</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">WORKDIR=${WORKDIR}</span>
+    <span class="hljs-attr">volumes:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">/var/run/docker.sock:/var/run/docker.sock</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">.:/tests</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">./reports:/reports</span>
+    <span class="hljs-attr">depends_on:</span>
+      <span class="hljs-bullet">-</span> <span class="hljs-string">service</span>
+</code></pre>
+<p>Run <code>make run</code> again to start the service and Cicada. Ensure that it runs
+the tests successfully and generates the report files.</p>
+<p>Congratulations on creating and testing an gRPC service!</p>
+</span></div></article></div><div class="docs-prevnext"><a class="docs-prev button" href="/cicada-2/docs/async-app-guide"><span class="arrow-prev">← </span><span>Async App Guide</span></a><a class="docs-next button" href="/cicada-2/docs/test"><span>Test</span><span class="arrow-next"> →</span></a></div></div></div><nav class="onPageNav"><ul class="toc-headings"><li><a href="#app">App</a></li><li><a href="#environment">Environment</a></li><li><a href="#tests">Tests</a></li></ul></nav></div><footer class="nav-footer" id="footer"><section class="sitemap"><a href="/cicada-2/" class="nav-home"><img src="/cicada-2/img/favicon.ico" alt="Cicada" width="66" height="58"/></a><div><h5>Docs</h5><a href="/cicada-2/docs/en/quickstart.html">Getting Started</a><a href="/cicada-2/docs/en/test.html">API Reference</a></div><div><h5>More</h5><a href="https://github.com/herzo175/cicada-2">GitHub</a><a class="github-button" href="https://github.com/herzo175/cicada-2" data-icon="octicon-star" data-count-href="/facebook/docusaurus/stargazers" data-show-count="true" data-count-aria-label="# stargazers on GitHub" aria-label="Star this project on GitHub">Star</a></div></section><section class="copyright">Copyright © 2020 Cicada</section></footer></div></body></html>
