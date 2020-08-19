@@ -139,6 +139,8 @@ report files:</p>
   <span class="hljs-attr">accessModes:</span>
     <span class="hljs-bullet">-</span> <span class="hljs-string">ReadWriteOnce</span>
 </code></pre>
+<p>NOTE: These PVC's use a storage class called <code>local-path</code>. Be sure to use a
+storage class appropriate for your cluster.</p>
 <p>After creating the PVC's, we will start a pod that can bind to them for the
 purpose of uploading the files, called <code>initializer</code>:</p>
 <pre><code class="hljs css language-yaml"><span class="hljs-attr">apiVersion:</span> <span class="hljs-string">v1</span>
