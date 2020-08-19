@@ -92,6 +92,9 @@ spec:
     - ReadWriteOnce
 ```
 
+NOTE: These PVC's use a storage class called `local-path`. Be sure to use a
+storage class appropriate for your cluster.
+
 After creating the PVC's, we will start a pod that can bind to them for the
 purpose of uploading the files, called `initializer`:
 
