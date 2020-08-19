@@ -4,7 +4,15 @@ from typing import Dict, List, Iterable
 import yaml
 
 from cicada2.shared.errors import ValidationError
-from cicada2.engine.runners import run_docker
+from cicada2.engine.runners import (
+    run_test,
+    create_docker_container,
+    create_kube_pod,
+    stop_docker_container,
+    stop_kube_pod,
+    get_docker_hostname,
+    get_pod_hostname
+)
 from cicada2.shared.types import TestConfig, FileTestsConfig, RunnerClosure, TestRunners
 
 
@@ -23,9 +31,23 @@ def create_test_task(
         Runner closure for test
     """
     if task_type == "docker":
-        return run_docker(test_config, run_id)
+        return run_test(
+            create_docker_container,
+            stop_docker_container,
+            get_docker_hostname,
+            test_config,
+            run_id
+        )
+    elif task_type == "kube":
+        return run_test(
+            create_kube_pod,
+            stop_kube_pod,
+            get_pod_hostname,
+            test_config,
+            run_id
+        )
     else:
-        raise ValidationError(f"Task type {task_type} not found")
+        raise ValidationError(f"Task type '{task_type}' not found")
 
 
 def create_test_runners(

@@ -85,6 +85,10 @@ def get_contents(path: str, client: S3FileSystem) -> Optional[str]:
         return fp.read()
 
 
+def get_runtime_ms(start: datetime, end: datetime):
+    return int((end - start).seconds*1000 + (end - start).microseconds/1000)
+
+
 def run_action(
     action_type: str, params: ActionParams
 ) -> Union[ActionResponse, ReadResponse, ExistsResponse]:
@@ -103,7 +107,7 @@ def run_action(
         write_contents(path, contents, client)
         end = datetime.now()
 
-        return ActionResponse(runtime=int((end - start).microseconds / 1000))
+        return ActionResponse(runtime=get_runtime_ms(start, end))
     elif action_type == "read":
         assert "path" in params, "'path' must be specified for action 'read'"
 
@@ -116,7 +120,7 @@ def run_action(
 
         # NOTE: special support JSON files?
         return ReadResponse(
-            contents=contents, runtime=int((end - start).microseconds / 1000)
+            contents=contents, runtime=get_runtime_ms(start, end)
         )
     elif action_type == "exists":
         assert "path" in params, "'path' must be specified for action 'exists'"
@@ -129,7 +133,7 @@ def run_action(
         end = datetime.now()
 
         return ExistsResponse(
-            exists=exists, runtime=int((end - start).microseconds / 1000)
+            exists=exists, runtime=get_runtime_ms(start, end)
         )
     elif action_type == "put":
         assert "sourcePath" in params, "'sourcePath' must be specified for action 'put'"
@@ -146,7 +150,7 @@ def run_action(
         client.put(source_path, destination_path, recursive=recursive)
         end = datetime.now()
 
-        return ActionResponse(runtime=int((end - start).microseconds / 1000))
+        return ActionResponse(runtime=get_runtime_ms(start, end))
     elif action_type == "get":
         assert "sourcePath" in params, "'sourcePath' must be specified for action 'get'"
         assert (
@@ -162,7 +166,7 @@ def run_action(
         client.get(source_path, destination_path, recursive=recursive)
         end = datetime.now()
 
-        return ActionResponse(runtime=int((end - start).microseconds / 1000))
+        return ActionResponse(runtime=get_runtime_ms(start, end))
     elif action_type == "rm":
         assert "path" in params, "'path' must be specified for action 'rm'"
 
@@ -174,7 +178,7 @@ def run_action(
         client.rm(path, recursive=recursive)
         end = datetime.now()
 
-        return ActionResponse(runtime=int((end - start).microseconds / 1000))
+        return ActionResponse(runtime=get_runtime_ms(start, end))
     elif action_type == "cb":
         assert "bucketName" in params, "'bucketName' must be specified for action 'cb'"
 
@@ -186,7 +190,7 @@ def run_action(
         client.create_bucket(Bucket=bucket_name)
         end = datetime.now()
 
-        return ActionResponse(runtime=int((end - start).microseconds / 1000))
+        return ActionResponse(runtime=get_runtime_ms(start, end))
     elif action_type == "rb":
         assert "bucketName" in params, "'bucketName' must be specified for action 'rb'"
 
@@ -198,7 +202,7 @@ def run_action(
         client.delete_bucket(Bucket=bucket_name)
         end = datetime.now()
 
-        return ActionResponse(runtime=int((end - start).microseconds / 1000))
+        return ActionResponse(runtime=get_runtime_ms(start, end))
     else:
         raise ValueError(f"Action type {action_type} is invalid")
 

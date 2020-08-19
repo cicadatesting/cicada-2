@@ -8,26 +8,18 @@
   },
   "seed": {
     "actions": {
-      "cb0": {
-        "results": [
-          {
-            "runtime": 7
-          }
-        ],
-        "outputs": {}
-      },
-      "put0": {
-        "results": [
-          {
-            "runtime": 13
-          }
-        ],
-        "outputs": {}
-      },
       "put1": {
         "results": [
           {
-            "runtime": 8
+            "runtime": 3
+          }
+        ],
+        "outputs": {}
+      },
+      "cb0": {
+        "results": [
+          {
+            "runtime": 4
           }
         ],
         "outputs": {}
@@ -35,7 +27,15 @@
       "put2": {
         "results": [
           {
-            "runtime": 8
+            "runtime": 3
+          }
+        ],
+        "outputs": {}
+      },
+      "put0": {
+        "results": [
+          {
+            "runtime": 7
           }
         ],
         "outputs": {}
@@ -51,24 +51,24 @@
   },
   "send-messages": {
     "actions": {
-      "Send1": {
-        "results": [
-          {
-            "messages_sent": 1,
-            "messages_received": null,
-            "errors": [],
-            "runtime": 14
-          }
-        ],
-        "outputs": {}
-      },
       "Send0": {
         "results": [
           {
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 86
+            "runtime": 47
+          }
+        ],
+        "outputs": {}
+      },
+      "Send1": {
+        "results": [
+          {
+            "messages_sent": 1,
+            "messages_received": null,
+            "errors": [],
+            "runtime": 4
           }
         ],
         "outputs": {}
@@ -79,18 +79,18 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 16
+            "runtime": 4
           }
         ],
         "outputs": {}
       }
     },
     "asserts": {
-      "FindMessage2": [
+      "FindMessage0": [
         {
           "passed": true,
           "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
-          "expected": "{'key': 'file_c'}",
+          "expected": "{'key': 'file_a'}",
           "description": "passed"
         }
       ],
@@ -102,11 +102,11 @@
           "description": "passed"
         }
       ],
-      "FindMessage0": [
+      "FindMessage2": [
         {
           "passed": true,
           "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
-          "expected": "{'key': 'file_a'}",
+          "expected": "{'key': 'file_c'}",
           "description": "passed"
         }
       ]
@@ -129,19 +129,19 @@
           "description": "passed"
         }
       ],
-      "FilesEqual1": [
-        {
-          "passed": true,
-          "actual": "s3://file-transform-service/file_b.json",
-          "expected": "/test_data/file_b.json",
-          "description": "passed"
-        }
-      ],
       "FilesEqual0": [
         {
           "passed": true,
           "actual": "s3://file-transform-service/file_a.json",
           "expected": "/test_data/file_a.json",
+          "description": "passed"
+        }
+      ],
+      "FilesEqual1": [
+        {
+          "passed": true,
+          "actual": "s3://file-transform-service/file_b.json",
+          "expected": "/test_data/file_b.json",
           "description": "passed"
         }
       ]

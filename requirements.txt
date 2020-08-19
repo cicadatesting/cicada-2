@@ -10,3 +10,4 @@ psycopg2
 sqlalchemy
 pyyaml
 typing_extensions
+kubernetes==11.0.0

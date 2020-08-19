@@ -21,7 +21,7 @@ services:
       - db
       - flyway
   cicada:
-    image: jeremyaherzog/cicada-2-engine
+    image: jeremyaherzog/cicada-2-engine:local
     environment:
       - CONTAINER_NETWORK=rest_api_default
     volumes:
