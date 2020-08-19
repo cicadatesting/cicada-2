@@ -2,13 +2,13 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-d66cd04b
+* Run ID: cicada-2-run-991a3ad4
 * Successful Tests: 2
 * Failed Tests: 0
 
 ## Tests
 1. [add_members](#add_members)
-2. [update_ages](#update_ages)
+2. [update_names](#update_names)
 * #### add_members
     - Description: add 100 new members
     - Duration: 0 seconds
@@ -23,29 +23,38 @@
                 ```json
                 {
                   "body": {
-                    "id": 100,
+                    "id": 200,
                     "name": "jeff"
                   },
                   "headers": {
                     "Content-Length": "35",
                     "Content-Type": "application/json",
-                    "Date": "Sat, 02 May 2020 02:41:46 GMT",
-                    "Server": "Werkzeug/1.0.1 Python/3.8.2"
+                    "Date": "Thu, 13 Aug 2020 02:28:41 GMT",
+                    "Server": "Werkzeug/1.0.1 Python/3.8.3"
                   },
-                  "runtime": 5.231,
+                  "runtime": 3.672,
                   "status_code": 200,
-                  "text": "{\n  \"id\": 100, \n  \"name\": \"jeff\"\n}\n"
+                  "text": "{\n  \"id\": 200, \n  \"name\": \"jeff\"\n}\n"
                 }
                 ```
 ---
 
-* #### update_ages
-    - Description: update ages of new members
+* #### update_names
+    - Description: update names of new members
     - Duration: 0 seconds
     - Completed Cycles: 1
     - Remaining Asserts: 
     - Error: None
     - Actions:
+        * SQLQuery0
+            - Number of Calls: 1
+            - Failed Calls: 0
+            - Result
+                ```json
+                {
+                  "rows": []
+                }
+                ```
         * SQLQuery1
             - Number of Calls: 1
             - Failed Calls: 0
@@ -60,15 +69,6 @@
                     ```json
                     1
                     ```
-        * SQLQuery0
-            - Number of Calls: 1
-            - Failed Calls: 0
-            - Result
-                ```json
-                {
-                  "rows": []
-                }
-                ```
     - Asserts:
         * EqualsRows0
             - Number of Calls: 1

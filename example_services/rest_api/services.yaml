@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: db
+  labels:
+    run: db
+spec:
+  containers:
+    - image: postgres:12-alpine
+      name: db
+      env:
+        - name: POSTGRES_PASSWORD
+          value: admin
+      ports:
+        - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    run: db
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flyway
+  labels:
+    run: flyway
+spec:
+  restartPolicy: Never
+  containers:
+    - image: flyway/flyway:6-alpine
+      name: flyway
+      args:
+      - -url=jdbc:postgresql://db:5432/
+      - -schemas=public
+      - -user=postgres
+      - -password=admin
+      - -connectRetries=60
+      - migrate
+      volumeMounts:
+        - mountPath: /flyway/sql
+          name: flyway-volume
+  volumes:
+    - name: flyway-volume
+      persistentVolumeClaim:
+        claimName: flyway-pvc
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api
+  labels:
+    run: api
+spec:
+  restartPolicy: Never
+  containers:
+    - image: jeremyaherzog/rest-api-example:local
+      name: api
+      ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    run: api

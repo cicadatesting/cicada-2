@@ -118,7 +118,7 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
         "headers": dict(response.headers),
         "body": body,
         "text": text,
-        "runtime": (end - start).microseconds / 1000,
+        "runtime": (end - start).seconds*1000 + (end - start).microseconds/1000,
     }
 
 

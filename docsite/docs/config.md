@@ -35,6 +35,18 @@ Defaults to `5` tries
 Path to JSON state file to use as the inital state data to provide to tests.
 Must also be mounted to engine in a volume.
 
+## POD_NAMESPACE
+
+Namespace to run pods in (kubernetes only)
+
+Defaults to `default`
+
+## POD_SERVICE_ACCOUNT
+
+Service account to give to runners inside pods if specified (kubernetes only)
+
+Defaults to `default`
+
 ## REPORTS_FOLDER
 
 Path in engine to write reports files to.
@@ -45,7 +57,7 @@ Defaults to `/reports`
 
 Container platform to use for runners.
 
-Only supported value (and default) is `docker` (Kubernetes coming some day)
+Defaults to `docker`. Alternate value is `kube` (for kubernetes)
 
 ## TESTS_FOLDER
 

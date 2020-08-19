@@ -8,26 +8,18 @@
   },
   "seed": {
     "actions": {
-      "cb0": {
-        "results": [
-          {
-            "runtime": 7
-          }
-        ],
-        "outputs": {}
-      },
-      "put0": {
-        "results": [
-          {
-            "runtime": 13
-          }
-        ],
-        "outputs": {}
-      },
       "put1": {
         "results": [
           {
-            "runtime": 8
+            "runtime": 3
+          }
+        ],
+        "outputs": {}
+      },
+      "cb0": {
+        "results": [
+          {
+            "runtime": 4
           }
         ],
         "outputs": {}
@@ -35,7 +27,15 @@
       "put2": {
         "results": [
           {
-            "runtime": 8
+            "runtime": 3
+          }
+        ],
+        "outputs": {}
+      },
+      "put0": {
+        "results": [
+          {
+            "runtime": 7
           }
         ],
         "outputs": {}

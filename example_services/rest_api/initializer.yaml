@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: initializer
+spec:
+  containers:
+  - image: busybox
+    name: initializer
+    command: ["ping", "127.0.0.1"]
+    volumeMounts:
+      - mountPath: "/flyway"
+        name: flyway-volume
+      - mountPath: "/tests"
+        name: tests-volume
+      - mountPath: "/reports"
+        name: reports-volume
+  volumes:
+    - name: flyway-volume
+      persistentVolumeClaim:
+        claimName: flyway-pvc
+    - name: tests-volume
+      persistentVolumeClaim:
+        claimName: tests-pvc
+    - name: reports-volume
+      persistentVolumeClaim:
+        claimName: reports-pvc

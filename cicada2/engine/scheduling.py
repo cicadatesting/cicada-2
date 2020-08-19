@@ -1,3 +1,4 @@
+from logging import Logger
 import os
 import time
 import json
@@ -15,6 +16,7 @@ from cicada2.engine.config import (
 from cicada2.engine.loading import load_tests_tree
 from cicada2.shared.logs import get_logger
 from cicada2.engine.reporting import render_report
+from cicada2.engine.runners import clean_docker_containers, clean_kube_runners
 from cicada2.shared.types import TestSummary
 
 
@@ -154,3 +156,12 @@ def run_tests(
         os.path.join(reports_location, "state.final.json"), "w"
     ) as final_state_fp:
         json.dump(final_state, final_state_fp, indent=2)
+
+    LOGGER.debug("cleaning orphaned runners")
+
+    if tasks_type == "docker":
+        clean_docker_containers(run_id)
+    elif tasks_type == "kube":
+        clean_kube_runners(run_id)
+
+    LOGGER.info("Tests complete!")
