@@ -214,7 +214,7 @@ def create_kube_pod(
         volumes = [
             k8s_client.V1Volume(
                 name=vol["source"],
-                persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(
+                persistent_volume_claim=k8s_client.V1PersistentVolumeClaimVolumeSource(
                     claim_name=vol["source"]
                 )
             )
