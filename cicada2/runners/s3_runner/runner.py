@@ -86,7 +86,7 @@ def get_contents(path: str, client: S3FileSystem) -> Optional[str]:
 
 
 def get_runtime_ms(start: datetime, end: datetime):
-    return int((end - start).seconds*1000 (end - start).microseconds/1000)
+    return int((end - start).seconds*1000 + (end - start).microseconds/1000)
 
 
 def run_action(

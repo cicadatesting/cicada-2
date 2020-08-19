@@ -4,7 +4,8 @@ from typing import Dict, List, Optional
 
 import docker
 from docker.errors import APIError
-from kubernetes import client, config
+from kubernetes import client as k8s_client
+from kubernetes import config as k8s_config
 from kubernetes.client.rest import ApiException
 
 from cicada2.engine.config import (
@@ -201,8 +202,8 @@ def create_kube_pod(
     volumes: List[Volume] = None,
     service_account: str = POD_SERVICE_ACCOUNT
 ):
-    config.load_incluster_config()
-    v1 = client.CoreV1Api()
+    k8s_config.load_incluster_config()
+    v1 = k8s_client.CoreV1Api()
 
     runner_type = f"{image.split('/')[-1].split(':')[0]}"
     container_id = f"{runner_type}-{str(uuid.uuid4())[:8]}"
@@ -211,7 +212,7 @@ def create_kube_pod(
         volumes = []
     else:
         volumes = [
-            client.V1Volume(
+            k8s_client.V1Volume(
                 name=vol["source"],
                 persistent_volume_claim=client.V1PersistentVolumeClaimVolumeSource(
                     claim_name=vol["source"]
@@ -221,17 +222,17 @@ def create_kube_pod(
         ]
 
     volume_mounts = [
-        client.V1VolumeMount(name=vol["source"], mount_path=vol["destination"])
+        k8s_client.V1VolumeMount(name=vol["source"], mount_path=vol["destination"])
         for vol in volumes
     ]
 
     pod_env = [
-        client.V1EnvVar(name=key, value=value)
+        k8s_client.V1EnvVar(name=key, value=value)
         for key, value in env_map.items()
     ]
 
-    pod_body = client.V1Pod(
-        metadata=client.V1ObjectMeta(
+    pod_body = k8s_client.V1Pod(
+        metadata=k8s_client.V1ObjectMeta(
             name=container_id,
             labels={
                 "run_id": run_id,
@@ -240,12 +241,12 @@ def create_kube_pod(
                 "type": "cicada-2-runner"
             }
         ),
-        spec=client.V1PodSpec(
+        spec=k8s_client.V1PodSpec(
             containers=[
-                client.V1Container(
+                k8s_client.V1Container(
                     image=image,
                     name=container_id,
-                    ports=[client.V1ContainerPort(container_port=50051)],
+                    ports=[k8s_client.V1ContainerPort(container_port=50051)],
                     volume_mounts=volume_mounts,
                     env=pod_env
                 )
@@ -255,8 +256,8 @@ def create_kube_pod(
         ),
     )
 
-    service_body = client.V1Service(
-        metadata=client.V1ObjectMeta(
+    service_body = k8s_client.V1Service(
+        metadata=k8s_client.V1ObjectMeta(
             name=container_id,
             labels={
                 "run_id": run_id,
@@ -264,9 +265,9 @@ def create_kube_pod(
                 "type": "cicada-2-runner"
             }
         ),
-        spec=client.V1ServiceSpec(
+        spec=k8s_client.V1ServiceSpec(
             ports=[
-                client.V1ServicePort(
+                k8s_client.V1ServicePort(
                     port=50051,
                     target_port=50051
                 )
@@ -284,7 +285,7 @@ def create_kube_pod(
         raise RuntimeError(f"Unable to create pod: {err}")
 
     if container_is_healthy(f"{container_id}:50051"):
-        LOGGER.info(f"successfully created pod {container_id}")
+        LOGGER.info("successfully created pod %s", container_id)
         return container_id
     else:
         raise RuntimeError("Unable to successfully contact container")
@@ -292,8 +293,8 @@ def create_kube_pod(
 
 def stop_kube_pod(container_id: str, namespace: str = POD_NAMESPACE):
     # TODO: make pod termination optional or some way to just stop the pod
-    config.load_incluster_config()
-    v1 = client.CoreV1Api()
+    k8s_config.load_incluster_config()
+    v1 = k8s_client.CoreV1Api()
 
     LOGGER.debug("Stopping pod and service %s", container_id)
 
@@ -305,8 +306,8 @@ def stop_kube_pod(container_id: str, namespace: str = POD_NAMESPACE):
 
 
 def clean_kube_runners(run_id: str, namespace: str = POD_NAMESPACE):
-    config.load_incluster_config()
-    v1 = client.CoreV1Api()
+    k8s_config.load_incluster_config()
+    v1 = k8s_client.CoreV1Api()
 
     LOGGER.debug("Cleaning pods and services for run ID %s", run_id)
 
