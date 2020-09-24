@@ -47,7 +47,7 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 0.3.0  # NOTE: possibly derive from branch name/pr name or something when doing releases
+        - 0.4.0  # NOTE: possibly derive from branch name/pr name or something when doing releases
         - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
@@ -66,7 +66,7 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 0.3.0
+        - 0.4.0
         - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
@@ -85,7 +85,7 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 0.3.0
+        - 0.4.0
         - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
@@ -104,7 +104,7 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 0.3.0
+        - 0.4.0
         - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
@@ -123,7 +123,45 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 0.3.0
+        - 0.4.0
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+    when:
+      branch:
+        - master
+      event:
+        - push
+  - name: build-io-utility
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/operator.io-utility.dockerfile
+      repo: jeremyaherzog/cicada-operator-io-utility
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - 0.4.0
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+    when:
+      branch:
+        - master
+      event:
+        - push
+  - name: build-cicada-operator
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/operator.daemon.dockerfile
+      repo: jeremyaherzog/cicada-operator
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - 0.4.0
         - latest
         - ${DRONE_COMMIT_SHA}
     commands: []

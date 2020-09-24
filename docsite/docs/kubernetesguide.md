@@ -8,41 +8,31 @@ In this guide, you'll set up the rest runner example to run on kubernetes.
 
 ## Setup
 
-As a prerequisite, the Cicada engine will need privileges to create, list, and
-delete services in the namespace it will be operating in. The yaml below can be
-used to create a service account with the necessary roles:
+As a prerequisite, the Cicada operator will need to be installed. The operator
+can be used to start the engine as well as download and upload requisite tests
+and reports from Git or an S3 compatiable filestore.
 
-<!--TODO: downloadable links to yaml-->
+Helm:
 
-```yaml
-kind: ClusterRole
-apiVersion: rbac.authorization.k8s.io/v1
-metadata:
-  namespace: default
-  name: cicada-engine-role
-rules:
-- apiGroups: [""]
-  resources: ["pods", "services"]
-  verbs: ["create", "delete", "deletecollection", "list"]
----
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  creationTimestamp: null
-  name: cicada-engine-account
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: cicada-engine-pod
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: cicada-engine-role
-subjects:
-- kind: ServiceAccount
-  name: cicada-engine-account
-  namespace: default
+```bash
+# Add Helm repo
+helm repo add cicada-charts https://cicadatesting.github.io/cicada-charts
+helm repo update
+# Make sure cicada-charts/cicada-operator-chart is displayed
+helm search repo cicada-charts
+# Install Helm chart
+helm install cicada-operator cicada-charts/cicada-operator-chart
+```
+
+YAML:
+
+```bash
+# Install the operator CRD's
+kubectl apply -f https://cicadatesting.github.io/cicada-charts/operator/templates/crd.yaml
+# Install roles for operator, engine, runners
+kubectl apply -f https://cicadatesting.github.io/cicada-charts/operator/templates/rbac.yaml
+# Start Cicada operator
+kubectl apply -f https://cicadatesting.github.io/cicada-charts/operator/templates/deployment.yaml
 ```
 
 ## Environment
@@ -52,7 +42,7 @@ cluster, we will use kubernetes volumes. To begin, create
 `PersistentVolumeClaims` for the database migration files, test files, and
 report files:
 
-<!--TODO: downloadable links to yaml-->
+`pvc.yaml`:
 
 ```yaml
 apiVersion: v1
@@ -96,9 +86,13 @@ NOTE: These PVC's use a storage class called `local-path`. Be sure to use a
 storage class appropriate for your cluster.
 
 After creating the PVC's, we will start a pod that can bind to them for the
-purpose of uploading the files, called `initializer`:
+purpose of uploading the files, called `initializer`.
+
+`pvc.yaml`
 
 ```yaml
+...
+---
 apiVersion: v1
 kind: Pod
 metadata:
@@ -135,46 +129,123 @@ kubectl cp test.cicada.yaml initializer:/tests
 kubectl cp V1__Initial.sql initializer:/flyway
 ```
 
-## Running
+If you are using a utility like `ksync`, you can bind the
+current directory to the `/flyway`, `/tests`, and `/reports`
+directories to skip the manual copies.
 
-To run Cicada, create a pod for the engine that binds to the tests and reports
-volumes:
+## Services
+
+To run the application in kubernetes, create a file called `workflow.yaml` to specify the pods and services:
+
+`workflow.yaml`:
 
 ```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: cicada
+  name: db
   labels:
-    run: cicada
+    run: db
 spec:
-  serviceAccountName: cicada-engine-account
+  containers:
+    - image: postgres:12-alpine
+      name: db
+      env:
+        - name: POSTGRES_PASSWORD
+          value: admin
+      ports:
+        - containerPort: 5432
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: db
+spec:
+  ports:
+    - port: 5432
+      targetPort: 5432
+  selector:
+    run: db
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: flyway
+  labels:
+    run: flyway
+spec:
   restartPolicy: Never
   containers:
-    - image: jeremyaherzog/cicada-2-engine
-      name: cicada
-      env:
-        - name: TASK_TYPE
-          value: kube
+    - image: flyway/flyway:6-alpine
+      name: flyway
+      args:
+      - -url=jdbc:postgresql://db:5432/
+      - -schemas=public
+      - -user=postgres
+      - -password=admin
+      - -connectRetries=60
+      - migrate
       volumeMounts:
-        - mountPath: /tests
-          name: tests-volume
-        - mountPath: /reports
-          name: reports-volume
+        - mountPath: /flyway/sql
+          name: flyway-volume
   volumes:
-    - name: tests-volume
+    - name: flyway-volume
       persistentVolumeClaim:
-        claimName: tests-pvc
-    - name: reports-volume
-      persistentVolumeClaim:
-        claimName: reports-pvc
+        claimName: flyway-pvc
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api
+  labels:
+    run: api
+spec:
+  restartPolicy: Never
+  containers:
+    - image: jeremyaherzog/rest-api-example:local
+      name: api
+      ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+  selector:
+    run: api
 ```
 
-Make sure that the environment variable `TASK_TYPE` is set to `kube` and that
-it is using the `cicada-engine-account` service account or a service account
-with the correct permissions.
+This will start the database and API, as well as apply migrations to
+the database.
 
-Once the pod completes, the reports will be ready!
+## Running
+
+To run Cicada, create a pod for the engine that binds to the tests and reports
+volumes:
+
+`workflow.yaml`
+
+```yaml
+apiVersion:  cicada.io/v1
+kind: TestEngine
+metadata:
+  name: rest-api-test
+spec:
+  dependencies:
+    - name: api
+      statuses:
+        - Running
+  tests:
+    pvc: tests-pvc
+  reports:
+    pvc: reports-pvc
+```
+
+Run the service using `kubectl apply -f workflow.yaml`. Once the engine pods complete, the reports will be ready!
 
 ## Collecting reports
 
