@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-991a3ad4
+* Run ID: cicada-2-run-54ba4b33
 * Successful Tests: 2
 * Failed Tests: 0
 
@@ -23,18 +23,18 @@
                 ```json
                 {
                   "body": {
-                    "id": 200,
+                    "id": 100,
                     "name": "jeff"
                   },
                   "headers": {
                     "Content-Length": "35",
                     "Content-Type": "application/json",
-                    "Date": "Thu, 13 Aug 2020 02:28:41 GMT",
+                    "Date": "Tue, 15 Sep 2020 03:11:53 GMT",
                     "Server": "Werkzeug/1.0.1 Python/3.8.3"
                   },
-                  "runtime": 3.672,
+                  "runtime": 3.193,
                   "status_code": 200,
-                  "text": "{\n  \"id\": 200, \n  \"name\": \"jeff\"\n}\n"
+                  "text": "{\n  \"id\": 100, \n  \"name\": \"jeff\"\n}\n"
                 }
                 ```
 ---
@@ -46,15 +46,6 @@
     - Remaining Asserts: 
     - Error: None
     - Actions:
-        * SQLQuery0
-            - Number of Calls: 1
-            - Failed Calls: 0
-            - Result
-                ```json
-                {
-                  "rows": []
-                }
-                ```
         * SQLQuery1
             - Number of Calls: 1
             - Failed Calls: 0
@@ -69,6 +60,15 @@
                     ```json
                     1
                     ```
+        * SQLQuery0
+            - Number of Calls: 1
+            - Failed Calls: 0
+            - Result
+                ```json
+                {
+                  "rows": []
+                }
+                ```
     - Asserts:
         * EqualsRows0
             - Number of Calls: 1
