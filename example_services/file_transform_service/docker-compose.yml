@@ -33,7 +33,7 @@ services:
     depends_on:
       - kafka
   cicada:
-    image: jeremyaherzog/cicada-2-engine:latest
+    image: jeremyaherzog/cicada-2-engine
     environment:
       - CONTAINER_NETWORK=file_transform_service_default
       - INITIAL_STATE_FILE=/initial-data/initial.json

@@ -17,10 +17,10 @@ docker pull jeremyaherzog/cicada-2-engine:latest
 To run Cicada, you'll need to configure a network for the runners to operate in:
 
 ```bash
-docker network create cicada
+docker network create cicada-2
 ```
 
-By default, Cicada uses the `cicada` network. You can also override the
+By default, Cicada uses the `cicada-2` network. You can also override the
 network by providing the `CONTAINER_NETWORK` environment variable.
 
 > If the network does not exist, Cicada will attempt to create it, 
@@ -62,8 +62,8 @@ add it to the `network` and mount the following volumes:
 
 ```bash
 docker run --rm \
-    --name cicada-engine \
-    --network cicada \
+    --name cicada-2-engine \
+    --network cicada-2 \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $(pwd)/tests:/tests \
     -v $(pwd)/reports:/reports \

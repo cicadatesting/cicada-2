@@ -185,7 +185,9 @@ def clean_docker_containers(run_id):
         for container in containers:
             container.stop()
     except APIError as err:
-        raise RuntimeError(f"Unable to stop containers for run ID {run_id}: {err}")
+        raise RuntimeError(
+            f"Unable to stop containers for run ID {run_id}: {err}"
+        )
 
 
 def get_docker_hostname(container):
@@ -198,7 +200,7 @@ def create_kube_pod(
     run_id: str,
     namespace: str = POD_NAMESPACE,
     volumes: List[Volume] = None,
-    service_account: str = POD_SERVICE_ACCOUNT,
+    service_account: str = POD_SERVICE_ACCOUNT
 ):
     k8s_config.load_incluster_config()
     v1 = k8s_client.CoreV1Api()
@@ -214,7 +216,7 @@ def create_kube_pod(
                 name=vol["source"],
                 persistent_volume_claim=k8s_client.V1PersistentVolumeClaimVolumeSource(
                     claim_name=vol["source"]
-                ),
+                )
             )
             for vol in volumes
         ]
@@ -225,7 +227,8 @@ def create_kube_pod(
     ]
 
     pod_env = [
-        k8s_client.V1EnvVar(name=key, value=value) for key, value in env_map.items()
+        k8s_client.V1EnvVar(name=key, value=value)
+        for key, value in env_map.items()
     ]
 
     pod_body = k8s_client.V1Pod(
@@ -234,9 +237,9 @@ def create_kube_pod(
             labels={
                 "run_id": run_id,
                 "run": container_id,
-                "family": "cicada",
-                "type": "cicada-2-runner",
-            },
+                "family": "cicada-2",
+                "type": "cicada-2-runner"
+            }
         ),
         spec=k8s_client.V1PodSpec(
             containers=[
@@ -245,33 +248,38 @@ def create_kube_pod(
                     name=container_id,
                     ports=[k8s_client.V1ContainerPort(container_port=50051)],
                     volume_mounts=volume_mounts,
-                    env=pod_env,
+                    env=pod_env
                 )
             ],
             volumes=volumes,
-            service_account_name=service_account,
+            service_account_name=service_account
         ),
     )
 
     service_body = k8s_client.V1Service(
         metadata=k8s_client.V1ObjectMeta(
             name=container_id,
-            labels={"run_id": run_id, "family": "cicada", "type": "cicada-2-runner"},
+            labels={
+                "run_id": run_id,
+                "family": "cicada-2",
+                "type": "cicada-2-runner"
+            }
         ),
         spec=k8s_client.V1ServiceSpec(
-            ports=[k8s_client.V1ServicePort(port=50051, target_port=50051)],
-            selector={"run": container_id},
+            ports=[
+                k8s_client.V1ServicePort(
+                    port=50051,
+                    target_port=50051
+                )
+            ],
+            selector={
+                "run": container_id
+            }
         ),
     )
 
     try:
-        # TODO: possibly implement built-in healthchecks
-        pod = v1.create_namespaced_pod(namespace, pod_body)
-
-        while pod.status.phase != "Running":
-            time.sleep(1)
-            pod = v1.read_namespaced_pod(container_id, namespace)
-
+        v1.create_namespaced_pod(namespace, pod_body)
         v1.create_namespaced_service(namespace, service_body)
     except ApiException as err:
         raise RuntimeError(f"Unable to create pod: {err}")
@@ -284,6 +292,7 @@ def create_kube_pod(
 
 
 def stop_kube_pod(container_id: str, namespace: str = POD_NAMESPACE):
+    # TODO: make pod termination optional or some way to just stop the pod
     k8s_config.load_incluster_config()
     v1 = k8s_client.CoreV1Api()
 
@@ -296,30 +305,34 @@ def stop_kube_pod(container_id: str, namespace: str = POD_NAMESPACE):
         raise RuntimeError(f"Unable to stop pod {container_id}: {err}")
 
 
-# NOTE: commented out because can be handeled by operator - Maybe keep?
-# def clean_kube_runners(run_id: str, namespace: str = POD_NAMESPACE):
-#     k8s_config.load_incluster_config()
-#     v1 = k8s_client.CoreV1Api()
+def clean_kube_runners(run_id: str, namespace: str = POD_NAMESPACE):
+    k8s_config.load_incluster_config()
+    v1 = k8s_client.CoreV1Api()
 
-#     LOGGER.debug("Cleaning pods and services for run ID %s", run_id)
+    LOGGER.debug("Cleaning pods and services for run ID %s", run_id)
 
-#     try:
-#         v1.delete_collection_namespaced_pod(
-#             namespace=namespace, label_selector=f"run_id={run_id}"
-#         )
+    try:
+        # v1.delete_namespaced_pod(namespace=namespace, name=container_id)
+        # v1.delete_namespaced_service(namespace=namespace, name=container_id)
+        v1.delete_collection_namespaced_pod(
+            namespace=namespace,
+            label_selector=f"run_id={run_id}"
+        )
 
-#         service_list = v1.list_namespaced_service(
-#             namespace=namespace, label_selector=f"run_id={run_id}"
-#         ).items
+        service_list = v1.list_namespaced_service(
+            namespace=namespace,
+            label_selector="run_id=kubia-run"
+        ).items
 
-#         for service in service_list:
-#             v1.delete_namespaced_service(
-#                 name=service.metadata.name, namespace=namespace
-#             )
-#     except ApiException as err:
-#         raise RuntimeError(
-#             f"Unable to stop pods and services for run ID {run_id}: {err}"
-#         )
+        for service in service_list:
+            v1.delete_namespaced_service(
+                name=service.metadata.name,
+                namespace=namespace
+            )
+    except ApiException as err:
+        raise RuntimeError(
+            f"Unable to stop pods and services for run ID {run_id}: {err}"
+        )
 
 
 def get_pod_hostname(container_id: str):
@@ -331,7 +344,7 @@ def run_test(
     remove_runner_fn,
     get_runner_hostname_fn,
     test_config: TestConfig,
-    run_id: str,
+    run_id: str
 ) -> RunnerClosure:
     """
     Runs test using docker runners
@@ -362,7 +375,10 @@ def run_test(
 
             for _ in range(rendered_test_config.get("runnerCount", 1)):
                 runner = create_runner_fn(
-                    image, env, run_id, volumes=rendered_test_config.get("volumes")
+                    image,
+                    env,
+                    run_id,
+                    volumes=rendered_test_config.get("volumes")
                 )
                 runners.append(runner)
 
@@ -370,7 +386,9 @@ def run_test(
                 new_state = run_test_with_timeout(
                     test_config=rendered_test_config,
                     incoming_state=state,
-                    hostnames=[get_runner_hostname_fn(runner) for runner in runners],
+                    hostnames=[
+                        get_runner_hostname_fn(runner) for runner in runners
+                    ],
                     duration=rendered_test_config.get("timeout", 15),
                 )
             except (AssertionError, ValueError, TypeError, RuntimeError) as err:
@@ -398,7 +416,10 @@ def run_test(
                 remove_runner_fn(runner)
         except (AssertionError, ValueError, TypeError, RuntimeError) as err:
             LOGGER.error(
-                "Error creating test %s: %s", test_config["name"], err, exc_info=True
+                "Error creating test %s: %s",
+                test_config["name"],
+                err,
+                exc_info=True
             )
 
             new_state = {

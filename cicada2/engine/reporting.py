@@ -8,7 +8,6 @@ TEMPLATES_DIRECTORY = os.path.join(
 )
 
 # TODO: include more test/assert/action config information
-# TODO: fix ordering of tests
 # NOTE: possibly add support for displaying erred calls in non versioned results
 # NOTE: May need to support displaying test duration in ms instead of seconds
 
