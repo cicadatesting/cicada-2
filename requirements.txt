@@ -11,3 +11,7 @@ sqlalchemy
 pyyaml
 typing_extensions
 kubernetes==11.0.0
+kopf==0.27
+click==7.1.2
+s3fs==0.4.2
+GitPython==3.1.7
