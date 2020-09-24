@@ -33,7 +33,7 @@ ENGINE: Any = None
 
 
 def get_engine() -> engine:
-    # TODO: validate connection works, possibly in healthcheck
+    # TODO: validate, possibly in healthcheck
     global ENGINE
 
     if ENGINE is not None:

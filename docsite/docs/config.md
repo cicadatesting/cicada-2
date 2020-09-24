@@ -10,7 +10,7 @@ Environment variables that can be provided to the engine
 
 Docker network to attach containers to.
 
-Defaults to `cicada`
+Defaults to `cicada-2`
 
 ## CREATE_NETWORK
 

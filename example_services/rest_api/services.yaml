@@ -75,17 +75,3 @@ spec:
       targetPort: 8080
   selector:
     run: api
----
-apiVersion:  cicada.io/v1
-kind: TestEngine
-metadata:
-  name: rest-api-test
-spec:
-  dependencies:
-    - name: api
-      statuses:
-        - Running
-  tests:
-    pvc: tests-pvc
-  reports:
-    pvc: reports-pvc

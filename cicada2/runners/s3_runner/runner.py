@@ -5,9 +5,9 @@ from uuid import uuid4
 from filecmp import cmp
 from typing_extensions import TypedDict
 
-from s3fs import S3FileSystem
 import boto3
 from boto3_type_annotations.s3 import Client
+from s3fs import S3FileSystem
 
 from cicada2.shared.types import AssertResult
 from cicada2.shared.asserts import assert_strings
@@ -52,7 +52,7 @@ def extract_client_config() -> Dict[str, Union[Optional[str], bool]]:
         "aws_access_key_id": getenv("RUNNER_ACCESSKEYID"),
         "aws_secret_access_key": getenv("RUNNER_SECRETACCESSKEY"),
         "aws_session_token": getenv("RUNNER_SESSIONTOKEN"),
-        "use_ssl": getenv("RUNNER_USESSL", "true").lower() in ["true", "y", "yes"],
+        "use_ssl": getenv("CREATE_NETWORK", "true").lower() in ["true", "y", "yes"],
     }
 
 
@@ -86,7 +86,7 @@ def get_contents(path: str, client: S3FileSystem) -> Optional[str]:
 
 
 def get_runtime_ms(start: datetime, end: datetime):
-    return int((end - start).seconds * 1000 + (end - start).microseconds / 1000)
+    return int((end - start).seconds*1000 + (end - start).microseconds/1000)
 
 
 def run_action(
@@ -119,7 +119,9 @@ def run_action(
         end = datetime.now()
 
         # NOTE: special support JSON files?
-        return ReadResponse(contents=contents, runtime=get_runtime_ms(start, end))
+        return ReadResponse(
+            contents=contents, runtime=get_runtime_ms(start, end)
+        )
     elif action_type == "exists":
         assert "path" in params, "'path' must be specified for action 'exists'"
 
@@ -130,7 +132,9 @@ def run_action(
         exists = client.exists(path)
         end = datetime.now()
 
-        return ExistsResponse(exists=exists, runtime=get_runtime_ms(start, end))
+        return ExistsResponse(
+            exists=exists, runtime=get_runtime_ms(start, end)
+        )
     elif action_type == "put":
         assert "sourcePath" in params, "'sourcePath' must be specified for action 'put'"
         assert (

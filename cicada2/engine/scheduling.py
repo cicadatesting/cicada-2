@@ -8,7 +8,6 @@ from dask.distributed import Client, Future
 
 from cicada2.engine.config import (
     INITIAL_STATE_FILE,
-    RUN_ID,
     TASK_TYPE,
     REPORTS_FOLDER,
     TESTS_FOLDER,
@@ -16,7 +15,7 @@ from cicada2.engine.config import (
 from cicada2.engine.loading import load_tests_tree
 from cicada2.shared.logs import get_logger
 from cicada2.engine.reporting import render_report
-from cicada2.engine.runners import clean_docker_containers
+from cicada2.engine.runners import clean_docker_containers, clean_kube_runners
 from cicada2.shared.types import TestSummary
 
 
@@ -65,10 +64,9 @@ def run_tests(
     initial_state_file: str = INITIAL_STATE_FILE,
     tasks_type: str = TASK_TYPE,
     reports_location: str = REPORTS_FOLDER,
-    run_id: str = RUN_ID,
 ):
-    if run_id is None:
-        run_id = f"cicada-2-run-{str(uuid.uuid4())[:8]}"
+    # NOTE: possibly have run ID in globals
+    run_id = f"cicada-2-run-{str(uuid.uuid4())[:8]}"
 
     LOGGER.info("Starting run %s", run_id)
     test_configs, test_runners, test_dependencies = load_tests_tree(
@@ -162,5 +160,7 @@ def run_tests(
 
     if tasks_type == "docker":
         clean_docker_containers(run_id)
+    elif tasks_type == "kube":
+        clean_kube_runners(run_id)
 
     LOGGER.info("Tests complete!")
