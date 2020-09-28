@@ -7,7 +7,7 @@ sidebar_label: Quickstart
 Cicada requires Docker to run and is available as a Docker image:
 
 ```bash
-docker pull jeremyaherzog/cicada-2-engine:latest
+docker pull cicadatesting/cicada-2-engine:latest
 ```
 
 ## Running `Cicada`
@@ -67,7 +67,7 @@ docker run --rm \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v $(pwd)/tests:/tests \
     -v $(pwd)/reports:/reports \
-    jeremyaherzog/cicada-2-engine
+    cicadatesting/cicada-2-engine
 ```
 
 When this finishes running, check the `report.md` file to see the results

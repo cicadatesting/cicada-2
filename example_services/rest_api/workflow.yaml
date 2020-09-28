@@ -60,7 +60,7 @@ metadata:
 spec:
   restartPolicy: Never
   containers:
-    - image: jeremyaherzog/rest-api-example:local
+    - image: cicadatesting/rest-api-example:local
       name: api
       ports:
         - containerPort: 8080

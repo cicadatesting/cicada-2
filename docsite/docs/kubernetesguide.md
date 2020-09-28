@@ -202,7 +202,7 @@ metadata:
 spec:
   restartPolicy: Never
   containers:
-    - image: jeremyaherzog/rest-api-example:local
+    - image: cicadatesting/rest-api-example:latest
       name: api
       ports:
         - containerPort: 8080

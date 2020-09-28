@@ -95,7 +95,7 @@ def run_io_utility(
             restart_policy="Never",
             containers=[
                 k8s_client.V1Container(
-                    image="jeremyaherzog/cicada-operator-io-utility:latest",
+                    image="cicadatesting/cicada-operator-io-utility:latest",
                     name=io_utility_name,
                     volume_mounts=[volume_mount],
                     env=pod_env,
@@ -182,7 +182,7 @@ def run_engine(
             restart_policy="Never",
             containers=[
                 k8s_client.V1Container(
-                    image="jeremyaherzog/cicada-2-engine:latest",
+                    image="cicadatesting/cicada-2-engine:latest",
                     name=test_engine_name,
                     volume_mounts=[tests_volume_mount, reports_volume_mount],
                     env=pod_env,

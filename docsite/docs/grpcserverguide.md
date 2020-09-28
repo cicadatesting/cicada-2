@@ -178,7 +178,7 @@ tests:
 services:
   ...
   cicada:
-    image: jeremyaherzog/cicada-2-engine
+    image: cicadatesting/cicada-2-engine
     environment:
       - CONTAINER_NETWORK=grpc_server_default
       - WORKDIR=${WORKDIR}

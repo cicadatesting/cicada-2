@@ -5,7 +5,7 @@ services:
     ports:
       - 50051:50051
   cicada:
-    image: jeremyaherzog/cicada-2-engine:latest
+    image: cicadatesting/cicada-2-engine:latest
     environment:
       - CONTAINER_NETWORK=grpc_server_default
       - WORKDIR=${WORKDIR}
