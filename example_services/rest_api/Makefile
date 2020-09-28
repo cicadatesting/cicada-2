@@ -1,9 +1,9 @@
 .PHONY=build,services,run,clean
 
 build:
-	docker build . -t jeremyaherzog/rest-api-example:local
+	docker build . -t cicadatesting/rest-api-example:local
 ifdef K3D
-	k3d image import jeremyaherzog/rest-api-example:local
+	k3d image import cicadatesting/rest-api-example:local
 endif
 
 k3d-setup:

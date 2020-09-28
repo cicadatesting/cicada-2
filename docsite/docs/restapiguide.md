@@ -147,7 +147,7 @@ version: '3'
 services:
   ...
   cicada:
-    image: jeremyaherzog/cicada-2-engine
+    image: cicadatesting/cicada-2-engine
     environment:
       - CONTAINER_NETWORK=rest_api_default
     volumes:

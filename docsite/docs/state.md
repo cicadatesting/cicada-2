@@ -88,7 +88,7 @@ For example, let's say we wanted to make sure the API returns the Jeff that was 
 ```
 
 When the action is run, this template will be rendered and the template section
-will be added to the assert config:
+will be added to the assert config (ID may vary):
 
 ```yaml
 - name: check-jeff-added
@@ -101,7 +101,7 @@ will be added to the assert config:
       params:
         method: GET
         actionParams:
-          url: http://api:8080/members/{{ state['add-member']['actions']['POST0']['results'][0]['body']['id'] }}
+          url: http://api:8080/members/123
         expected:
           name: Jeff
           age: 25

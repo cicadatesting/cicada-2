@@ -1,30 +1,30 @@
 .PHONY=build-engine,build-env,build-runner,run-env,proto-compile
 
 build-engine:
-	docker build -f dockerfiles/engine.dockerfile -t jeremyaherzog/cicada-2-engine:latest .
+	docker build -f dockerfiles/engine.dockerfile -t cicadatesting/cicada-2-engine:latest .
 ifdef K3D
-	k3d image import jeremyaherzog/cicada-2-engine:latest
+	k3d image import cicadatesting/cicada-2-engine:latest
 endif
 
 build-env:
-	docker build -f dockerfiles/env.dockerfile -t jeremyaherzog/cicada-env .
+	docker build -f dockerfiles/env.dockerfile -t cicadatesting/cicada-env .
 
 build-runner:
-	docker build -f dockerfiles/${RUNNER_NAME}.dockerfile -t jeremyaherzog/cicada-2-${RUNNER_NAME} .
+	docker build -f dockerfiles/${RUNNER_NAME}.dockerfile -t cicadatesting/cicada-2-${RUNNER_NAME} .
 ifdef K3D
-	k3d image import jeremyaherzog/cicada-2-${RUNNER_NAME}:latest
+	k3d image import cicadatesting/cicada-2-${RUNNER_NAME}:latest
 endif
 
 build-io-utility:
-	docker build -f dockerfiles/operator.io-utility.dockerfile -t jeremyaherzog/cicada-operator-io-utility .
+	docker build -f dockerfiles/operator.io-utility.dockerfile -t cicadatesting/cicada-operator-io-utility .
 ifdef K3D
-	k3d image import jeremyaherzog/cicada-operator-io-utility:latest
+	k3d image import cicadatesting/cicada-operator-io-utility:latest
 endif
 
 build-operator:
-	docker build -f dockerfiles/operator.daemon.dockerfile -t jeremyaherzog/cicada-operator:latest .
+	docker build -f dockerfiles/operator.daemon.dockerfile -t cicadatesting/cicada-operator:latest .
 ifdef K3D
-	k3d image import jeremyaherzog/cicada-operator:latest
+	k3d image import cicadatesting/cicada-operator:latest
 endif
 
 run-env:
@@ -33,7 +33,7 @@ run-env:
 		--network cicada \
 		-v /var/run/docker.sock:/var/run/docker.sock \
 		-v $(shell pwd):/opt \
-		jeremyaherzog/cicada-env \
+		cicadatesting/cicada-env \
 		/bin/bash
 
 lint:

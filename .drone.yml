@@ -41,7 +41,7 @@ steps:
     image: plugins/docker
     settings:
       dockerfile: dockerfiles/engine.dockerfile
-      repo: jeremyaherzog/cicada-2-engine
+      repo: cicadatesting/cicada-2-engine
       username:
         from_secret: DOCKER_USERNAME
       password:
@@ -60,7 +60,7 @@ steps:
     image: plugins/docker
     settings:
       dockerfile: dockerfiles/rest-runner.dockerfile
-      repo: jeremyaherzog/cicada-2-rest-runner
+      repo: cicadatesting/cicada-2-rest-runner
       username:
         from_secret: DOCKER_USERNAME
       password:
@@ -79,7 +79,7 @@ steps:
     image: plugins/docker
     settings:
       dockerfile: dockerfiles/sql-runner.dockerfile
-      repo: jeremyaherzog/cicada-2-sql-runner
+      repo: cicadatesting/cicada-2-sql-runner
       username:
         from_secret: DOCKER_USERNAME
       password:
@@ -98,7 +98,7 @@ steps:
     image: plugins/docker
     settings:
       dockerfile: dockerfiles/kafka-runner.dockerfile
-      repo: jeremyaherzog/cicada-2-kafka-runner
+      repo: cicadatesting/cicada-2-kafka-runner
       username:
         from_secret: DOCKER_USERNAME
       password:
@@ -117,7 +117,26 @@ steps:
     image: plugins/docker
     settings:
       dockerfile: dockerfiles/s3-runner.dockerfile
-      repo: jeremyaherzog/cicada-2-s3-runner
+      repo: cicadatesting/cicada-2-s3-runner
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - 0.4.0
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+    when:
+      branch:
+        - master
+      event:
+        - push
+  - name: build-grpc-runner
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/grpc-runner.dockerfile
+      repo: cicadatesting/cicada-2-grpc-runner
       username:
         from_secret: DOCKER_USERNAME
       password:
@@ -136,7 +155,7 @@ steps:
     image: plugins/docker
     settings:
       dockerfile: dockerfiles/operator.io-utility.dockerfile
-      repo: jeremyaherzog/cicada-operator-io-utility
+      repo: cicadatesting/cicada-operator-io-utility
       username:
         from_secret: DOCKER_USERNAME
       password:
@@ -155,7 +174,7 @@ steps:
     image: plugins/docker
     settings:
       dockerfile: dockerfiles/operator.daemon.dockerfile
-      repo: jeremyaherzog/cicada-operator
+      repo: cicadatesting/cicada-operator
       username:
         from_secret: DOCKER_USERNAME
       password:
