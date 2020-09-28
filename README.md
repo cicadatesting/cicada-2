@@ -8,7 +8,7 @@ It currently supports testing for REST API's and Postgres databases.
 
 ## Links
 
-* <a href="https://herzo175.github.io/cicada-2/">Documentation</a>
+* <a href="https://cicadatesting.github.io/cicada-2/">Documentation</a>
 
 ## Running
 
