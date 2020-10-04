@@ -143,3 +143,16 @@ def test_assert_element_expected_none():
     passed, _ = asserts.assert_element(expected, actual)
 
     assert not passed
+
+
+def test_assert_element_nested():
+    expected = {"foo": {"fizz": [3, 1, 2], "buzz": "^[a-zA-Z0-9_-]+$"}, "bar": True}
+    actual = {
+        "foo": {"fizz": [3, 1, 2, 4], "buzz": "fizz-buzz"},
+        "bar": True,
+        "bar2": False,
+    }
+
+    passed, _ = asserts.assert_element(expected, actual, match=True)
+
+    assert passed

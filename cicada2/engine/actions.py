@@ -49,6 +49,10 @@ def run_actions(
             execution_output: ActionResult = send_action(hostname, rendered_action)
             action_results.append(execution_output)
 
+            # TODO: run asserts under action here
+            # TODO: Add assert statuses to return container
+            # TODO: update remaining assert filter and continue running in testing
+
             time.sleep(rendered_action.get("secondsBetweenExecutions", 0))
 
         store_action_versions = rendered_action.get("storeVersions", True)

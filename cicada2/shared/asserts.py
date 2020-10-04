@@ -2,6 +2,9 @@ import re
 from typing import Any, Tuple, Collection
 
 
+reserved_keywords = ["all_required", "match", "ordered"]
+
+
 def assert_dicts(
     expected: dict, actual: dict, all_required=False, **kwargs
 ) -> Tuple[bool, str]:
@@ -68,7 +71,11 @@ def assert_strings(
         Whether the two strings match or equal each other and a description or the result
     """
     if match:
-        passed = re.match(expected, actual, **kwargs)
+        passed = re.match(
+            expected,
+            actual,
+            **{k: v for k, v in kwargs.items() if k not in reserved_keywords},
+        )
 
         if not passed:
             description = f"{actual} does not match {expected}"
