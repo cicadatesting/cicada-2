@@ -133,7 +133,8 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
                 messages_sent=len(params.get("messages")) - len(failed_messages),
                 messages_received=None,
                 errors=failed_messages,
-                runtime=int((end - start).microseconds / 1000),
+                runtime=(end - start).seconds * 1000
+                + (end - start).microseconds / 1000,
             )
     elif action_type == "Receive":
         assert "topic" in params, "Must specify topic in action params"
@@ -158,7 +159,9 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
                     for msg in msg_list
                 ],
                 errors=None,
-                runtime=int((end - start).seconds*1000 + (end - start).microseconds/1000),
+                runtime=int(
+                    (end - start).seconds * 1000 + (end - start).microseconds / 1000
+                ),
             )
     else:
         raise ValueError(f"Action type {action_type} is invalid")

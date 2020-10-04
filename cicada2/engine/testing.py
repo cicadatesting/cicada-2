@@ -312,7 +312,9 @@ def run_test(
 
     # stop if remaining_cycles == 0 or had asserts and no asserts remain
     while continue_running(
-        asserts, remaining_cycles, state[test_config["name"]].get("asserts", {}),
+        asserts,
+        remaining_cycles,
+        state[test_config["name"]].get("asserts", {}),
     ):
         # Check if running with a timeout and break if timeout has signaled
         if timeout_signal_name is not None:
@@ -332,6 +334,7 @@ def run_test(
                 "series",
             ], f"actionDistributionStrategy must be 'parallel' or 'series', got '{action_distribution_strategy}'"
 
+            # TODO: option to run as many as possible in time period
             if action_distribution_strategy == "series":
                 run_actions_func = run_actions_series
             else:
@@ -373,7 +376,9 @@ def run_test(
 
         # Wait between cycles if test is to continue running
         if continue_running(
-            asserts, remaining_cycles, state[test_config["name"]].get("asserts", {}),
+            asserts,
+            remaining_cycles,
+            state[test_config["name"]].get("asserts", {}),
         ):
             time.sleep(test_config.get("secondsBetweenCycles", 1))
 
