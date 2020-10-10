@@ -129,7 +129,7 @@ def test_continue_running_asserts_failed_unlimited_second_run():
     }
 
     assert testing.continue_running(
-        actions=[],
+        actions=actions,
         asserts=asserts,
         remaining_cycles=-2,
         actions_data={},

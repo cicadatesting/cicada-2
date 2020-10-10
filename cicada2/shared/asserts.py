@@ -186,7 +186,7 @@ def assert_element(expected: Any, actual: Any, **kwargs) -> Tuple[bool, str]:
 
 
 def status_is_passed(status: Union[AssertResult, List[AssertResult]]):
-    if isinstance(status, List):
+    if isinstance(status, list):
         return any(result["passed"] for result in status)
     else:
         return status["passed"]
