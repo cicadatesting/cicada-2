@@ -20,7 +20,40 @@
             "error": null
           }
         ],
-        "outputs": {}
+        "outputs": {},
+        "asserts": {}
+      },
+      "Unary2": {
+        "results": [
+          {
+            "response": {
+              "message": "Hello, jeff!"
+            },
+            "metadata": {},
+            "error": null
+          }
+        ],
+        "outputs": {},
+        "asserts": {
+          "Assert0": [
+            {
+              "passed": true,
+              "actual": {
+                "response": {
+                  "message": "Hello, jeff!"
+                },
+                "metadata": {},
+                "error": null
+              },
+              "expected": {
+                "response": {
+                  "message": "Hello, jeff!"
+                }
+              },
+              "description": "passed"
+            }
+          ]
+        }
       },
       "Unary0": {
         "results": [
@@ -33,26 +66,41 @@
             }
           }
         ],
-        "outputs": {}
+        "outputs": {},
+        "asserts": {}
+      },
+      "Unary1": {
+        "results": [
+          {
+            "response": {
+              "message": "Hello, jeff!"
+            },
+            "metadata": {},
+            "error": null
+          }
+        ],
+        "outputs": {},
+        "asserts": {
+          "Assert0": [
+            {
+              "passed": true,
+              "actual": {
+                "response": {
+                  "message": "Hello, jeff!"
+                },
+                "metadata": {},
+                "error": null
+              },
+              "expected": {
+                "response": {
+                  "message": "Hello, jeff!"
+                }
+              },
+              "description": "passed"
+            }
+          ]
+        }
       }
-    },
-    "asserts": {
-      "ResponseAssert1": [
-        {
-          "passed": true,
-          "actual": "{\"message\": \"Hello, jeff!\"}",
-          "expected": "{\"message\": \"Hello, jeff!\"}",
-          "description": "\"passed\""
-        }
-      ],
-      "ResponseAssert0": [
-        {
-          "passed": true,
-          "actual": "{\"message\": \"Hello, jeff!\"}",
-          "expected": "{\"message\": \"Hello, jeff!\"}",
-          "description": "\"passed\""
-        }
-      ]
     },
     "summary": {
       "description": "Send requests to greeter service",

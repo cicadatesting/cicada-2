@@ -2,7 +2,7 @@ from collections import defaultdict
 from unittest.mock import patch, Mock
 
 from cicada2.engine import testing
-from cicada2.shared.types import AssertResult
+from cicada2.shared.types import Action, Assert, AssertResult
 
 
 def test_get_default_cycles_empty():
@@ -12,47 +12,115 @@ def test_get_default_cycles_empty():
 
 
 def test_get_default_cycles_asserts_only():
-    default_cycles = testing.get_default_cycles(asserts=["foo"], actions=[])
+    default_cycles = testing.get_default_cycles(
+        asserts=[Assert(name="foo")], actions=[]
+    )
 
     assert default_cycles == -1
 
 
 def test_get_default_cycles_actions_only():
-    default_cycles = testing.get_default_cycles(asserts=[], actions=["bar"])
+    default_cycles = testing.get_default_cycles(
+        asserts=[], actions=[Action(name="bar")]
+    )
 
     assert default_cycles == 1
 
 
 def test_get_default_cycles_actions_and_asserts():
-    default_cycles = testing.get_default_cycles(asserts=["foo"], actions=["bar"])
+    default_cycles = testing.get_default_cycles(
+        asserts=[Assert(name="foo")], actions=[Action(name="bar")]
+    )
 
     assert default_cycles == -1
 
 
+def test_get_default_cycles_actions_have_asserts():
+    default_cycles = testing.get_default_cycles(
+        asserts=[], actions=[Action(name="bar", asserts=[Assert(name="foo")])]
+    )
+
+    assert default_cycles == -1
+
+
+def test_continue_running_no_actions_no_asserts():
+    assert testing.continue_running(
+        actions=[],
+        asserts=[],
+        remaining_cycles=1,
+        actions_data={},
+        assert_statuses={},
+    )
+
+
 def test_continue_running_no_asserts_limited():
-    assert testing.continue_running(asserts=[], remaining_cycles=1, assert_statuses={})
+    actions = [Action(name="some-action")]
+    asserts = []
+
+    assert testing.continue_running(
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=1,
+        actions_data={},
+        assert_statuses={},
+    )
 
 
 def test_continue_running_no_asserts_unlimited():
-    assert testing.continue_running(asserts=[], remaining_cycles=-1, assert_statuses={})
+    actions = [Action(name="some-action")]
+    asserts = []
+
+    assert testing.continue_running(
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=-1,
+        actions_data={},
+        assert_statuses={},
+    )
 
 
 def test_continue_running_no_asserts_no_remaining():
+    actions = [Action(name="some-action")]
+    asserts = []
+
     assert not testing.continue_running(
-        asserts=[], remaining_cycles=0, assert_statuses={}
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=0,
+        actions_data={},
+        assert_statuses={},
     )
 
 
 def test_continue_running_asserts_unlimited_first_run():
-    test_asserts = [{"type": "RESTAssert"}]
+    actions = []
+    asserts = [{"type": "RESTAssert"}]
 
     assert testing.continue_running(
-        asserts=test_asserts, remaining_cycles=-1, assert_statuses={}
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=-1,
+        actions_data={},
+        assert_statuses={},
+    )
+
+
+def test_continue_running_actions_with_asserts_first_run():
+    actions = [Action(name="bar", asserts=[Assert(name="foo")])]
+    asserts = []
+
+    assert testing.continue_running(
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=-1,
+        actions_data={},
+        assert_statuses={},
     )
 
 
 def test_continue_running_asserts_failed_unlimited_second_run():
-    test_asserts = [{"type": "RESTAssert"}]
+    actions = []
+    asserts = [{"type": "RESTAssert"}]
 
     assert_statuses = {
         "RESTAssert0": [
@@ -61,12 +129,40 @@ def test_continue_running_asserts_failed_unlimited_second_run():
     }
 
     assert testing.continue_running(
-        asserts=test_asserts, remaining_cycles=-2, assert_statuses=assert_statuses
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=-2,
+        actions_data={},
+        assert_statuses=assert_statuses,
+    )
+
+
+def test_continue_running_actions_with_asserts_failed_unlimited_second_run():
+    actions = [Action(name="bar", asserts=[Assert(name="foo")])]
+    asserts = []
+
+    actions_data = {
+        "bar": {
+            "asserts": {
+                "foo": AssertResult(
+                    passed=False, actual="", expected="", description=""
+                )
+            }
+        }
+    }
+
+    assert testing.continue_running(
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=-2,
+        actions_data=actions_data,
+        assert_statuses={},
     )
 
 
 def test_continue_running_asserts_passed_limited_second_run():
-    test_asserts = [{"type": "RESTAssert", "name": "RESTAssert0"}]
+    actions = []
+    asserts = [{"type": "RESTAssert", "name": "RESTAssert0"}]
 
     assert_statuses = {
         "RESTAssert0": [
@@ -75,12 +171,38 @@ def test_continue_running_asserts_passed_limited_second_run():
     }
 
     assert not testing.continue_running(
-        asserts=test_asserts, remaining_cycles=1, assert_statuses=assert_statuses
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=1,
+        actions_data={},
+        assert_statuses=assert_statuses,
+    )
+
+
+def test_continue_running_asserts_with_actions_passed_limited_second_run():
+    actions = [Action(name="bar", asserts=[Assert(name="foo")])]
+    asserts = []
+
+    actions_data = {
+        "bar": {
+            "asserts": {
+                "foo": AssertResult(passed=True, actual="", expected="", description="")
+            }
+        }
+    }
+
+    assert not testing.continue_running(
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=1,
+        actions_data=actions_data,
+        assert_statuses={},
     )
 
 
 def test_continue_running_asserts_passed_unlimited_second_run():
-    test_asserts = [{"type": "RESTAssert", "name": "RESTAssert0"}]
+    actions = []
+    asserts = [{"type": "RESTAssert", "name": "RESTAssert0"}]
 
     assert_statuses = {
         "RESTAssert0": [
@@ -89,12 +211,38 @@ def test_continue_running_asserts_passed_unlimited_second_run():
     }
 
     assert not testing.continue_running(
-        asserts=test_asserts, remaining_cycles=-2, assert_statuses=assert_statuses
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=-2,
+        actions_data={},
+        assert_statuses=assert_statuses,
+    )
+
+
+def test_continue_running_asserts_with_actions_passed_unlimited_second_run():
+    actions = [Action(name="bar", asserts=[Assert(name="foo")])]
+    asserts = []
+
+    actions_data = {
+        "bar": {
+            "asserts": {
+                "foo": AssertResult(passed=True, actual="", expected="", description="")
+            }
+        }
+    }
+
+    assert not testing.continue_running(
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=-2,
+        actions_data=actions_data,
+        assert_statuses={},
     )
 
 
 def test_continue_running_asserts_passed_limited_second_run_no_remaining():
-    test_asserts = [{"type": "RESTAssert"}]
+    actions = []
+    asserts = [{"type": "RESTAssert"}]
 
     assert_statuses = {
         "RESTAssert0": [
@@ -103,12 +251,38 @@ def test_continue_running_asserts_passed_limited_second_run_no_remaining():
     }
 
     assert not testing.continue_running(
-        asserts=test_asserts, remaining_cycles=0, assert_statuses=assert_statuses
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=0,
+        actions_data={},
+        assert_statuses=assert_statuses,
+    )
+
+
+def test_continue_running_actions_with_asserts_passed_limited_second_run_no_remaining():
+    actions = [Action(name="bar", asserts=[Assert(name="foo")])]
+    asserts = []
+
+    actions_data = {
+        "bar": {
+            "asserts": {
+                "foo": AssertResult(passed=True, actual="", expected="", description="")
+            }
+        }
+    }
+
+    assert not testing.continue_running(
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=0,
+        actions_data=actions_data,
+        assert_statuses={},
     )
 
 
 def test_continue_running_asserts_failed_limited_second_run():
-    test_asserts = [{"type": "RESTAssert"}]
+    actions = []
+    asserts = [{"type": "RESTAssert"}]
 
     assert_statuses = {
         "RESTAssert0": [
@@ -117,7 +291,34 @@ def test_continue_running_asserts_failed_limited_second_run():
     }
 
     assert not testing.continue_running(
-        asserts=test_asserts, remaining_cycles=0, assert_statuses=assert_statuses
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=0,
+        actions_data={},
+        assert_statuses=assert_statuses,
+    )
+
+
+def test_continue_running_actions_with_asserts_failed_limited_second_run():
+    actions = [Action(name="bar", asserts=[Assert(name="foo")])]
+    asserts = []
+
+    actions_data = {
+        "bar": {
+            "asserts": {
+                "foo": AssertResult(
+                    passed=False, actual="", expected="", description=""
+                )
+            }
+        }
+    }
+
+    assert not testing.continue_running(
+        actions=actions,
+        asserts=asserts,
+        remaining_cycles=0,
+        actions_data=actions_data,
+        assert_statuses={},
     )
 
 
@@ -136,7 +337,7 @@ def test_run_actions_parallel(run_actions_mock: Mock):
         seconds_between_actions=0,
     )
 
-    assert results == {"A": {"outputs": {}, "results": [{"foo": "bar"}]}}
+    assert results == {"A": {"outputs": {}, "results": [{"foo": "bar"}], "asserts": {}}}
 
 
 @patch("cicada2.engine.testing.run_actions")
@@ -155,7 +356,7 @@ def test_run_actions_parallel_multiple_hosts(run_actions_mock: Mock):
     )
 
     assert results == {
-        "A": {"outputs": {}, "results": [{"foo": "bar"}, {"foo": "bar"}]}
+        "A": {"outputs": {}, "results": [{"foo": "bar"}, {"foo": "bar"}], "asserts": {}}
     }
 
 
@@ -174,7 +375,7 @@ def test_run_actions_series(run_actions_mock):
         seconds_between_actions=0,
     )
 
-    assert results == {"A": {"outputs": {}, "results": [{"foo": "bar"}]}}
+    assert results == {"A": {"outputs": {}, "results": [{"foo": "bar"}], "asserts": {}}}
 
 
 @patch("cicada2.engine.testing.run_actions")
@@ -199,8 +400,8 @@ def test_run_actions_series_multiple_actions(run_actions_mock):
     )
 
     assert results == {
-        "A": {"outputs": {}, "results": [{"foo": "bar"}]},
-        "B": {"outputs": {}, "results": [{"foo": "bar"}]},
+        "A": {"outputs": {}, "results": [{"foo": "bar"}], "asserts": {}},
+        "B": {"outputs": {}, "results": [{"foo": "bar"}], "asserts": {}},
     }
 
 
@@ -226,8 +427,16 @@ def test_run_actions_series_multiple_actions_multiple_hosts(run_actions_mock):
     )
 
     assert results == {
-        "A": {"outputs": {}, "results": [{"foo": "bar"}, {"foo": "bar"}]},
-        "B": {"outputs": {}, "results": [{"foo": "bar"}, {"foo": "bar"}]},
+        "A": {
+            "outputs": {},
+            "results": [{"foo": "bar"}, {"foo": "bar"}],
+            "asserts": {},
+        },
+        "B": {
+            "outputs": {},
+            "results": [{"foo": "bar"}, {"foo": "bar"}],
+            "asserts": {},
+        },
     }
 
 
@@ -246,7 +455,7 @@ def test_run_actions_series_one_action_multiple_hosts(run_actions_mock):
         seconds_between_actions=0,
     )
 
-    assert results == {"A": {"outputs": {}, "results": [{"foo": "bar"}]}}
+    assert results == {"A": {"outputs": {}, "results": [{"foo": "bar"}], "asserts": {}}}
 
 
 @patch("cicada2.engine.testing.run_asserts")

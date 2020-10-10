@@ -25,6 +25,13 @@ The state container follows this structure:
                 ],
                 outputs: {
                     output-name: {value specified in test config}
+                },
+                asserts: {
+                    assert-name: [
+                        {
+                            <a href="actionsasserts#assert-result">AssertResult</a>
+                        }
+                    ]
                 }
             },
             another-action-name: {...}

@@ -1,5 +1,5 @@
 import time
-from typing import Dict, List
+from typing import List
 
 from cicada2.engine.messaging import send_assert
 from cicada2.engine.parsing import render_section
@@ -61,35 +61,3 @@ def run_asserts(
             time.sleep(seconds_between_asserts)
 
     return results
-
-
-def get_remaining_asserts(asserts: List[Assert], statuses: Statuses) -> List[Assert]:
-    """
-    Returns the asserts that haven't passed yet or should still be run
-
-    Args:
-        asserts: List of asserts in test
-        statuses: Statuses of each assert
-
-    Returns:
-        List of asserts that still need to run
-    """
-    asserts_by_name: Dict[str, Assert] = {}
-
-    for asrt in asserts:
-        assert_name = asrt.get("name")
-
-        asserts_by_name[assert_name] = asrt
-
-    # Test has not been run yet for each assert so they're all remaining
-    if any(assert_name not in statuses for assert_name in asserts_by_name):
-        return asserts
-
-    return [
-        asserts_by_name[assert_name]
-        for assert_name in asserts_by_name
-        if (
-            asserts_by_name[assert_name].get("keepIfPassed", False)
-            or not any(status["passed"] for status in statuses[assert_name])
-        )
-    ]

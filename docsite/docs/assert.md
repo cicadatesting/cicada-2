@@ -17,6 +17,7 @@ asserts:
     actual: <a href="#actual">string</a>
     expected: <a href="#expected">string</a>
     description: <a href="#description">string</a>
+    assertOptions: <a href="#assert-options">string</a>
 </code></pre>
 
 Returns
@@ -89,7 +90,8 @@ Sets assert result's `description` value to the one provided is using a <a href=
 
 ## Assert Options
 
-Flags passed as keyword arguments to call assert logic with
+Flags passed as keyword arguments to call assert logic with for an
+Assert inside of an Action
 
 <pre><code>
 assertOptions:

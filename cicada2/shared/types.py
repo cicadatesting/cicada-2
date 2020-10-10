@@ -4,6 +4,28 @@ from typing_extensions import TypedDict
 # TODO: investigate dataclass usage
 
 
+class Assert(TypedDict):
+    name: Optional[str]
+    type: str
+    executionsPerCycle: Optional[int]
+    params: Optional[dict]
+    template: Optional[str]
+    passed: Optional[bool]
+    keepIfPassed: Optional[bool]
+    actual: Optional[str]
+    expected: Optional[str]
+    description: Optional[str]
+    storeVersions: Optional[bool]
+    assertOptions: Optional[dict]
+
+
+class AssertResult(TypedDict):
+    passed: bool
+    actual: Optional[str]
+    expected: Optional[str]
+    description: Optional[str]
+
+
 class Output(TypedDict):
     name: str
     # isGlobal: Optional[bool]
@@ -20,6 +42,7 @@ class Action(TypedDict):
     secondsBetweenExecutions: Optional[float]
     storeVersions: Optional[bool]
     params: dict
+    asserts: Optional[List[Assert]]
     outputs: Optional[List[Output]]
 
 
@@ -33,27 +56,6 @@ class ActionData(TypedDict):
 
 
 ActionsData = Dict[str, ActionData]
-
-
-class Assert(TypedDict):
-    name: Optional[str]
-    type: str
-    executionsPerCycle: Optional[int]
-    params: Optional[dict]
-    template: Optional[str]
-    passed: Optional[bool]
-    keepIfPassed: Optional[bool]
-    actual: Optional[str]
-    expected: Optional[str]
-    description: Optional[str]
-    storeVersions: Optional[bool]
-
-
-class AssertResult(TypedDict):
-    passed: bool
-    actual: Optional[str]
-    expected: Optional[str]
-    description: Optional[str]
 
 
 Statuses: object = Dict[str, Union[AssertResult, List[AssertResult]]]

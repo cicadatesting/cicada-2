@@ -9,7 +9,16 @@ from cicada2.engine.state import (
     combine_data_by_key,
     combine_datas,
 )
-from cicada2.shared.types import Action, ActionsData, ActionResult, Output
+from cicada2.shared.types import (
+    Action,
+    ActionsData,
+    ActionResult,
+    Assert,
+    AssertResult,
+    Output,
+    Statuses,
+)
+from cicada2.shared.asserts import assert_element, get_remaining_asserts
 
 
 def run_actions(
@@ -44,13 +53,30 @@ def run_actions(
 
         executions_per_cycle: int = rendered_action.get("executionsPerCycle", 1)
         action_results: List[ActionResult] = []
+        assert_results: Statuses = defaultdict(list)
 
         for _ in range(executions_per_cycle):
             execution_output: ActionResult = send_action(hostname, rendered_action)
             action_results.append(execution_output)
 
-            # TODO: run asserts under action here
-            # TODO: Add assert statuses to return container
+            for asrt in get_remaining_asserts(
+                rendered_action.get("asserts", []), assert_results
+            ):
+                rendered_assert: Assert = render_section(
+                    section=asrt, state=state, result=execution_output
+                )
+
+                assert_name = asrt["name"]
+                store_assert_versions = rendered_assert.get("storeVersions", True)
+                assert_result = run_assert_from_action_result(
+                    rendered_assert, execution_output
+                )
+
+                if store_assert_versions:
+                    assert_results[assert_name].append(assert_result)
+                else:
+                    assert_results[assert_name] = assert_result
+
             # TODO: update remaining assert filter and continue running in testing
 
             time.sleep(rendered_action.get("secondsBetweenExecutions", 0))
@@ -61,6 +87,8 @@ def run_actions(
             data[action_name]["results"] = action_results[-1]
         else:
             data[action_name]["results"] = action_results
+
+        data[action_name]["asserts"] = assert_results
 
         for output in rendered_action.get("outputs", []):
             rendered_output: Output = render_section(
@@ -93,6 +121,37 @@ def run_actions(
     return data
 
 
+def run_assert_from_action_result(asrt: Assert, action_result: ActionResult):
+    if asrt.get("type") == "NullAssert":
+        assert_result = AssertResult(
+            passed=asrt.get("passed", False),
+            actual=asrt.get("actual", ""),
+            expected=asrt.get("expected", ""),
+            description=asrt.get("description", ""),
+        )
+    else:
+        assert (
+            "expected" in asrt
+        ), f"Assert {asrt.get('name')} is missing property 'expected'"
+
+        # TODO: implement/test negative asserts
+        actual = asrt.get("actual", action_result)
+        expected = asrt.get("expected")
+
+        passed, description = assert_element(
+            expected, actual, **asrt.get("assertOptions", {})
+        )
+
+        assert_result = AssertResult(
+            passed=passed,
+            actual=actual,
+            expected=expected,
+            description=description,
+        )
+
+    return assert_result
+
+
 def combine_action_data(
     combined_data: ActionsData, action_data: ActionsData
 ) -> ActionsData:
@@ -117,6 +176,10 @@ def combine_action_data(
             "outputs": combine_data_by_key(
                 combined_data.get(key, {}).get("outputs", {}),
                 action_data.get(key, {}).get("outputs", {}),
+            ),
+            "asserts": combine_data_by_key(
+                combined_data.get(key, {}).get("asserts", {}),
+                action_data.get(key, {}).get("asserts", {}),
             ),
         }
         for key in combined_keys
