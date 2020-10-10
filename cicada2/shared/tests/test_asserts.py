@@ -1,4 +1,4 @@
-from cicada2.shared import asserts
+from cicada2.shared import asserts, types
 
 
 def test_assert_dicts_equal():
@@ -156,3 +156,73 @@ def test_assert_element_nested():
     passed, _ = asserts.assert_element(expected, actual, match=True)
 
     assert passed
+
+
+def test_get_remaining_asserts():
+    test_asserts = [
+        {"name": "A"},
+        {"type": "B", "name": "B0"},
+        {"type": "B", "name": "B1"},
+        {"type": "C", "name": "C0"},
+    ]
+
+    statuses = {
+        "A": [
+            types.AssertResult(passed=False, actual="", expected="", description=""),
+            types.AssertResult(passed=True, actual="", expected="", description=""),
+        ],
+        "B0": [
+            types.AssertResult(passed=True, actual="", expected="", description=""),
+            types.AssertResult(passed=True, actual="", expected="", description=""),
+        ],
+        "B1": [
+            types.AssertResult(passed=False, actual="", expected="", description=""),
+            types.AssertResult(passed=False, actual="", expected="", description=""),
+        ],
+        "C0": [
+            types.AssertResult(passed=False, actual="", expected="", description="")
+        ],
+    }
+
+    remaining_asserts = asserts.get_remaining_asserts(test_asserts, statuses)
+
+    assert len(remaining_asserts) == 2
+    assert {"type": "B", "name": "B1"} in remaining_asserts
+    assert {"type": "C", "name": "C0"} in remaining_asserts
+
+
+def test_get_remaining_asserts_unversioned():
+    test_asserts = [
+        {"name": "A"},
+        {"type": "B", "name": "B0"},
+        {"type": "B", "name": "B1"},
+        {"type": "C", "name": "C0"},
+    ]
+
+    statuses = {
+        "A": types.AssertResult(passed=True, actual="", expected="", description=""),
+        "B0": types.AssertResult(passed=True, actual="", expected="", description=""),
+        "B1": types.AssertResult(passed=False, actual="", expected="", description=""),
+        "C0": types.AssertResult(passed=False, actual="", expected="", description=""),
+    }
+
+    remaining_asserts = asserts.get_remaining_asserts(test_asserts, statuses)
+
+    assert len(remaining_asserts) == 2
+    assert {"type": "B", "name": "B1"} in remaining_asserts
+    assert {"type": "C", "name": "C0"} in remaining_asserts
+
+
+def test_get_remaining_asserts_no_status():
+    test_asserts = [
+        {"name": "A"},
+        {"type": "B"},
+        {"type": "B"},
+        {
+            "type": "C",
+        },
+    ]
+
+    remaining_asserts = asserts.get_remaining_asserts(test_asserts, {})
+
+    assert remaining_asserts == test_asserts

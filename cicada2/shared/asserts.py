@@ -1,5 +1,7 @@
 import re
-from typing import Any, Tuple, Collection
+from typing import Any, Tuple, Collection, Dict, List, Union
+
+from cicada2.shared.types import Assert, AssertResult, Statuses
 
 
 reserved_keywords = ["all_required", "match", "ordered"]
@@ -181,3 +183,42 @@ def assert_element(expected: Any, actual: Any, **kwargs) -> Tuple[bool, str]:
             description = f"Expected {expected} but got {actual}"
 
         return passed, description
+
+
+def status_is_passed(status: Union[AssertResult, List[AssertResult]]):
+    if isinstance(status, List):
+        return any(result["passed"] for result in status)
+    else:
+        return status["passed"]
+
+
+def get_remaining_asserts(asserts: List[Assert], statuses: Statuses) -> List[Assert]:
+    """
+    Returns the asserts that haven't passed yet or should still be run
+
+    Args:
+        asserts: List of asserts in test
+        statuses: Statuses of each assert
+
+    Returns:
+        List of asserts that still need to run
+    """
+    asserts_by_name: Dict[str, Assert] = {}
+
+    for asrt in asserts:
+        assert_name = asrt.get("name")
+
+        asserts_by_name[assert_name] = asrt
+
+    # Test has not been run yet for each assert so they're all remaining
+    if any(assert_name not in statuses for assert_name in asserts_by_name):
+        return asserts
+
+    return [
+        asserts_by_name[assert_name]
+        for assert_name in asserts_by_name
+        if (
+            asserts_by_name[assert_name].get("keepIfPassed", False)
+            or not status_is_passed(statuses[assert_name])
+        )
+    ]

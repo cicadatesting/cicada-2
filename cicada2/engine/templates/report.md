@@ -48,6 +48,23 @@
                 {{ action['results']|tojson(indent=2)|indent(16)|replace("&#34;", "\"") }}
                 ```
             {%- endif %}
+            {%- if action['asserts']|length > 0 %}
+            - Asserts
+                {%- for assert_name, asrt in action['asserts'].items() %}
+                * {{ assert_name }}
+                        {%- if asrt|length > 0 %}
+                    - Number of Calls: {{ asrt|length }}
+                    - Failed Calls: {{ asrt|map(attribute="passed")|select("false")|list|length }}
+                        ```json
+                        {{ asrt[-1]|tojson(indent=2)|indent(24)|replace("&#34;", "\"") }}
+                        ```
+                        {%- elif assert %}
+                        ```json
+                        {{ asrt|tojson(indent=2)|indent(24)|replace("&#34;", "\"") }}
+                        ```
+                        {%- endif %}
+                {%- endfor %}
+            {%- endif %}
             {%- if action['outputs']|length > 0 %}
             - Outputs
                 {%- for output_name, output in action['outputs'].items() %}
@@ -74,7 +91,7 @@
                 ```json
                 {{ asrt|tojson(indent=2)|indent(16)|replace("&#34;", "\"") }}
                 ```
-            {%- endif %}
+                {%- endif %}
         {%- endfor %}
     {%- endif %}
 ---

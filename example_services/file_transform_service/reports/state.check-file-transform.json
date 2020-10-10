@@ -8,37 +8,41 @@
   },
   "seed": {
     "actions": {
-      "put1": {
-        "results": [
-          {
-            "runtime": 3
-          }
-        ],
-        "outputs": {}
-      },
       "cb0": {
-        "results": [
-          {
-            "runtime": 4
-          }
-        ],
-        "outputs": {}
-      },
-      "put2": {
-        "results": [
-          {
-            "runtime": 3
-          }
-        ],
-        "outputs": {}
-      },
-      "put0": {
         "results": [
           {
             "runtime": 7
           }
         ],
-        "outputs": {}
+        "outputs": {},
+        "asserts": {}
+      },
+      "put1": {
+        "results": [
+          {
+            "runtime": 4
+          }
+        ],
+        "outputs": {},
+        "asserts": {}
+      },
+      "put2": {
+        "results": [
+          {
+            "runtime": 4
+          }
+        ],
+        "outputs": {},
+        "asserts": {}
+      },
+      "put0": {
+        "results": [
+          {
+            "runtime": 6
+          }
+        ],
+        "outputs": {},
+        "asserts": {}
       }
     },
     "summary": {
@@ -51,27 +55,17 @@
   },
   "send-messages": {
     "actions": {
-      "Send0": {
-        "results": [
-          {
-            "messages_sent": 1,
-            "messages_received": null,
-            "errors": [],
-            "runtime": 47
-          }
-        ],
-        "outputs": {}
-      },
       "Send1": {
         "results": [
           {
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 4
+            "runtime": 5.844
           }
         ],
-        "outputs": {}
+        "outputs": {},
+        "asserts": {}
       },
       "Send2": {
         "results": [
@@ -79,10 +73,23 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 4
+            "runtime": 6.115
           }
         ],
-        "outputs": {}
+        "outputs": {},
+        "asserts": {}
+      },
+      "Send0": {
+        "results": [
+          {
+            "messages_sent": 1,
+            "messages_received": null,
+            "errors": [],
+            "runtime": 44.456
+          }
+        ],
+        "outputs": {},
+        "asserts": {}
       }
     },
     "asserts": {
@@ -94,19 +101,19 @@
           "description": "passed"
         }
       ],
-      "FindMessage1": [
-        {
-          "passed": true,
-          "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
-          "expected": "{'key': 'file_b'}",
-          "description": "passed"
-        }
-      ],
       "FindMessage2": [
         {
           "passed": true,
           "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
           "expected": "{'key': 'file_c'}",
+          "description": "passed"
+        }
+      ],
+      "FindMessage1": [
+        {
+          "passed": true,
+          "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
+          "expected": "{'key': 'file_b'}",
           "description": "passed"
         }
       ]
@@ -121,14 +128,6 @@
   },
   "check-file-transform": {
     "asserts": {
-      "FilesEqual2": [
-        {
-          "passed": true,
-          "actual": "s3://file-transform-service/file_c.json",
-          "expected": "/test_data/file_c.json",
-          "description": "passed"
-        }
-      ],
       "FilesEqual0": [
         {
           "passed": true,
@@ -142,6 +141,14 @@
           "passed": true,
           "actual": "s3://file-transform-service/file_b.json",
           "expected": "/test_data/file_b.json",
+          "description": "passed"
+        }
+      ],
+      "FilesEqual2": [
+        {
+          "passed": true,
+          "actual": "s3://file-transform-service/file_c.json",
+          "expected": "/test_data/file_c.json",
           "description": "passed"
         }
       ]

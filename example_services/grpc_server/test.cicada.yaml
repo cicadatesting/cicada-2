@@ -28,34 +28,33 @@ tests:
           requestType: HelloRequest
           message:
             name: jeff
-    asserts:
-      - type: ResponseAssert
+      - type: Unary
         params:
-          actionType: Unary
-          expected:
-            message: "Hello, jeff!"
-          actionParams:
+          proto: app
+          service: Greeter
+          serviceAddress: service:50051
+          method: SayHello
+          requestType: HelloRequest
+          metadata:
+            - key: foo
+              value: bar
+          message:
+            name: jeff
+        asserts:
+          - expected:
+              response:
+                message: "Hello, jeff!"
+      - type: Unary
+        template: >
+          params:
             proto: app
             service: Greeter
             serviceAddress: service:50051
-            method: SayHello
-            requestType: HelloRequest
-            metadata:
-              - key: foo
-                value: bar
+            method: SayHelloBytes
+            requestType: HelloRequestBytes
             message:
-              name: jeff
-      - type: ResponseAssert
-        template: >
-          params:
-            actionType: Unary
-            expected:
-              message: "Hello, jeff!"
-            actionParams:
-              proto: app
-              service: Greeter
-              serviceAddress: service:50051
-              method: SayHelloBytes
-              requestType: HelloRequestBytes
-              message:
-                name: {{ base64.b64encode("jeff".encode("utf-8")).decode("utf-8") }}
+              name: {{ base64.b64encode("jeff".encode("utf-8")).decode("utf-8") }}
+        asserts:
+          - expected:
+              response:
+                message: "Hello, jeff!"

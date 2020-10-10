@@ -9,9 +9,10 @@ from dask import bag
 from dask.distributed import Future, get_client, Variable, wait
 
 from cicada2.engine.actions import run_actions, combine_action_data
-from cicada2.engine.asserts import get_remaining_asserts, run_asserts
+from cicada2.engine.asserts import run_asserts
 from cicada2.shared.logs import get_logger
 from cicada2.engine.state import combine_data_by_key, create_item_name
+from cicada2.shared.asserts import get_remaining_asserts
 from cicada2.shared.types import (
     Action,
     ActionsData,
@@ -23,6 +24,14 @@ from cicada2.shared.types import (
 
 
 LOGGER = get_logger("testing")
+
+
+def action_has_asserts(action: Action):
+    return action.get("asserts", []) != []
+
+
+def actions_have_asserts(actions: List[Action]):
+    return any(action_has_asserts(action) for action in actions)
 
 
 def get_default_cycles(actions: List[Action], asserts: List[Assert]) -> int:
@@ -40,7 +49,7 @@ def get_default_cycles(actions: List[Action], asserts: List[Assert]) -> int:
     Returns:
         Default number of cycles the test should have
     """
-    if asserts:
+    if asserts or actions_have_asserts(actions):
         return -1
     elif actions:
         return 1
@@ -49,16 +58,20 @@ def get_default_cycles(actions: List[Action], asserts: List[Assert]) -> int:
 
 
 def continue_running(
-    asserts: List[Assert], remaining_cycles: int, assert_statuses: Statuses
+    actions: List[Action],
+    asserts: List[Assert],
+    remaining_cycles: int,
+    actions_data: ActionsData,
+    assert_statuses: Statuses,
 ) -> bool:
     """
     Determines if the test should continue running
 
-    * Stop if no asserts and remaining cycles == 0
-    * Stop if has asserts and remaining cycles == 0
-    * Stop if has asserts, unlimited cycles, no remaining asserts
+    * Stop if no asserts, no action asserts, and remaining cycles == 0
+    * Stop if has asserts or action asserts and remaining cycles == 0
+    * Stop if has asserts or action asserts, unlimited cycles, no remaining asserts or action asserts
 
-    * Keep going if has no remaining asserts and remaining cycles > 0
+    * Keep going if has no remaining asserts or action asserts and remaining cycles > 0
 
     Args:
         asserts: List of asserts test has
@@ -68,10 +81,22 @@ def continue_running(
     Returns:
         Whether to continue running or not
     """
-    return (asserts == [] and remaining_cycles != 0) or (
-        asserts != []
+    return (
+        asserts == [] and not actions_have_asserts(actions) and remaining_cycles != 0
+    ) or (
+        (asserts != [] or actions_have_asserts(actions))
         and remaining_cycles != 0
-        and get_remaining_asserts(asserts, assert_statuses) != []
+        and (
+            get_remaining_asserts(asserts, assert_statuses) != []
+            or any(
+                get_remaining_asserts(
+                    action.get("asserts", []),
+                    actions_data.get(action["name"], {}).get("asserts", {}),
+                )
+                != []
+                for action in actions
+            )
+        )
     )
 
 
@@ -239,6 +264,65 @@ def run_asserts_series(
     return asserts_task.compute()
 
 
+def verify_action_names(actions: List[Action], test_config: TestConfig):
+    action_names = []
+
+    for action in actions:
+        assert (
+            "type" in action
+        ), f"Action in test '{test_config['name']}' is missing property 'type'"
+
+        action_name = action.get("name")
+
+        if action_name is None:
+            action_name = create_item_name(action["type"], action_names)
+
+        # NOTE: sets action name if not set
+        action["name"] = action_name
+        action_names.append(action_name)
+
+        action_assert_names = []
+
+        for i, asrt in enumerate(action.get("asserts", [])):
+            assert_name = asrt.get("name")
+
+            if assert_name is None:
+                assert_name = f"Assert{i}"
+
+            asrt["name"] = assert_name
+            action_assert_names.append(assert_name)
+
+        assert len(set(action_assert_names)) == len(
+            action_assert_names
+        ), f"Assert names for action {action_name} if specified must be unique"
+
+    assert len(set(action_names)) == len(
+        action_names
+    ), "Action names if specified must be unique"
+
+
+def verify_assert_names(asserts: List[Assert], test_config: TestConfig):
+    assert_names = []
+
+    for asrt in asserts:
+        assert (
+            "type" in asrt
+        ), f"Assert in test '{test_config['name']}' is missing property 'type'"
+
+        assert_name = asrt.get("name")
+
+        if assert_name is None:
+            assert_name = create_item_name(asrt["type"], assert_names)
+
+        # NOTE: sets assert name if not set
+        asrt["name"] = assert_name
+        assert_names.append(assert_name)
+
+    assert len(set(assert_names)) == len(
+        assert_names
+    ), "Assert names if specified must be unique"
+
+
 def run_test(
     test_config: TestConfig,
     incoming_state: dict,
@@ -269,51 +353,17 @@ def run_test(
     state = defaultdict(dict, incoming_state)
 
     # Validate test before running
-    action_names = []
-    assert_names = []
-
-    for action in actions:
-        assert (
-            "type" in action
-        ), f"Action in test '{test_config['name']}' is missing property 'type'"
-
-        action_name = action.get("name")
-
-        if action_name is None:
-            action_name = create_item_name(action["type"], action_names)
-
-        # NOTE: sets action name if not set
-        action["name"] = action_name
-        action_names.append(action_name)
-
-    for asrt in asserts:
-        assert (
-            "type" in asrt
-        ), f"Assert in test '{test_config['name']}' is missing property 'type'"
-
-        assert_name = asrt.get("name")
-
-        if assert_name is None:
-            assert_name = create_item_name(asrt["type"], assert_names)
-
-        # NOTE: sets assert name if not set
-        asrt["name"] = assert_name
-        assert_names.append(assert_name)
-
     assert hostnames, "Must have at least one host to run tests"
-    assert len(set(action_names)) == len(
-        action_names
-    ), "Action names if specified must be unique"
-    assert len(set(assert_names)) == len(
-        assert_names
-    ), "Assert names if specified must be unique"
-
+    verify_action_names(actions, test_config)
+    verify_assert_names(asserts, test_config)
     start_time = datetime.now()
 
     # stop if remaining_cycles == 0 or had asserts and no asserts remain
     while continue_running(
+        actions,
         asserts,
         remaining_cycles,
+        state[test_config["name"]].get("actions", {}),
         state[test_config["name"]].get("asserts", {}),
     ):
         # Check if running with a timeout and break if timeout has signaled
@@ -376,8 +426,10 @@ def run_test(
 
         # Wait between cycles if test is to continue running
         if continue_running(
+            actions,
             asserts,
             remaining_cycles,
+            state[test_config["name"]].get("actions", {}),
             state[test_config["name"]].get("asserts", {}),
         ):
             time.sleep(test_config.get("secondsBetweenCycles", 1))

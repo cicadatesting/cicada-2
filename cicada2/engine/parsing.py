@@ -62,9 +62,6 @@ def render_section(section: Any, state: dict, **kwargs: dict) -> Any:
     if isinstance(section, dict) and rendered_section_template is None:
         rendered_section_template = {}
 
-    print("section:", section)
-    print("rendered_section_template:", rendered_section_template)
-
     if isinstance(section, dict) and isinstance(rendered_section_template, dict):
         return {**section, **rendered_section_template}
     else:

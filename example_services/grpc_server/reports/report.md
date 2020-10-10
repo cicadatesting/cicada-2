@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-89fc041a
+* Run ID: cicada-2-run-df169934
 * Successful Tests: 1
 * Failed Tests: 0
 
@@ -36,6 +36,41 @@
                   ]
                 }
                 ```
+        * Unary2
+            - Number of Calls: 1
+            - Failed Calls: 0
+            - Result
+                ```json
+                {
+                  "error": null,
+                  "metadata": {},
+                  "response": {
+                    "message": "Hello, jeff!"
+                  }
+                }
+                ```
+            - Asserts
+                * Assert0
+                    - Number of Calls: 1
+                    - Failed Calls: 0
+                        ```json
+                        {
+                          "actual": {
+                            "error": null,
+                            "metadata": {},
+                            "response": {
+                              "message": "Hello, jeff!"
+                            }
+                          },
+                          "description": "passed",
+                          "expected": {
+                            "response": {
+                              "message": "Hello, jeff!"
+                            }
+                          },
+                          "passed": true
+                        }
+                        ```
         * Unary0
             - Number of Calls: 1
             - Failed Calls: 0
@@ -50,27 +85,39 @@
                   "response": null
                 }
                 ```
-    - Asserts:
-        * ResponseAssert1
+        * Unary1
             - Number of Calls: 1
             - Failed Calls: 0
+            - Result
                 ```json
                 {
-                  "actual": "{\"message\": \"Hello, jeff!\"}",
-                  "description": "\"passed\"",
-                  "expected": "{\"message\": \"Hello, jeff!\"}",
-                  "passed": true
+                  "error": null,
+                  "metadata": {},
+                  "response": {
+                    "message": "Hello, jeff!"
+                  }
                 }
                 ```
-        * ResponseAssert0
-            - Number of Calls: 1
-            - Failed Calls: 0
-                ```json
-                {
-                  "actual": "{\"message\": \"Hello, jeff!\"}",
-                  "description": "\"passed\"",
-                  "expected": "{\"message\": \"Hello, jeff!\"}",
-                  "passed": true
-                }
-                ```
+            - Asserts
+                * Assert0
+                    - Number of Calls: 1
+                    - Failed Calls: 0
+                        ```json
+                        {
+                          "actual": {
+                            "error": null,
+                            "metadata": {},
+                            "response": {
+                              "message": "Hello, jeff!"
+                            }
+                          },
+                          "description": "passed",
+                          "expected": {
+                            "response": {
+                              "message": "Hello, jeff!"
+                            }
+                          },
+                          "passed": true
+                        }
+                        ```
 ---

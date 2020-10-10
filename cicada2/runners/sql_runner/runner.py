@@ -77,9 +77,6 @@ def get_engine() -> engine:
 
 
 def run_action(action_type: str, params: ActionParams) -> ActionResult:
-    print(action_type)
-    print(params)
-
     # TODO: param validation
     # TODO: Error catching
     if action_type == "SQLQuery":
@@ -89,8 +86,6 @@ def run_action(action_type: str, params: ActionParams) -> ActionResult:
     else:
         raise ValueError(f"Action type {action_type} is invalid")
 
-    print(f"{params['query']} returns rows: {result.returns_rows}")
-
     if result.returns_rows:
         # item[0] is column name
         # item[1] is column value
@@ -98,8 +93,6 @@ def run_action(action_type: str, params: ActionParams) -> ActionResult:
         rows = [{item[0]: item[1] for item in row.items()} for row in result]
     else:
         rows = []
-
-    print(rows)
 
     return {"rows": rows}
 
@@ -167,8 +160,6 @@ def run_assert(assert_type: str, params: AssertParams) -> AssertResult:
 
     action_response = run_action(params["method"], params["actionParams"])
     expected = params["expected"]
-
-    print(action_response)
 
     if assert_type == "ContainsRows":
         # NOTE: possibly validate that expected/action response has rows

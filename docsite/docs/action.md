@@ -14,6 +14,7 @@ actions:
     storeVersions: <a href="#store-versions">bool</a>
     params: <a href="#params">Map</a>
     outputs: List[<a href="#outputs">Output</a>]
+    asserts: List[<a href="#asserts">Assert</a>]
 </code></pre>
 
 
@@ -56,12 +57,36 @@ Parameters to provide to action (See runner's supported action params)
 
 ### Outputs
 
-<pre><code>
+Outputs are used to store extra information from an action call (like an index
+value or the length of a list returned in action).
+
+The `value` is stored under the `output` section of the action in the state
+container. `value` is stored as a list if `storeVersions` is set to `true` (
+Defaults to `false`)
+
+```yaml
 outputs:
-  - name: string
+  - name: string (REQUIRED)
     template: string
     storeVersions: bool
-    value: Any
-</code></pre>
+    value: Any (REQUIRED)
+```
 
-<!-- This is a link to an [external page.](http://www.example.com) -->
+### Asserts
+
+Asserts that run based on the results of the action. JSON returned by runner
+is compared against element in `expected` section.
+
+Result of action is available to `template` section under the key `result`.
+Example:
+
+```yaml
+action:
+  ...
+  asserts:
+    - expected: 5
+      template: >
+        actual: {{ result['items']|length }}
+```
+
+See [Asserts](assert.md) for more information.

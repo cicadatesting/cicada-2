@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-09f02fdf
+* Run ID: cicada-2-run-57cfb265
 * Successful Tests: 4
 * Failed Tests: 0
 
@@ -18,16 +18,16 @@
     - Remaining Asserts: 
     - Error: None
     - Actions:
-        * put1
+        * cb0
             - Number of Calls: 1
             - Failed Calls: 0
             - Result
                 ```json
                 {
-                  "runtime": 3
+                  "runtime": 7
                 }
                 ```
-        * cb0
+        * put1
             - Number of Calls: 1
             - Failed Calls: 0
             - Result
@@ -42,7 +42,7 @@
             - Result
                 ```json
                 {
-                  "runtime": 3
+                  "runtime": 4
                 }
                 ```
         * put0
@@ -51,7 +51,7 @@
             - Result
                 ```json
                 {
-                  "runtime": 7
+                  "runtime": 6
                 }
                 ```
 ---
@@ -63,18 +63,6 @@
     - Remaining Asserts: 
     - Error: None
     - Actions:
-        * Send0
-            - Number of Calls: 1
-            - Failed Calls: 0
-            - Result
-                ```json
-                {
-                  "errors": [],
-                  "messages_received": null,
-                  "messages_sent": 1,
-                  "runtime": 47
-                }
-                ```
         * Send1
             - Number of Calls: 1
             - Failed Calls: 0
@@ -84,7 +72,7 @@
                   "errors": [],
                   "messages_received": null,
                   "messages_sent": 1,
-                  "runtime": 4
+                  "runtime": 5.844
                 }
                 ```
         * Send2
@@ -96,7 +84,19 @@
                   "errors": [],
                   "messages_received": null,
                   "messages_sent": 1,
-                  "runtime": 4
+                  "runtime": 6.115
+                }
+                ```
+        * Send0
+            - Number of Calls: 1
+            - Failed Calls: 0
+            - Result
+                ```json
+                {
+                  "errors": [],
+                  "messages_received": null,
+                  "messages_sent": 1,
+                  "runtime": 44.456
                 }
                 ```
     - Asserts:
@@ -111,17 +111,6 @@
                   "passed": true
                 }
                 ```
-        * FindMessage1
-            - Number of Calls: 1
-            - Failed Calls: 0
-                ```json
-                {
-                  "actual": "{\u0027topic\u0027: \u0027outbound-files\u0027, \u0027key\u0027: \u0027file_a\u0027, \u0027value\u0027: None}",
-                  "description": "passed",
-                  "expected": "{\u0027key\u0027: \u0027file_b\u0027}",
-                  "passed": true
-                }
-                ```
         * FindMessage2
             - Number of Calls: 1
             - Failed Calls: 0
@@ -130,6 +119,17 @@
                   "actual": "{\u0027topic\u0027: \u0027outbound-files\u0027, \u0027key\u0027: \u0027file_a\u0027, \u0027value\u0027: None}",
                   "description": "passed",
                   "expected": "{\u0027key\u0027: \u0027file_c\u0027}",
+                  "passed": true
+                }
+                ```
+        * FindMessage1
+            - Number of Calls: 1
+            - Failed Calls: 0
+                ```json
+                {
+                  "actual": "{\u0027topic\u0027: \u0027outbound-files\u0027, \u0027key\u0027: \u0027file_a\u0027, \u0027value\u0027: None}",
+                  "description": "passed",
+                  "expected": "{\u0027key\u0027: \u0027file_b\u0027}",
                   "passed": true
                 }
                 ```
@@ -142,17 +142,6 @@
     - Remaining Asserts: 
     - Error: None
     - Asserts:
-        * FilesEqual2
-            - Number of Calls: 1
-            - Failed Calls: 0
-                ```json
-                {
-                  "actual": "s3://file-transform-service/file_c.json",
-                  "description": "passed",
-                  "expected": "/test_data/file_c.json",
-                  "passed": true
-                }
-                ```
         * FilesEqual0
             - Number of Calls: 1
             - Failed Calls: 0
@@ -175,6 +164,17 @@
                   "passed": true
                 }
                 ```
+        * FilesEqual2
+            - Number of Calls: 1
+            - Failed Calls: 0
+                ```json
+                {
+                  "actual": "s3://file-transform-service/file_c.json",
+                  "description": "passed",
+                  "expected": "/test_data/file_c.json",
+                  "passed": true
+                }
+                ```
 ---
 
 * #### teardown
@@ -190,7 +190,7 @@
             - Result
                 ```json
                 {
-                  "runtime": 24
+                  "runtime": 25
                 }
                 ```
 ---
