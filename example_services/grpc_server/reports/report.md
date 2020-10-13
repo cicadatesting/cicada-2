@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-df169934
+* Run ID: cicada-2-run-16b66d76
 * Successful Tests: 1
 * Failed Tests: 0
 
@@ -10,30 +10,24 @@
 1. [greeter-requests](#greeter-requests)
 * #### greeter-requests
     - Description: Send requests to greeter service
+    - Filename: /tests/test.cicada.yaml
     - Duration: 0 seconds
     - Completed Cycles: 1
     - Remaining Asserts: 
     - Error: None
     - Actions:
-        * BidirectionalStreaming0
+        * Unary0
             - Number of Calls: 1
             - Failed Calls: 0
             - Result
                 ```json
                 {
-                  "error": null,
-                  "metadata": {
-                    "checksum-bin": "SSBhZ3JlZQ==",
-                    "retry": "false"
+                  "error": {
+                    "code": "StatusCode.UNIMPLEMENTED",
+                    "details": "Method not implemented!"
                   },
-                  "response": [
-                    {
-                      "message": "Hello, alice!"
-                    },
-                    {
-                      "message": "Hello, bob!"
-                    }
-                  ]
+                  "metadata": null,
+                  "response": null
                 }
                 ```
         * Unary2
@@ -71,18 +65,25 @@
                           "passed": true
                         }
                         ```
-        * Unary0
+        * BidirectionalStreaming0
             - Number of Calls: 1
             - Failed Calls: 0
             - Result
                 ```json
                 {
-                  "error": {
-                    "code": "StatusCode.UNIMPLEMENTED",
-                    "details": "Method not implemented!"
+                  "error": null,
+                  "metadata": {
+                    "checksum-bin": "SSBhZ3JlZQ==",
+                    "retry": "false"
                   },
-                  "metadata": null,
-                  "response": null
+                  "response": [
+                    {
+                      "message": "Hello, alice!"
+                    },
+                    {
+                      "message": "Hello, bob!"
+                    }
+                  ]
                 }
                 ```
         * Unary1

@@ -444,6 +444,7 @@ def run_test(
         remaining_asserts=[asrt["name"] for asrt in remaining_asserts],
         error=None,
         duration=(datetime.now() - start_time).seconds,
+        filename=test_config.get("filename"),
     )
 
     return state

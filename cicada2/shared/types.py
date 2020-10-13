@@ -69,6 +69,7 @@ class Volume(TypedDict):
 
 class TestConfig(TypedDict):
     name: str
+    filename: str
     timeout: Optional[float]  # NOTE: possibly take in ms instead of fraction of seconds
     template: Optional[str]
     cycles: int
@@ -95,6 +96,7 @@ class TestSummary(TypedDict):
     remaining_asserts: List[str]
     error: Optional[str]
     duration: int
+    filename: str
 
 
 class FileTestsConfig(TypedDict):

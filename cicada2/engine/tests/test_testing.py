@@ -609,6 +609,7 @@ def test_run_tests_unlimited_cycles(run_asserts_series_mock: Mock):
         "name": "some_test_name",
         "secondsBetweenCycles": 0,
         "asserts": [{"name": "A", "type": "SQLAssert", "params": {}}],
+        "filename": "test.foo.yaml",
     }
 
     end_state = testing.run_test(
@@ -631,6 +632,7 @@ def test_run_tests_unlimited_cycles(run_asserts_series_mock: Mock):
                 "error": None,
                 "duration": 0,
                 "remaining_asserts": [],
+                "filename": "test.foo.yaml",
             },
         }
     }
@@ -660,6 +662,7 @@ def test_run_tests_limited_cycles(run_asserts_series_mock: Mock):
         "cycles": 2,
         "secondsBetweenCycles": 0,
         "asserts": [{"name": "A", "type": "SQLAssert", "params": {}}],
+        "filename": "test.foo.yaml",
     }
 
     end_state = testing.run_test(
@@ -681,6 +684,7 @@ def test_run_tests_limited_cycles(run_asserts_series_mock: Mock):
                 "error": None,
                 "duration": 0,
                 "remaining_asserts": ["A"],
+                "filename": "test.foo.yaml",
             },
         }
     }

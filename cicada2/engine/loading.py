@@ -11,7 +11,7 @@ from cicada2.engine.runners import (
     stop_docker_container,
     stop_kube_pod,
     get_docker_hostname,
-    get_pod_hostname
+    get_pod_hostname,
 )
 from cicada2.shared.types import TestConfig, FileTestsConfig, RunnerClosure, TestRunners
 
@@ -36,15 +36,11 @@ def create_test_task(
             stop_docker_container,
             get_docker_hostname,
             test_config,
-            run_id
+            run_id,
         )
     elif task_type == "kube":
         return run_test(
-            create_kube_pod,
-            stop_kube_pod,
-            get_pod_hostname,
-            test_config,
-            run_id
+            create_kube_pod, stop_kube_pod, get_pod_hostname, test_config, run_id
         )
     else:
         raise ValidationError(f"Task type '{task_type}' not found")
@@ -92,7 +88,6 @@ def load_test_config(test_filename: str, task_type: str, run_id: str) -> TestRun
         Test configs, runners and dependencies for test file
     """
     with open(test_filename, "r") as test_file:
-        # TODO: add test filename to report
         main_tests_config: FileTestsConfig = yaml.load(
             test_file, Loader=yaml.FullLoader
         )
@@ -108,6 +103,8 @@ def load_test_config(test_filename: str, task_type: str, run_id: str) -> TestRun
             assert re.match(
                 "^[a-zA-Z0-9_-]+$", test_config["name"]
             ), f"Test name '{test_config['name']}' does not match '^[a-zA-Z0-9_-]+$'"
+
+            test_config["filename"] = test_filename
 
             test_configs[test_config["name"]] = test_config
 

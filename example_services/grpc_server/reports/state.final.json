@@ -2,22 +2,15 @@
   "globals": {},
   "greeter-requests": {
     "actions": {
-      "BidirectionalStreaming0": {
+      "Unary0": {
         "results": [
           {
-            "response": [
-              {
-                "message": "Hello, alice!"
-              },
-              {
-                "message": "Hello, bob!"
-              }
-            ],
-            "metadata": {
-              "checksum-bin": "SSBhZ3JlZQ==",
-              "retry": "false"
-            },
-            "error": null
+            "response": null,
+            "metadata": null,
+            "error": {
+              "details": "Method not implemented!",
+              "code": "StatusCode.UNIMPLEMENTED"
+            }
           }
         ],
         "outputs": {},
@@ -55,15 +48,22 @@
           ]
         }
       },
-      "Unary0": {
+      "BidirectionalStreaming0": {
         "results": [
           {
-            "response": null,
-            "metadata": null,
-            "error": {
-              "details": "Method not implemented!",
-              "code": "StatusCode.UNIMPLEMENTED"
-            }
+            "response": [
+              {
+                "message": "Hello, alice!"
+              },
+              {
+                "message": "Hello, bob!"
+              }
+            ],
+            "metadata": {
+              "checksum-bin": "SSBhZ3JlZQ==",
+              "retry": "false"
+            },
+            "error": null
           }
         ],
         "outputs": {},
@@ -107,7 +107,8 @@
       "completed_cycles": 1,
       "remaining_asserts": [],
       "error": null,
-      "duration": 0
+      "duration": 0,
+      "filename": "/tests/test.cicada.yaml"
     }
   }
 }

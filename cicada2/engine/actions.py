@@ -132,7 +132,6 @@ def run_assert_from_action_result(asrt: Assert, action_result: ActionResult):
             "expected" in asrt
         ), f"Assert {asrt.get('name')} is missing property 'expected'"
 
-        # TODO: implement/test negative asserts
         actual = asrt.get("actual", action_result)
         expected = asrt.get("expected")
 
