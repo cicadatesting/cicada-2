@@ -77,8 +77,6 @@ def run_actions(
                 else:
                     assert_results[assert_name] = assert_result
 
-            # TODO: update remaining assert filter and continue running in testing
-
             time.sleep(rendered_action.get("secondsBetweenExecutions", 0))
 
         store_action_versions = rendered_action.get("storeVersions", True)
@@ -141,6 +139,14 @@ def run_assert_from_action_result(asrt: Assert, action_result: ActionResult):
         passed, description = assert_element(
             expected, actual, **asrt.get("assertOptions", {})
         )
+
+        if asrt.get("negate", False):
+            passed = not passed
+
+            if passed:
+                description = f"passed; negated: {description}"
+            else:
+                description = f"expected not {expected}"
 
         assert_result = AssertResult(
             passed=passed,

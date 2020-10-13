@@ -195,6 +195,24 @@ def test_run_actions_non_versioned(send_action_mock):
     assert actions_data["X"]["results"] == [{"foo": "bar"}]
 
 
+def test_run_assert_from_action_result_negated():
+    asrt = {"name": "foo", "expected": {"fizz", "buzz"}, "negate": True}
+    action_result = {"foo", "bar"}
+
+    assert_result = actions.run_assert_from_action_result(asrt, action_result)
+
+    assert assert_result["passed"]
+
+
+def test_run_assert_from_action_result_negated_passed():
+    asrt = {"name": "foo", "expected": {"fizz", "buzz"}, "negate": True}
+    action_result = {"fizz", "buzz"}
+
+    assert_result = actions.run_assert_from_action_result(asrt, action_result)
+
+    assert not assert_result["passed"]
+
+
 def test_combine_action_data():
     current_actions_data = {
         "POST0": {
