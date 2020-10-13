@@ -26,6 +26,7 @@
 * #### {{ test_name }}
     {%- set summary = state[test_name].get('summary') %}
     - Description: {{ summary['description'] }}
+    - Filename: {{ summary['filename'] }}
     - Duration: {{ summary['duration'] }} seconds
     - Completed Cycles: {{ summary['completed_cycles'] }}
     - Remaining Asserts: {{ summary['remaining_asserts']|join(', ') }}

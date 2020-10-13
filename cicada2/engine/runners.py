@@ -346,7 +346,7 @@ def run_test(
 
     def closure(state):
         try:
-            rendered_test_config = render_section(test_config, state)
+            rendered_test_config: TestConfig = render_section(test_config, state)
 
             image = runner_to_image(
                 rendered_test_config.get("runner")
@@ -390,6 +390,7 @@ def run_test(
                             completed_cycles=0,
                             remaining_asserts=[],
                             duration=0,
+                            filename=rendered_test_config.get("filename"),
                         )
                     }
                 }
@@ -409,6 +410,7 @@ def run_test(
                         completed_cycles=0,
                         remaining_asserts=[],
                         duration=0,
+                        filename=test_config.get("filename"),
                     )
                 }
             }
