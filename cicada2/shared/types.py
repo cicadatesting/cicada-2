@@ -17,6 +17,7 @@ class Assert(TypedDict):
     description: Optional[str]
     storeVersions: Optional[bool]
     assertOptions: Optional[dict]
+    negate: Optional[bool]
 
 
 class AssertResult(TypedDict):

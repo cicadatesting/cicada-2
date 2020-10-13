@@ -47,7 +47,21 @@ def run_asserts(
             ), f"Assert {assert_name} is missing property 'params'"
 
             for _ in range(executions_per_cycle):
-                assert_results.append(send_assert(hostname, rendered_assert))
+                assert_result = send_assert(hostname, rendered_assert)
+
+                if rendered_assert.get("negate", False):
+                    assert_result["passed"] = not assert_result.get("passed")
+
+                    if assert_result["passed"]:
+                        assert_result[
+                            "description"
+                        ] = f"passed; negated: {assert_result.get('description')}"
+                    else:
+                        assert_result[
+                            "description"
+                        ] = f"expected not {assert_result.get('expected')}"
+
+                assert_results.append(assert_result)
 
         save_assert_versions = rendered_assert.get("storeVersions", True)
 

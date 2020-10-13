@@ -32,6 +32,26 @@ def test_run_asserts(mock_send_assert):
     ]
 
 
+@patch("cicada2.engine.asserts.send_assert")
+def test_run_asserts_negate(mock_send_assert):
+    mock_send_assert.return_value = AssertResult(
+        passed=False, actual="foo", expected="foo", description="bad"
+    )
+
+    test_asserts = [{"name": "A", "type": "SQLAssert", "params": {}, "negate": True}]
+
+    statuses = asserts.run_asserts(test_asserts, {}, "", 0)
+
+    assert statuses["A"] == [
+        AssertResult(
+            passed=True,
+            actual="foo",
+            expected="foo",
+            description="passed; negated: bad",
+        ),
+    ]
+
+
 # TODO: test remote assert errors
 
 

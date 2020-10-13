@@ -17,6 +17,7 @@ asserts:
     actual: <a href="#actual">string</a>
     expected: <a href="#expected">string</a>
     description: <a href="#description">string</a>
+    negate: <a href="#negate">bool</a>
     assertOptions: <a href="#assert-options">string</a>
 </code></pre>
 
@@ -87,6 +88,13 @@ Sets assert result's `passed` value to the one provided is using a <a href="#nul
 ### Description
 
 Sets assert result's `description` value to the one provided is using a <a href="#nullassert">`NullAssert`</a>
+
+### Negate
+
+If `true`, inverts original value for `passed`. This allows the assert to pass
+if the test fails or vise-versa
+
+Defaults to `false`
 
 ## Assert Options
 
