@@ -1,6 +1,6 @@
 import time
-from collections import defaultdict
-from typing import List, Set
+from collections import defaultdict, OrderedDict
+from typing import List
 
 from cicada2.engine.messaging import send_action
 from cicada2.engine.parsing import render_section
@@ -40,12 +40,15 @@ def run_actions(
     def infinite_defaultdict():
         return defaultdict(infinite_defaultdict)
 
-    data: ActionsData = infinite_defaultdict()
+    # data: ActionsData = infinite_defaultdict()
+    data: ActionsData = OrderedDict(
+        (action["name"], infinite_defaultdict()) for action in actions
+    )
 
     for i, action in enumerate(actions):
         rendered_action: Action = render_section(action, state)
 
-        action_name = rendered_action.get("name")
+        action_name = rendered_action["name"]
 
         assert (
             "params" in rendered_action
@@ -53,7 +56,10 @@ def run_actions(
 
         executions_per_cycle: int = rendered_action.get("executionsPerCycle", 1)
         action_results: List[ActionResult] = []
-        assert_results: Statuses = defaultdict(list)
+        # assert_results: Statuses = defaultdict(list)
+        assert_results: Statuses = OrderedDict(
+            (asrt["name"], []) for asrt in rendered_action.get("asserts", [])
+        )
 
         for _ in range(executions_per_cycle):
             execution_output: ActionResult = send_action(hostname, rendered_action)
@@ -170,7 +176,7 @@ def combine_action_data(
     Returns:
         Existing data combined with one runner's run_action result (does not overwrite combined_data)
     """
-    combined_keys: Set[str] = combine_keys(combined_data, action_data)
+    combined_keys: List[str] = combine_keys(combined_data, action_data)
 
     return {
         key: {

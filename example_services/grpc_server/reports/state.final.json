@@ -2,6 +2,27 @@
   "globals": {},
   "greeter-requests": {
     "actions": {
+      "BidirectionalStreaming0": {
+        "results": [
+          {
+            "response": [
+              {
+                "message": "Hello, alice!"
+              },
+              {
+                "message": "Hello, bob!"
+              }
+            ],
+            "metadata": {
+              "checksum-bin": "SSBhZ3JlZQ==",
+              "retry": "false"
+            },
+            "error": null
+          }
+        ],
+        "outputs": {},
+        "asserts": {}
+      },
       "Unary0": {
         "results": [
           {
@@ -16,7 +37,7 @@
         "outputs": {},
         "asserts": {}
       },
-      "Unary2": {
+      "Unary1": {
         "results": [
           {
             "response": {
@@ -48,28 +69,7 @@
           ]
         }
       },
-      "BidirectionalStreaming0": {
-        "results": [
-          {
-            "response": [
-              {
-                "message": "Hello, alice!"
-              },
-              {
-                "message": "Hello, bob!"
-              }
-            ],
-            "metadata": {
-              "checksum-bin": "SSBhZ3JlZQ==",
-              "retry": "false"
-            },
-            "error": null
-          }
-        ],
-        "outputs": {},
-        "asserts": {}
-      },
-      "Unary1": {
+      "Unary2": {
         "results": [
           {
             "response": {

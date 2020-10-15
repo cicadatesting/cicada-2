@@ -1,4 +1,4 @@
-from typing import Dict, Set, Any, List, Iterable, Union
+from typing import Dict, OrderedDict, Set, Any, List, Iterable, Union
 
 
 def combine_keys(dict_a: dict, dict_b: dict) -> Set[str]:
@@ -14,7 +14,15 @@ def combine_keys(dict_a: dict, dict_b: dict) -> Set[str]:
     Returns:
         Combined keys in both dictionaries
     """
-    return set(dict_a).union(dict_b)
+    keys = OrderedDict()
+
+    for key in dict_a:
+        keys[key] = None
+
+    for key in dict_b:
+        keys[key] = None
+
+    return keys.keys()
 
 
 def combine_data_by_key(
@@ -33,10 +41,10 @@ def combine_data_by_key(
     """
     combined_keys = combine_keys(combined_outputs, output)
 
-    return {
-        key: combine_datas(combined_outputs.get(key, []), output.get(key, []))
+    return OrderedDict(
+        (key, combine_datas(combined_outputs.get(key, []), output.get(key, [])))
         for key in combined_keys
-    }
+    )
 
 
 def combine_datas(

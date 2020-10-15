@@ -1,5 +1,5 @@
 import time
-from typing import List
+from typing import List, OrderedDict
 
 from cicada2.engine.messaging import send_assert
 from cicada2.engine.parsing import render_section
@@ -21,7 +21,7 @@ def run_asserts(
     Returns:
         Statuses of all asserts run by host
     """
-    results: Statuses = {}
+    results: Statuses = OrderedDict()
 
     for i, asrt in enumerate(asserts):
         rendered_assert: Assert = render_section(asrt, state)

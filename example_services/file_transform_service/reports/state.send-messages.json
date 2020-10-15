@@ -11,7 +11,16 @@
       "cb0": {
         "results": [
           {
-            "runtime": 7
+            "runtime": 6
+          }
+        ],
+        "outputs": {},
+        "asserts": {}
+      },
+      "put0": {
+        "results": [
+          {
+            "runtime": 9
           }
         ],
         "outputs": {},
@@ -29,16 +38,7 @@
       "put2": {
         "results": [
           {
-            "runtime": 4
-          }
-        ],
-        "outputs": {},
-        "asserts": {}
-      },
-      "put0": {
-        "results": [
-          {
-            "runtime": 6
+            "runtime": 5
           }
         ],
         "outputs": {},
@@ -50,18 +50,31 @@
       "completed_cycles": 1,
       "remaining_asserts": [],
       "error": null,
-      "duration": 0
+      "duration": 0,
+      "filename": "/tests/test.cicada.yaml"
     }
   },
   "send-messages": {
     "actions": {
+      "Send0": {
+        "results": [
+          {
+            "messages_sent": 1,
+            "messages_received": null,
+            "errors": [],
+            "runtime": 61.557
+          }
+        ],
+        "outputs": {},
+        "asserts": {}
+      },
       "Send1": {
         "results": [
           {
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 5.844
+            "runtime": 7.485
           }
         ],
         "outputs": {},
@@ -73,19 +86,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 6.115
-          }
-        ],
-        "outputs": {},
-        "asserts": {}
-      },
-      "Send0": {
-        "results": [
-          {
-            "messages_sent": 1,
-            "messages_received": null,
-            "errors": [],
-            "runtime": 44.456
+            "runtime": 6.159
           }
         ],
         "outputs": {},
@@ -101,19 +102,19 @@
           "description": "passed"
         }
       ],
-      "FindMessage2": [
-        {
-          "passed": true,
-          "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
-          "expected": "{'key': 'file_c'}",
-          "description": "passed"
-        }
-      ],
       "FindMessage1": [
         {
           "passed": true,
           "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
           "expected": "{'key': 'file_b'}",
+          "description": "passed"
+        }
+      ],
+      "FindMessage2": [
+        {
+          "passed": true,
+          "actual": "{'topic': 'outbound-files', 'key': 'file_a', 'value': None}",
+          "expected": "{'key': 'file_c'}",
           "description": "passed"
         }
       ]
@@ -123,7 +124,8 @@
       "completed_cycles": 1,
       "remaining_asserts": [],
       "error": null,
-      "duration": 1
+      "duration": 1,
+      "filename": "/tests/test.cicada.yaml"
     }
   }
 }
