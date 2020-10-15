@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-57cfb265
+* Run ID: cicada-2-run-b3f167dc
 * Successful Tests: 4
 * Failed Tests: 0
 
@@ -13,6 +13,7 @@
 4. [teardown](#teardown)
 * #### seed
     - Description: create test bucket
+    - Filename: /tests/test.cicada.yaml
     - Duration: 0 seconds
     - Completed Cycles: 1
     - Remaining Asserts: 
@@ -24,7 +25,16 @@
             - Result
                 ```json
                 {
-                  "runtime": 7
+                  "runtime": 6
+                }
+                ```
+        * put0
+            - Number of Calls: 1
+            - Failed Calls: 0
+            - Result
+                ```json
+                {
+                  "runtime": 9
                 }
                 ```
         * put1
@@ -42,27 +52,31 @@
             - Result
                 ```json
                 {
-                  "runtime": 4
-                }
-                ```
-        * put0
-            - Number of Calls: 1
-            - Failed Calls: 0
-            - Result
-                ```json
-                {
-                  "runtime": 6
+                  "runtime": 5
                 }
                 ```
 ---
 
 * #### send-messages
     - Description: Send a message to service
+    - Filename: /tests/test.cicada.yaml
     - Duration: 1 seconds
     - Completed Cycles: 1
     - Remaining Asserts: 
     - Error: None
     - Actions:
+        * Send0
+            - Number of Calls: 1
+            - Failed Calls: 0
+            - Result
+                ```json
+                {
+                  "errors": [],
+                  "messages_received": null,
+                  "messages_sent": 1,
+                  "runtime": 61.557
+                }
+                ```
         * Send1
             - Number of Calls: 1
             - Failed Calls: 0
@@ -72,7 +86,7 @@
                   "errors": [],
                   "messages_received": null,
                   "messages_sent": 1,
-                  "runtime": 5.844
+                  "runtime": 7.485
                 }
                 ```
         * Send2
@@ -84,19 +98,7 @@
                   "errors": [],
                   "messages_received": null,
                   "messages_sent": 1,
-                  "runtime": 6.115
-                }
-                ```
-        * Send0
-            - Number of Calls: 1
-            - Failed Calls: 0
-            - Result
-                ```json
-                {
-                  "errors": [],
-                  "messages_received": null,
-                  "messages_sent": 1,
-                  "runtime": 44.456
+                  "runtime": 6.159
                 }
                 ```
     - Asserts:
@@ -111,17 +113,6 @@
                   "passed": true
                 }
                 ```
-        * FindMessage2
-            - Number of Calls: 1
-            - Failed Calls: 0
-                ```json
-                {
-                  "actual": "{\u0027topic\u0027: \u0027outbound-files\u0027, \u0027key\u0027: \u0027file_a\u0027, \u0027value\u0027: None}",
-                  "description": "passed",
-                  "expected": "{\u0027key\u0027: \u0027file_c\u0027}",
-                  "passed": true
-                }
-                ```
         * FindMessage1
             - Number of Calls: 1
             - Failed Calls: 0
@@ -133,10 +124,22 @@
                   "passed": true
                 }
                 ```
+        * FindMessage2
+            - Number of Calls: 1
+            - Failed Calls: 0
+                ```json
+                {
+                  "actual": "{\u0027topic\u0027: \u0027outbound-files\u0027, \u0027key\u0027: \u0027file_a\u0027, \u0027value\u0027: None}",
+                  "description": "passed",
+                  "expected": "{\u0027key\u0027: \u0027file_c\u0027}",
+                  "passed": true
+                }
+                ```
 ---
 
 * #### check-file-transform
     - Description: Check that file has been updated
+    - Filename: /tests/test.cicada.yaml
     - Duration: 0 seconds
     - Completed Cycles: 1
     - Remaining Asserts: 
@@ -179,6 +182,7 @@
 
 * #### teardown
     - Description: Delete temporary S3 bucket
+    - Filename: /tests/test.cicada.yaml
     - Duration: 0 seconds
     - Completed Cycles: 1
     - Remaining Asserts: 
@@ -190,7 +194,7 @@
             - Result
                 ```json
                 {
-                  "runtime": 25
+                  "runtime": 24
                 }
                 ```
 ---

@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-16b66d76
+* Run ID: cicada-2-run-fc70e814
 * Successful Tests: 1
 * Failed Tests: 0
 
@@ -16,6 +16,27 @@
     - Remaining Asserts: 
     - Error: None
     - Actions:
+        * BidirectionalStreaming0
+            - Number of Calls: 1
+            - Failed Calls: 0
+            - Result
+                ```json
+                {
+                  "error": null,
+                  "metadata": {
+                    "checksum-bin": "SSBhZ3JlZQ==",
+                    "retry": "false"
+                  },
+                  "response": [
+                    {
+                      "message": "Hello, alice!"
+                    },
+                    {
+                      "message": "Hello, bob!"
+                    }
+                  ]
+                }
+                ```
         * Unary0
             - Number of Calls: 1
             - Failed Calls: 0
@@ -30,7 +51,7 @@
                   "response": null
                 }
                 ```
-        * Unary2
+        * Unary1
             - Number of Calls: 1
             - Failed Calls: 0
             - Result
@@ -65,28 +86,7 @@
                           "passed": true
                         }
                         ```
-        * BidirectionalStreaming0
-            - Number of Calls: 1
-            - Failed Calls: 0
-            - Result
-                ```json
-                {
-                  "error": null,
-                  "metadata": {
-                    "checksum-bin": "SSBhZ3JlZQ==",
-                    "retry": "false"
-                  },
-                  "response": [
-                    {
-                      "message": "Hello, alice!"
-                    },
-                    {
-                      "message": "Hello, bob!"
-                    }
-                  ]
-                }
-                ```
-        * Unary1
+        * Unary2
             - Number of Calls: 1
             - Failed Calls: 0
             - Result
