@@ -1,5 +1,5 @@
 import json
-from typing import Optional, final
+from typing import Optional
 from contextlib import contextmanager
 
 import grpc
@@ -43,7 +43,7 @@ def get_action_sender(runner_address: str) -> Optional[ActionResult]:
         try:
             yield call
         finally:
-            return
+            pass
 
 
 @contextmanager
@@ -75,7 +75,7 @@ def get_assert_sender(runner_address: str) -> AssertResult:
         try:
             yield call
         finally:
-            return
+            pass
 
 
 def runner_healthcheck(runner_address: str) -> bool:
