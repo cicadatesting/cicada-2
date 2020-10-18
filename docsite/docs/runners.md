@@ -25,23 +25,40 @@ and returns an `ActionReply`
 ```proto
 message ActionRequest {
     string type = 1;
-    bytes params = 2; // utf-8 encoded json byte string
+    string params = 2; // JSON string
 }
 
 message ActionReply {
-    bytes outputs = 1; // utf-8 encoded json byte string
+    string outputs = 1; // JSON string
 }
 ```
 
 An `ActionRequest` contains the [action type](action.md#type) and
 [params](action.md#params) being supplied to the runner.
 
-The parameter `params` in `ActionRequest` is the `utf-8` encoded
-JSON string representation of the action's `params` in bytes.
+The parameter `params` in `ActionRequest` is the JSON of the action's `params`
+converted to a string.
 
-Likewise, the parameter `outputs` must be a `utf-8` encoded string
-representation of a JSON object that the runner is returning to the
-engine, also converted to bytes.
+For example, given this action:
+
+```yaml
+actions:
+  - type: SomeAction
+    params:
+      foo: bar
+```
+
+The message will look like:
+
+```json
+{
+    "type": "SomeAction",
+    "params": "{\"foo\": \"bar\"}"
+}
+```
+
+Likewise, the parameter `outputs` in `ActionReply` JSON string of the object
+that the runner is returning to the engine.
 
 ## Assert
 
@@ -53,7 +70,7 @@ results in a way specific to the runner's medium of communication.
 ```proto
 message AssertRequest {
     string type = 1;
-    bytes params = 2;
+    string params = 2;
 }
 
 message AssertReply {
@@ -66,9 +83,7 @@ message AssertReply {
 
 Like in `ActionRequest`, the `AssertRequest` contains the
 [assert type](assert.md#type) and [params](assert.md#params)
-being supplied to the runner. The params are also a `utf-8`
-string representation of the assert's params in JSON
-converted to bytes.
+being supplied to the runner. The params are also a JSON string.
 
 Each `AssertReply` contains 4 parameters:
 

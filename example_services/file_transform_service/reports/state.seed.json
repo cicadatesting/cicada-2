@@ -20,7 +20,7 @@
       "put0": {
         "results": [
           {
-            "runtime": 9
+            "runtime": 5
           }
         ],
         "outputs": {},
@@ -38,7 +38,7 @@
       "put2": {
         "results": [
           {
-            "runtime": 5
+            "runtime": 4
           }
         ],
         "outputs": {},
