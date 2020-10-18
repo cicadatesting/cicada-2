@@ -4,10 +4,10 @@ from cicada2.engine import asserts
 from cicada2.shared.types import AssertResult
 
 
-@patch("cicada2.engine.asserts.send_assert")
-def test_run_asserts(mock_send_assert):
-    mock_send_assert.return_value = AssertResult(
-        passed=True, actual="foo", expected="foo", description="good"
+@patch("cicada2.engine.asserts.get_assert_sender")
+def test_run_asserts(mock_get_assert_sender):
+    mock_get_assert_sender.return_value.__enter__.return_value.return_value = (
+        AssertResult(passed=True, actual="foo", expected="foo", description="good")
     )
 
     test_asserts = [
@@ -32,10 +32,10 @@ def test_run_asserts(mock_send_assert):
     ]
 
 
-@patch("cicada2.engine.asserts.send_assert")
-def test_run_asserts_negate(mock_send_assert):
-    mock_send_assert.return_value = AssertResult(
-        passed=False, actual="foo", expected="foo", description="bad"
+@patch("cicada2.engine.asserts.get_assert_sender")
+def test_run_asserts_negate(mock_get_assert_sender):
+    mock_get_assert_sender.return_value.__enter__.return_value.return_value = (
+        AssertResult(passed=False, actual="foo", expected="foo", description="bad")
     )
 
     test_asserts = [{"name": "A", "type": "SQLAssert", "params": {}, "negate": True}]
@@ -55,10 +55,10 @@ def test_run_asserts_negate(mock_send_assert):
 # TODO: test remote assert errors
 
 
-@patch("cicada2.engine.asserts.send_assert")
-def test_asserts_non_versioned(mock_send_assert):
-    mock_send_assert.return_value = AssertResult(
-        passed=True, actual="foo", expected="foo", description="good"
+@patch("cicada2.engine.asserts.get_assert_sender")
+def test_asserts_non_versioned(mock_get_assert_sender):
+    mock_get_assert_sender.return_value.__enter__.return_value.return_value = (
+        AssertResult(passed=True, actual="foo", expected="foo", description="good")
     )
 
     test_asserts = [

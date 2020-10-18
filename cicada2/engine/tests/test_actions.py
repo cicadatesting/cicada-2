@@ -3,9 +3,11 @@ from unittest.mock import patch
 from cicada2.engine import actions
 
 
-@patch("cicada2.engine.actions.send_action")
-def test_run_actions(send_action_mock):
-    send_action_mock.return_value = {"foo": "bar"}
+@patch("cicada2.engine.actions.get_action_sender")
+def test_run_actions(get_action_sender_mock):
+    get_action_sender_mock.return_value.__enter__.return_value.return_value = {
+        "foo": "bar"
+    }
 
     test_actions = [
         {
@@ -25,9 +27,12 @@ def test_run_actions(send_action_mock):
     assert actions_data["X"]["results"] == [{"foo": "bar"}]
 
 
-@patch("cicada2.engine.actions.send_action")
-def test_run_actions_with_asserts(send_action_mock):
-    send_action_mock.return_value = {"foo": "bar", "fizz": "buzz"}
+@patch("cicada2.engine.actions.get_action_sender")
+def test_run_actions_with_asserts(get_action_sender_mock):
+    get_action_sender_mock.return_value.__enter__.return_value.return_value = {
+        "foo": "bar",
+        "fizz": "buzz",
+    }
 
     test_actions = [
         {
@@ -44,9 +49,11 @@ def test_run_actions_with_asserts(send_action_mock):
     assert actions_data["POST0"]["asserts"]["Assert0"][0]["passed"]
 
 
-@patch("cicada2.engine.actions.send_action")
-def test_run_actions_with_asserts_actual_override(send_action_mock):
-    send_action_mock.return_value = {"foo": ["fizz", "buzz"]}
+@patch("cicada2.engine.actions.get_action_sender")
+def test_run_actions_with_asserts_actual_override(get_action_sender_mock):
+    get_action_sender_mock.return_value.__enter__.return_value.return_value = {
+        "foo": ["fizz", "buzz"]
+    }
 
     test_actions = [
         {
@@ -70,11 +77,14 @@ def test_run_actions_with_asserts_actual_override(send_action_mock):
     assert actions_data["POST0"]["asserts"]["Assert0"][0]["passed"]
 
 
-@patch("cicada2.engine.actions.send_action")
+@patch("cicada2.engine.actions.get_action_sender")
 def test_run_actions_with_asserts_multiple_calls_versioned(
-    send_action_mock,
+    get_action_sender_mock,
 ):
-    send_action_mock.side_effect = [{"foo": "bar"}, {"fizz": "buzz"}]
+    get_action_sender_mock.return_value.__enter__.return_value.side_effect = [
+        {"foo": "bar"},
+        {"fizz": "buzz"},
+    ]
 
     test_actions = [
         {
@@ -108,11 +118,14 @@ def test_run_actions_with_asserts_multiple_calls_versioned(
     assert actions_data["POST0"]["asserts"]["Assert1"][1]["passed"]
 
 
-@patch("cicada2.engine.actions.send_action")
+@patch("cicada2.engine.actions.get_action_sender")
 def test_run_actions_with_asserts_multiple_calls_versioned_keep_if_passed(
-    send_action_mock,
+    get_action_sender_mock,
 ):
-    send_action_mock.side_effect = [{"foo": "bar"}, {"fizz": "buzz"}]
+    get_action_sender_mock.return_value.__enter__.return_value.side_effect = [
+        {"foo": "bar"},
+        {"fizz": "buzz"},
+    ]
 
     test_actions = [
         {
@@ -150,9 +163,13 @@ def test_run_actions_with_asserts_multiple_calls_versioned_keep_if_passed(
     assert not actions_data["POST0"]["asserts"]["Assert1"][0]["passed"]
 
 
-@patch("cicada2.engine.actions.send_action")
-def test_run_actions_errored_call(send_action_mock):
-    send_action_mock.side_effect = [{"foo": "bar"}, {}, {}]
+@patch("cicada2.engine.actions.get_action_sender")
+def test_run_actions_errored_call(get_action_sender_mock):
+    get_action_sender_mock.return_value.__enter__.return_value.side_effect = [
+        {"foo": "bar"},
+        {},
+        {},
+    ]
 
     test_actions = [
         {
@@ -172,9 +189,11 @@ def test_run_actions_errored_call(send_action_mock):
     assert actions_data["X"]["results"] == [{}]
 
 
-@patch("cicada2.engine.actions.send_action")
-def test_run_actions_non_versioned(send_action_mock):
-    send_action_mock.return_value = {"foo": "bar"}
+@patch("cicada2.engine.actions.get_action_sender")
+def test_run_actions_non_versioned(get_action_sender_mock):
+    get_action_sender_mock.return_value.__enter__.return_value.return_value = {
+        "foo": "bar"
+    }
 
     test_actions = [
         {

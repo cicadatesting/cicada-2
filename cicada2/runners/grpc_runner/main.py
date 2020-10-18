@@ -15,7 +15,7 @@ class GRPCRunnerServer(runner_pb2_grpc.RunnerServicer):
                 action_type=request.type, params=json.loads(request.params)
             )
 
-            return runner_pb2.ActionReply(outputs=json.dumps(outputs).encode("utf-8"))
+            return runner_pb2.ActionReply(outputs=json.dumps(outputs))
         except ValueError as e:
             # NOTE: use abort_with_status?
             context.abort(code=grpc.StatusCode.INVALID_ARGUMENT, details=e)

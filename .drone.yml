@@ -47,7 +47,7 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 0.5.0  # NOTE: possibly derive from branch name/pr name or something when doing releases
+        - 1.0.0  # NOTE: possibly derive from branch name/pr name or something when doing releases
         - latest
         - ${DRONE_COMMIT_SHA}
     commands: []

@@ -12,16 +12,16 @@ service Runner {
 
 message ActionRequest {
     string type = 1;
-    bytes params = 2; // utf-8 encoded json byte string
+    string params = 2; // json string
 }
 
 message ActionReply {
-    bytes outputs = 1; // utf-8 encoded json byte string
+    string outputs = 1; // json string
 }
 
 message AssertRequest {
     string type = 1;
-    bytes params = 2;
+    string params = 2; // json string
 }
 
 message AssertReply {
