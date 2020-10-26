@@ -31,7 +31,7 @@ tests:
       - add_members
     config:
       # NOTE: possibly add feature to render inline without template section
-      connectionString: postgresql://postgres:admin@db:5432/postgres
+      connectionString: mysql+pymysql://root:admin@db:3306/mydb
     # Run each action, then check each assert. Repeat actions until all asserts have passed
     actions:
       - type: SQLQuery

@@ -1,20 +1,20 @@
 version: '3'
 services:
   db:
-    image: postgres:12-alpine
+    image: mysql
     environment:
-      - POSTGRES_PASSWORD=admin
+      - MYSQL_ROOT_PASSWORD=admin
     ports:
-      - 5432:5432
+      - 3306:3306
   flyway:
     image: flyway/flyway:6-alpine
-    command: -url=jdbc:postgresql://db:5432/ -schemas=public -user=postgres -password=admin -connectRetries=60 migrate
+    command: -url=jdbc:mysql://db:3306/ -schemas=mydb -user=root -password=admin -connectRetries=60 migrate
     volumes:
       - .:/flyway/sql
     depends_on:
       - db
   api:
-    build: .
+    image: cicadatesting/rest-api-example:local
     ports:
       - 8080:8080
     depends_on:
