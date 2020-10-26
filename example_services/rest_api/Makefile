@@ -30,5 +30,5 @@ ifdef K3D
 	kubectl delete -f workflow.yaml
 	kubectl delete -f pvc.yaml
 else
-	docker-compose down -remove-orphans
+	docker-compose down --remove-orphans
 endif

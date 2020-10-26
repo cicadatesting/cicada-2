@@ -3,3 +3,4 @@ protobuf
 psycopg2
 sqlalchemy
 typing_extensions
+pymysql

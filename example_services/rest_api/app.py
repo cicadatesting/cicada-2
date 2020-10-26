@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 
 
 app = Flask(__name__)
-engine = create_engine("postgresql://postgres:admin@db:5432/postgres")
+engine = create_engine("mysql+pymysql://root:admin@db:3306/mydb")
 
 
 @app.route("/members", methods=["POST"])
@@ -11,10 +11,10 @@ def members():
     body = request.json
 
     with engine.connect() as connection:
+        connection.execute("INSERT INTO members (name) VALUES (%s)", body["name"])
+
         row = list(
-            connection.execute(
-                "INSERT INTO members (name) VALUES (%s) RETURNING *", body["name"]
-            )
+            connection.execute("SELECT * FROM members WHERE id=LAST_INSERT_ID()")
         )[0]
 
     return jsonify({"id": row.id, "name": row.name})

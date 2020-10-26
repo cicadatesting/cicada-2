@@ -3,7 +3,7 @@ FROM python:3.8-buster
 WORKDIR /app
 
 RUN apt-get update
-RUN apt-get install -y libpq-dev python-dev
+RUN apt-get install -y libpq-dev python3-dev
 
 COPY cicada2/runners/sql_runner/requirements.txt cicada2/runners/sql_runner/requirements.txt
 RUN pip install -r cicada2/runners/sql_runner/requirements.txt
