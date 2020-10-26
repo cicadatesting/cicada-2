@@ -31,6 +31,7 @@ Connection string to use when connecting to database. Must be of the following f
 Database driver to use. Currently supported:
 
 * `postgresql`
+* `mysql+pymysql`
 
 `REQUIRED` if `connectionString` is not set
 
