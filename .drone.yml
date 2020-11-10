@@ -79,6 +79,11 @@ steps:
       - make build
       - make run
 
+volumes:
+  - name: docker_socket
+    host:
+      path: /var/run/docker.sock
+
 trigger:
   branch:
     - dev
