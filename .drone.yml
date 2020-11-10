@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: default
+name: pre-process
 
 steps:
   - name: format
@@ -8,35 +8,32 @@ steps:
     commands:
       - pip install black
       - black cicada2
-    when:
-      branch:
-        - master
-        - dev
-      event:
-        - push
   - name: lint
     image: python:3.8
     commands:
       - pip install pylint==2.4.4
       - pylint cicada2
-    when:
-      branch:
-        - master
-        - dev
-      event:
-        - push
   - name: test
     image: python:3.8
     commands:
     - pip install -r requirements.txt
     - pip install pytest
     - pytest
-    when:
-      branch:
-        - master
-        - dev
-      event:
-        - push
+
+trigger:
+  branch:
+    - master
+    - dev
+  event:
+    - push
+
+---
+
+kind: pipeline
+type: docker
+name: compose-integration-test
+
+steps:
   - name: build-engine
     image: plugins/docker
     settings:
@@ -47,15 +44,8 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 1.0.0  # NOTE: possibly derive from branch name/pr name or something when doing releases
-        - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
-    when:
-      branch:
-        - master
-      event:
-        - push
   - name: build-rest-runner
     image: plugins/docker
     settings:
@@ -66,15 +56,8 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 1.0.0
-        - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
-    when:
-      branch:
-        - master
-      event:
-        - push
   - name: build-sql-runner
     image: plugins/docker
     settings:
@@ -85,15 +68,8 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 1.0.0
-        - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
-    when:
-      branch:
-        - master
-      event:
-        - push
   - name: build-kafka-runner
     image: plugins/docker
     settings:
@@ -104,15 +80,8 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 1.0.0
-        - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
-    when:
-      branch:
-        - master
-      event:
-        - push
   - name: build-s3-runner
     image: plugins/docker
     settings:
@@ -123,15 +92,8 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 1.0.0
-        - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
-    when:
-      branch:
-        - master
-      event:
-        - push
   - name: build-grpc-runner
     image: plugins/docker
     settings:
@@ -142,15 +104,8 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 1.0.0
-        - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
-    when:
-      branch:
-        - master
-      event:
-        - push
   - name: build-io-utility
     image: plugins/docker
     settings:
@@ -161,15 +116,8 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 1.0.0
-        - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
-    when:
-      branch:
-        - master
-      event:
-        - push
   - name: build-cicada-operator
     image: plugins/docker
     settings:
@@ -180,15 +128,134 @@ steps:
       password:
         from_secret: DOCKER_PASSWORD
       tags:
-        - 1.0.0
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+
+trigger:
+  branch:
+    - test
+  event:
+    - push
+
+---
+
+kind: pipeline
+type: docker
+name: build-images
+
+steps:
+  - name: build-engine
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/engine.dockerfile
+      repo: cicadatesting/cicada-2-engine
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - ${DRONE_SEMVER}
         - latest
         - ${DRONE_COMMIT_SHA}
     commands: []
-    when:
-      branch:
-        - master
-      event:
-        - push
+  - name: build-rest-runner
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/rest-runner.dockerfile
+      repo: cicadatesting/cicada-2-rest-runner
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - ${DRONE_SEMVER}
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+  - name: build-sql-runner
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/sql-runner.dockerfile
+      repo: cicadatesting/cicada-2-sql-runner
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - ${DRONE_SEMVER}
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+  - name: build-kafka-runner
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/kafka-runner.dockerfile
+      repo: cicadatesting/cicada-2-kafka-runner
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - ${DRONE_SEMVER}
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+  - name: build-s3-runner
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/s3-runner.dockerfile
+      repo: cicadatesting/cicada-2-s3-runner
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - ${DRONE_SEMVER}
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+  - name: build-grpc-runner
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/grpc-runner.dockerfile
+      repo: cicadatesting/cicada-2-grpc-runner
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - ${DRONE_SEMVER}
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+  - name: build-io-utility
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/operator.io-utility.dockerfile
+      repo: cicadatesting/cicada-operator-io-utility
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - ${DRONE_SEMVER}
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
+  - name: build-cicada-operator
+    image: plugins/docker
+    settings:
+      dockerfile: dockerfiles/operator.daemon.dockerfile
+      repo: cicadatesting/cicada-operator
+      username:
+        from_secret: DOCKER_USERNAME
+      password:
+        from_secret: DOCKER_PASSWORD
+      tags:
+        - ${DRONE_SEMVER}
+        - latest
+        - ${DRONE_COMMIT_SHA}
+    commands: []
   - name: publish-docs
     image: node:14
     environment:
@@ -203,8 +270,9 @@ steps:
       - cd docsite/website
       - npm install
       - GIT_USER=$GIT_USER CURRENT_BRANCH=master npm run publish-gh-pages
-    when:
-      branch:
-        - master
-      event:
-        - push
+
+trigger:
+  branch:
+    - master
+  event:
+    - tag
