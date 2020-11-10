@@ -16,19 +16,75 @@ steps:
   - name: test
     image: python:3.8
     commands:
-    - pip install -r requirements.txt
-    - pip install pytest
-    - pytest
+      - pip install -r requirements.txt
+      - pip install pytest
+      - pytest
 
 trigger:
   branch:
-    - master
     - dev
   event:
     - push
 
 ---
+kind: pipeline
+type: docker
+name: pre-integration-test
 
+steps:
+  # - name: build-engine
+  #   image: plugins/docker
+  #   settings:
+  #     dockerfile: dockerfiles/engine.dockerfile
+  #     repo: cicadatesting/cicada-2-engine
+  #     username:
+  #       from_secret: DOCKER_USERNAME
+  #     password:
+  #       from_secret: DOCKER_PASSWORD
+  #     tags:
+  #       - ${DRONE_COMMIT_SHA}
+  #   commands: []
+  # - name: build-rest-runner
+  #   image: plugins/docker
+  #   settings:
+  #     dockerfile: dockerfiles/rest-runner.dockerfile
+  #     repo: cicadatesting/cicada-2-rest-runner
+  #     username:
+  #       from_secret: DOCKER_USERNAME
+  #     password:
+  #       from_secret: DOCKER_PASSWORD
+  #     tags:
+  #       - ${DRONE_COMMIT_SHA}
+  #   commands: []
+  # - name: build-sql-runner
+  #   image: plugins/docker
+  #   settings:
+  #     dockerfile: dockerfiles/sql-runner.dockerfile
+  #     repo: cicadatesting/cicada-2-sql-runner
+  #     username:
+  #       from_secret: DOCKER_USERNAME
+  #     password:
+  #       from_secret: DOCKER_PASSWORD
+  #     tags:
+  #       - ${DRONE_COMMIT_SHA}
+  #   commands: []
+  - name: test-rest-api
+    image: docker
+    volumes:
+      - name: docker_socket
+        path: /var/run/docker.sock
+    commands:
+      - cd example_services/rest_api
+      - make build
+      - make run
+
+trigger:
+  branch:
+    - dev
+  event:
+    - push
+
+---
 kind: pipeline
 type: docker
 name: compose-integration-test
@@ -138,7 +194,6 @@ trigger:
     - push
 
 ---
-
 kind: pipeline
 type: docker
 name: build-images
