@@ -1,0 +1,18 @@
+name: Integration Test Workflow
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Start services
+        run: |
+          cd example_services/rest_api
+          make services
+      - name: Stop and clean
+        run: make clean
+      # - name: Test
+      #   run: docker run --network container:webapp-frontend appropriate/curl -s --retry 10 --retry-connrefused http://localhost:5000/

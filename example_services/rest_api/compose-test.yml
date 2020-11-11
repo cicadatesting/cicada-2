@@ -1,0 +1,10 @@
+version: "3"
+services:
+  cicada:
+    image: cicadatesting/cicada-2-engine:latest
+    environment:
+      - CONTAINER_NETWORK=rest_api_default
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - .:/tests
+      - ./reports:/reports

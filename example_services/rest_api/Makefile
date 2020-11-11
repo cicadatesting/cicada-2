@@ -13,13 +13,13 @@ k3d-setup:
 	kubectl cp V1__Initial.sql initializer:/flyway
 
 services:
-	docker-compose up api
+	docker-compose -f compose-services.yml up -d --build
 
 run:
 ifdef K3D
 	kubectl apply -f workflow.yaml
 else
-	docker-compose up --build --remove-orphans
+	docker-compose -f compose-test.yml up --exit-code-from cicada
 endif
 
 get-reports:
@@ -30,5 +30,5 @@ ifdef K3D
 	kubectl delete -f workflow.yaml
 	kubectl delete -f pvc.yaml
 else
-	docker-compose down --remove-orphans
+	docker-compose -f compose-services.yml down --remove-orphans
 endif
