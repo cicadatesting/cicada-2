@@ -31,4 +31,5 @@ jobs:
       - name: Stop and clean
         run: |
           cd example_services/rest_api
+          docker-compose -f compose-services.yml logs api
           make clean
