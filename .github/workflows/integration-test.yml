@@ -23,6 +23,8 @@ jobs:
           cd example_services/rest_api
           make services
       - name: Stop and clean
-        run: make clean
+        run: |
+          cd example_services/rest_api
+          make clean
       # - name: Test
       #   run: docker run --network container:webapp-frontend appropriate/curl -s --retry 10 --retry-connrefused http://localhost:5000/
