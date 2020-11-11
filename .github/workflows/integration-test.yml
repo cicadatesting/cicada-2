@@ -4,7 +4,7 @@ on:
     branches:
       - dev
 jobs:
-  test:
+  test-rest-api:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -22,9 +22,11 @@ jobs:
         run: |
           cd example_services/rest_api
           make services
+      - name: Run tests
+        run: |
+          cd example_services/rest_api
+          make run
       - name: Stop and clean
         run: |
           cd example_services/rest_api
           make clean
-      # - name: Test
-      #   run: docker run --network container:webapp-frontend appropriate/curl -s --retry 10 --retry-connrefused http://localhost:5000/
