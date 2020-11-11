@@ -24,6 +24,8 @@ jobs:
           make services
       - name: Run tests
         run: |
+          docker pull cicadatesting/cicada-2-rest-runner
+          docker pull cicadatesting/cicada-2-sql-runner
           cd example_services/rest_api
           make run
       - name: Stop and clean
