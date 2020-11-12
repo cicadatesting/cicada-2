@@ -81,7 +81,8 @@ def run_tests(
     else:
         initial_state = {}
 
-    client = Client(processes=False)
+    # NOTE: Allow user configurable?
+    client = Client(processes=True, n_workers=len(test_configs))
     # Initialize to None to prevent stopping on first run
     test_statuses: Dict[str, Future] = {test_name: None for test_name in test_runners}
 

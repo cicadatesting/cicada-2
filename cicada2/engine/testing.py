@@ -512,7 +512,8 @@ def run_test_with_timeout(
         keep_going.set(False)
         return run_test_task.result()
     elif timeout_task.done():
-        LOGGER.debug(timeout_task)
+        LOGGER.debug("test task: %s", run_test_task)
+        LOGGER.debug("timeout task: %s", timeout_task)
         LOGGER.info("Test %s timed out", test_config["name"])
         # NOTE: add timed out to summary?
         keep_going.set(False)

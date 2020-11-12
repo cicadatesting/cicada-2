@@ -11,7 +11,7 @@
       "cb0": {
         "results": [
           {
-            "runtime": 6
+            "runtime": 4
           }
         ],
         "outputs": {},
@@ -20,7 +20,7 @@
       "put0": {
         "results": [
           {
-            "runtime": 5
+            "runtime": 9
           }
         ],
         "outputs": {},
@@ -62,7 +62,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 60.108
+            "runtime": 46.855
           }
         ],
         "outputs": {},
@@ -74,7 +74,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 6.921
+            "runtime": 8.732
           }
         ],
         "outputs": {},
@@ -86,7 +86,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 7.15
+            "runtime": 5.817
           }
         ],
         "outputs": {},
