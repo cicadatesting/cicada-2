@@ -18,6 +18,13 @@ Create `CONTAINER_NETWORK` if set to `true`, `y`, or `yes`
 
 Defaults to `true`
 
+## ERROR_CODE_OVERRIDE
+
+Overrides error code generated at end of Cicada run.
+
+By default, this is unset. Will exit with code `1` if no remaining asserts
+and errored runs. Exits `0` otherwise.
+
 ## HEALTHCHECK_INITIAL_WAIT
 
 Time in seconds to wait before checking runner for first time before entering exponential backoff

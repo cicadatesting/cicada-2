@@ -9,6 +9,7 @@ from requests.exceptions import BaseHTTPError
 
 from cicada2.shared.asserts import assert_dicts
 from cicada2.shared.types import AssertResult
+from cicada2.shared.util import get_runtime_ms
 
 
 class ActionParams(TypedDict):
@@ -118,7 +119,7 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
         "headers": dict(response.headers),
         "body": body,
         "text": text,
-        "runtime": (end - start).seconds*1000 + (end - start).microseconds/1000,
+        "runtime": get_runtime_ms(start, end),
     }
 
 

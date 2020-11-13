@@ -15,7 +15,7 @@ from cicada2.engine.config import (
 )
 from cicada2.engine.loading import load_tests_tree
 from cicada2.shared.logs import get_logger
-from cicada2.engine.reporting import render_report
+from cicada2.engine.reporting import test_succeeded, render_report
 from cicada2.engine.runners import clean_docker_containers
 from cicada2.shared.types import TestSummary
 
@@ -66,7 +66,7 @@ def run_tests(
     tasks_type: str = TASK_TYPE,
     reports_location: str = REPORTS_FOLDER,
     run_id: str = RUN_ID,
-):
+) -> bool:
     if run_id is None:
         run_id = f"cicada-2-run-{str(uuid.uuid4())[:8]}"
 
@@ -81,8 +81,7 @@ def run_tests(
     else:
         initial_state = {}
 
-    # NOTE: Allow user configurable?
-    client = Client(processes=True, n_workers=len(test_configs))
+    client = Client(processes=False)
     # Initialize to None to prevent stopping on first run
     test_statuses: Dict[str, Future] = {test_name: None for test_name in test_runners}
 
@@ -101,12 +100,7 @@ def run_tests(
 
                     dependency_summary = dependency_result[test_dependency]["summary"]
 
-                    dependency_error = dependency_summary["error"]
-                    dependency_remaining_asserts = dependency_summary[
-                        "remaining_asserts"
-                    ]
-
-                    if dependency_error or dependency_remaining_asserts != []:
+                    if not test_succeeded(dependency_summary):
                         has_missing_dependencies = True
                     else:
                         state.update(dependency_result)
@@ -138,9 +132,14 @@ def run_tests(
 
     os.makedirs(reports_location, exist_ok=True)
     final_state = {}
+    all_tests_succeeded = True
 
     for test_name in sort_dependencies(test_dependencies):
         final_test_state = test_statuses[test_name].result()
+
+        test_summary = final_test_state[test_name]["summary"]
+
+        all_tests_succeeded &= test_succeeded(test_summary)
 
         with open(
             os.path.join(reports_location, f"state.{test_name}.json"), "w"
@@ -165,3 +164,5 @@ def run_tests(
         clean_docker_containers(run_id)
 
     LOGGER.info("Tests complete!")
+
+    return all_tests_succeeded

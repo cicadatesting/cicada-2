@@ -10,6 +10,7 @@ from kafka.errors import KafkaError
 from cicada2.shared.asserts import assert_dicts
 from cicada2.shared.types import AssertResult
 from cicada2.shared.logs import get_logger
+from cicada2.shared.util import get_runtime_ms
 
 
 LOGGER = get_logger()
@@ -133,8 +134,7 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
                 messages_sent=len(params.get("messages")) - len(failed_messages),
                 messages_received=None,
                 errors=failed_messages,
-                runtime=(end - start).seconds * 1000
-                + (end - start).microseconds / 1000,
+                runtime=get_runtime_ms(start, end),
             )
     elif action_type == "Receive":
         assert "topic" in params, "Must specify topic in action params"
@@ -159,9 +159,7 @@ def run_action(action_type: str, params: ActionParams) -> ActionResponse:
                     for msg in msg_list
                 ],
                 errors=None,
-                runtime=int(
-                    (end - start).seconds * 1000 + (end - start).microseconds / 1000
-                ),
+                runtime=get_runtime_ms(start, end),
             )
     else:
         raise ValueError(f"Action type {action_type} is invalid")

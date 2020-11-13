@@ -10,9 +10,7 @@
     "actions": {
       "cb0": {
         "results": [
-          {
-            "runtime": 4
-          }
+          null
         ],
         "outputs": {},
         "asserts": {}
@@ -20,7 +18,7 @@
       "put0": {
         "results": [
           {
-            "runtime": 9
+            "runtime": 10
           }
         ],
         "outputs": {},
