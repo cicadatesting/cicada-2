@@ -10,7 +10,9 @@
     "actions": {
       "cb0": {
         "results": [
-          null
+          {
+            "runtime": 4
+          }
         ],
         "outputs": {},
         "asserts": {}
@@ -18,7 +20,7 @@
       "put0": {
         "results": [
           {
-            "runtime": 10
+            "runtime": 6
           }
         ],
         "outputs": {},
@@ -60,7 +62,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 55.686
+            "runtime": 52.875
           }
         ],
         "outputs": {},
@@ -72,7 +74,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 5.768
+            "runtime": 6.171
           }
         ],
         "outputs": {},
@@ -84,7 +86,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 7.568
+            "runtime": 6.756
           }
         ],
         "outputs": {},

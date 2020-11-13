@@ -2,7 +2,7 @@
 
 ## Summary
 
-* Run ID: cicada-2-run-838579a7
+* Run ID: cicada-2-run-5a4e9f52
 * Successful Tests: 4
 * Failed Tests: 0
 
@@ -21,10 +21,12 @@
     - Actions:
         * cb0
             - Number of Calls: 1
-            - Failed Calls: 1
+            - Failed Calls: 0
             - Result
                 ```json
-                null
+                {
+                  "runtime": 4
+                }
                 ```
         * put0
             - Number of Calls: 1
@@ -32,7 +34,7 @@
             - Result
                 ```json
                 {
-                  "runtime": 10
+                  "runtime": 6
                 }
                 ```
         * put1
@@ -72,7 +74,7 @@
                   "errors": [],
                   "messages_received": null,
                   "messages_sent": 1,
-                  "runtime": 55.686
+                  "runtime": 52.875
                 }
                 ```
         * Send1
@@ -84,7 +86,7 @@
                   "errors": [],
                   "messages_received": null,
                   "messages_sent": 1,
-                  "runtime": 5.768
+                  "runtime": 6.171
                 }
                 ```
         * Send2
@@ -96,7 +98,7 @@
                   "errors": [],
                   "messages_received": null,
                   "messages_sent": 1,
-                  "runtime": 7.568
+                  "runtime": 6.756
                 }
                 ```
     - Asserts:
