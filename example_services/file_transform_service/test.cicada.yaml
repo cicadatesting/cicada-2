@@ -3,7 +3,7 @@ version: 0.0
 tests:
   - name: seed
     description: create test bucket
-    runner: s3-runner
+    # runner: s3-runner
     config:
       accessKeyID: EXAMPLE_ACCESS_KEY
       secretAccessKey: EXAMPLE_SECRET_KEY
@@ -23,10 +23,11 @@ tests:
             sourcePath: /test_data/{{ tf }}.yaml
             destinationPath: s3://file-transform-service/{{ tf }}.yaml
         {% endfor %}
+      image: {{ getenv("S3_RUNNER_IMAGE") }}
 
   - name: send-messages
     description: Send a message to service
-    runner: kafka-runner
+    # runner: kafka-runner
     config:
       servers: kafka:9092
     template: >
@@ -47,12 +48,13 @@ tests:
             expected:
               key: {{ tf }}
         {% endfor %}
+      image: {{ getenv("KAFKA_RUNNER_IMAGE") }}
     dependencies:
       - seed
 
   - name: check-file-transform
     description: Check that file has been updated
-    runner: s3-runner
+    # runner: s3-runner
     config:
       accessKeyID: EXAMPLE_ACCESS_KEY
       secretAccessKey: EXAMPLE_SECRET_KEY
@@ -69,12 +71,15 @@ tests:
             path: s3://file-transform-service/{{ tf }}.json
             expected: /test_data/{{ tf }}.json
         {% endfor %}
+      image: {{ getenv("S3_RUNNER_IMAGE") }}
     dependencies:
       - send-messages
 
   - name: teardown
     description: Delete temporary S3 bucket
-    runner: s3-runner
+    # runner: s3-runner
+    template: >
+      image: {{ getenv("S3_RUNNER_IMAGE") }}
     config:
       accessKeyID: EXAMPLE_ACCESS_KEY
       secretAccessKey: EXAMPLE_SECRET_KEY

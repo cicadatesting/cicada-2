@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 services:
   zookeeper:
     image: bitnami/zookeeper:latest
@@ -33,11 +33,13 @@ services:
     depends_on:
       - kafka
   cicada:
-    image: cicadatesting/cicada-2-engine:latest
+    image: ${ENGINE_IMAGE}
     environment:
       - CONTAINER_NETWORK=file_transform_service_default
       - INITIAL_STATE_FILE=/initial-data/initial.json
       - WORKDIR=${WORKDIR}
+      - KAFKA_RUNNER_IMAGE=${KAFKA_RUNNER_IMAGE}
+      - S3_RUNNER_IMAGE=${S3_RUNNER_IMAGE}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - .:/tests

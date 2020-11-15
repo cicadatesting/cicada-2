@@ -3,11 +3,12 @@ version: 0.0
 tests:
   - name: greeter-requests
     description: Send requests to greeter service
-    runner: grpc-runner
+    # runner: grpc-runner
     template: >
       volumes:
         - source: {{ getenv("WORKDIR") }}/protos
           destination: /incoming_protos
+      image: {{ getenv("GRPC_RUNNER_IMAGE") }}
     actions:
       - type: BidirectionalStreaming
         params:

@@ -1,7 +1,11 @@
 .PHONY=services,run,clean,proto-compile
 WORKDIR=$(shell pwd)
+ENGINE_IMAGE=cicadatesting/cicada-2-engine
+GRPC_RUNNER_IMAGE=cicadatesting/cicada-2-grpc-runner
 
 export WORKDIR
+export ENGINE_IMAGE
+export GRPC_RUNNER_IMAGE
 
 services:
 	docker-compose up -d --build service

@@ -20,7 +20,7 @@
       "put0": {
         "results": [
           {
-            "runtime": 6
+            "runtime": 9
           }
         ],
         "outputs": {},
@@ -62,7 +62,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 52.875
+            "runtime": 44.849
           }
         ],
         "outputs": {},
@@ -74,7 +74,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 6.171
+            "runtime": 5.991
           }
         ],
         "outputs": {},
@@ -86,7 +86,7 @@
             "messages_sent": 1,
             "messages_received": null,
             "errors": [],
-            "runtime": 6.756
+            "runtime": 6.769
           }
         ],
         "outputs": {},
@@ -169,7 +169,7 @@
       "rm0": {
         "results": [
           {
-            "runtime": 23
+            "runtime": 22
           }
         ],
         "outputs": {},
