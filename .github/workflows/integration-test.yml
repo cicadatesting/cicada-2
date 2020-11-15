@@ -88,7 +88,10 @@ jobs:
       - name: Run tests
         run: |
           cd example_services/rest_api
-          make run
+          make run \
+            ENGINE_IMAGE=cicadatesting/cicada-2-engine:${{ github.sha }} \
+            REST_RUNNER_IMAGE=cicadatesting/cicada-2-rest-runner:${{ github.sha }} \
+            SQL_RUNNER_IMAGE=cicadatesting/cicada-2-sql-runner:${{ github.sha }}
       - name: Stop and clean
         run: |
           cd example_services/rest_api

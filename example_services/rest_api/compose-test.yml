@@ -1,9 +1,11 @@
 version: "3"
 services:
   cicada:
-    image: cicadatesting/cicada-2-engine:latest
+    image: ${ENGINE_IMAGE}
     environment:
       - CONTAINER_NETWORK=rest_api_default
+      - REST_RUNNER_IMAGE=${REST_RUNNER_IMAGE}
+      - SQL_RUNNER_IMAGE=${SQL_RUNNER_IMAGE}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - .:/tests

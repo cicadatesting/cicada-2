@@ -1,4 +1,11 @@
 .PHONY=build,services,run,clean
+ENGINE_IMAGE=cicadatesting/cicada-2-engine
+REST_RUNNER_IMAGE=cicadatesting/cicada-2-rest-runner
+SQL_RUNNER_IMAGE=cicadatesting/cicada-2-sql-runner
+
+export ENGINE_IMAGE
+export REST_RUNNER_IMAGE
+export SQL_RUNNER_IMAGE
 
 build:
 	docker build . -t cicadatesting/rest-api-example:local

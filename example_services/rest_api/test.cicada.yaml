@@ -3,7 +3,9 @@ version: 0.0
 tests:
   - name: add_members
     description: add 100 new members
-    runner: rest-runner
+    # runner: rest-runner
+    template: >
+      image: {{ getenv("REST_RUNNER_IMAGE") }}
     # timeout
     # runnerCount (number of instances)
     # cycles (number of times to run each action and assert)
@@ -26,7 +28,9 @@ tests:
             name: jeff
   - name: update_names
     description: update names of new members
-    runner: sql-runner
+    # runner: sql-runner
+    template: >
+      image: {{ getenv("SQL_RUNNER_IMAGE") }}
     dependencies:
       - add_members
     config:
@@ -46,7 +50,7 @@ tests:
             {% endfor %}
             query: "update members set name='jeff2' where id in ({{ ids|join(',') }})"
         outputs:
-          # Used to add state outside of runners 
+          # Used to add state outside of runners
           - name: index
             isGlobal: false # if global, store as state['index'] or something, else, state['update_names']['actions']['SQLQuery0']['index']
             template: >
