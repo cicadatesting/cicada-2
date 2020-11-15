@@ -23,7 +23,7 @@ jobs:
         with:
           context: .
           file: dockerfiles/engine.dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386
+          platforms: linux/amd64
           push: true
           tags: cicadatesting/cicada-2-engine:${{ github.sha }}
       - name: Build and push rest-runner
@@ -31,7 +31,7 @@ jobs:
         with:
           context: .
           file: dockerfiles/rest-runner.dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386
+          platforms: linux/amd64
           push: true
           tags: cicadatesting/cicada-2-rest-runner:${{ github.sha }}
       - name: Build and push sql-runner
@@ -39,7 +39,7 @@ jobs:
         with:
           context: .
           file: dockerfiles/sql-runner.dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386
+          platforms: linux/amd64
           push: true
           tags: cicadatesting/cicada-2-sql-runner:${{ github.sha }}
       - name: Build and push kafka-runner
@@ -47,7 +47,7 @@ jobs:
         with:
           context: .
           file: dockerfiles/kafka-runner.dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386
+          platforms: linux/amd64
           push: true
           tags: cicadatesting/cicada-2-kafka-runner:${{ github.sha }}
       - name: Build and push s3-runner
@@ -55,7 +55,7 @@ jobs:
         with:
           context: .
           file: dockerfiles/s3-runner.dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386
+          platforms: linux/amd64
           push: true
           tags: cicadatesting/cicada-2-s3-runner:${{ github.sha }}
       - name: Build and push grpc-runner
@@ -63,7 +63,7 @@ jobs:
         with:
           context: .
           file: dockerfiles/grpc-runner.dockerfile
-          platforms: linux/amd64,linux/arm64,linux/386
+          platforms: linux/amd64
           push: true
           tags: cicadatesting/cicada-2-grpc-runner:${{ github.sha }}
   test-rest-api:
