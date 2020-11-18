@@ -22,7 +22,7 @@ def verify_tests(state_file):
         all_tests_succeeded = True
 
         for test_name, test_results in state_file_contents.items():
-            summary = test_results.get["summary"]
+            summary = test_results["summary"]
 
             succeeded = test_succeeded(summary)
 
