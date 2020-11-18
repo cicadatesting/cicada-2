@@ -22,15 +22,16 @@ def verify_tests(state_file):
         all_tests_succeeded = True
 
         for test_name, test_results in state_file_contents.items():
-            summary = test_results["summary"]
+            if "summary" in test_results:
+                summary = test_results["summary"]
 
-            succeeded = test_succeeded(summary)
+                succeeded = test_succeeded(summary)
 
-            LOGGER.info(
-                "Test %s: %s", test_name, ("succeeded" if succeeded else "failed")
-            )
+                LOGGER.info(
+                    "Test %s: %s", test_name, ("succeeded" if succeeded else "failed")
+                )
 
-            all_tests_succeeded &= succeeded
+                all_tests_succeeded &= succeeded
 
         return all_tests_succeeded
 
