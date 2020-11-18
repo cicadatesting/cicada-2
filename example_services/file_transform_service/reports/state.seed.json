@@ -11,7 +11,7 @@
       "cb0": {
         "results": [
           {
-            "runtime": 4
+            "runtime": 5
           }
         ],
         "outputs": {},
@@ -20,7 +20,7 @@
       "put0": {
         "results": [
           {
-            "runtime": 9
+            "runtime": 8
           }
         ],
         "outputs": {},

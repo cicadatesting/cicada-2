@@ -9,7 +9,8 @@ tests:
       secretAccessKey: EXAMPLE_SECRET_KEY
       region: local
       endpointURL: http://s3:9000
-    template: >
+    template: |
+      image: {{ getenv("S3_RUNNER_IMAGE") }}
       volumes:
         - source: {{ getenv("WORKDIR") }}/test_data
           destination: /test_data
@@ -23,14 +24,14 @@ tests:
             sourcePath: /test_data/{{ tf }}.yaml
             destinationPath: s3://file-transform-service/{{ tf }}.yaml
         {% endfor %}
-      image: {{ getenv("S3_RUNNER_IMAGE") }}
 
   - name: send-messages
     description: Send a message to service
     # runner: kafka-runner
     config:
       servers: kafka:9092
-    template: >
+    template: |
+      image: {{ getenv("KAFKA_RUNNER_IMAGE") }}
       actions:
         {% for tf in state["globals"]["transform_files"] %}
         - type: Send
@@ -48,7 +49,6 @@ tests:
             expected:
               key: {{ tf }}
         {% endfor %}
-      image: {{ getenv("KAFKA_RUNNER_IMAGE") }}
     dependencies:
       - seed
 
@@ -60,7 +60,8 @@ tests:
       secretAccessKey: EXAMPLE_SECRET_KEY
       region: local
       endpointURL: http://s3:9000
-    template: >
+    template: |
+      image: {{ getenv("S3_RUNNER_IMAGE") }}
       volumes:
         - source: {{ getenv("WORKDIR") }}/test_data
           destination: /test_data
@@ -71,15 +72,13 @@ tests:
             path: s3://file-transform-service/{{ tf }}.json
             expected: /test_data/{{ tf }}.json
         {% endfor %}
-      image: {{ getenv("S3_RUNNER_IMAGE") }}
     dependencies:
       - send-messages
 
   - name: teardown
     description: Delete temporary S3 bucket
     # runner: s3-runner
-    template: >
-      image: {{ getenv("S3_RUNNER_IMAGE") }}
+    image: "{{ getenv('S3_RUNNER_IMAGE') }}"
     config:
       accessKeyID: EXAMPLE_ACCESS_KEY
       secretAccessKey: EXAMPLE_SECRET_KEY

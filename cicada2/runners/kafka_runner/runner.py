@@ -13,7 +13,7 @@ from cicada2.shared.logs import get_logger
 from cicada2.shared.util import get_runtime_ms
 
 
-LOGGER = get_logger()
+LOGGER = get_logger("kafka-runner")
 
 
 class KafkaMessage(TypedDict):
