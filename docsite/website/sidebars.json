@@ -19,7 +19,8 @@
       "action",
       "assert",
       "config",
-      "test-engine"
+      "test-engine",
+      "verification"
     ],
     "Runners": [
       "rest-runner",
