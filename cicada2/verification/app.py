@@ -44,6 +44,7 @@ def read_with_timeout(wait_time: int, read_fn):
     raise FileNotFoundError("Timed out waiting for file to become available")
 
 
+# pylint: disable=no-value-for-parameter
 @click.command()
 @click.option(
     "--state-file",
@@ -55,7 +56,7 @@ def read_with_timeout(wait_time: int, read_fn):
     default=120,
     help="Time to wait for file to become available",
 )
-def verify_tests(state_file, timeout):
+def verify_tests(state_file: str, timeout: int) -> bool:
     parsed_state_file_path = urlparse(state_file)
 
     if parsed_state_file_path.scheme == "file":
