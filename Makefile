@@ -27,6 +27,12 @@ ifdef K3D
 	k3d image import cicadatesting/cicada-operator:latest
 endif
 
+build-verification:
+	docker build -f dockerfiles/verification.dockerfile -t cicadatesting/cicada-verification:latest .
+ifdef K3D
+	k3d image import cicadatesting/cicada-verification:latest
+endif
+
 run-env:
 	docker run -it --rm \
 		--name cicada-env \

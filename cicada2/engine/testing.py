@@ -6,7 +6,7 @@ from itertools import cycle
 from typing import Dict, List
 
 from dask import bag
-from dask.distributed import Future, get_client, Variable, wait
+from dask.distributed import Future, get_client, Variable, wait, secede, rejoin
 
 from cicada2.engine.actions import run_actions, combine_action_data
 from cicada2.engine.asserts import run_asserts
@@ -474,6 +474,9 @@ def run_test_with_timeout(
     # NOTE: Use a dask cluster scheduler?
     client = get_client()
 
+    # Used to prevent system deadlock since we are spawning 2 threads
+    secede()
+
     # NOTE: may improve way of doing this
     timeout_signal_name = f"keep-going-{str(uuid.uuid4())}"
     keep_going = Variable(timeout_signal_name)
@@ -506,13 +509,15 @@ def run_test_with_timeout(
     wait([run_test_task, timeout_task], return_when="FIRST_COMPLETED")
     end = datetime.now()
 
+    rejoin()
     LOGGER.debug("Test %s took %d seconds", test_config["name"], (end - start).seconds)
 
     if run_test_task.done():
         keep_going.set(False)
         return run_test_task.result()
     elif timeout_task.done():
-        LOGGER.debug(timeout_task)
+        LOGGER.debug("test task: %s", run_test_task)
+        LOGGER.debug("timeout task: %s", timeout_task)
         LOGGER.info("Test %s timed out", test_config["name"])
         # NOTE: add timed out to summary?
         keep_going.set(False)

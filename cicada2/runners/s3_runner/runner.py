@@ -11,6 +11,7 @@ from boto3_type_annotations.s3 import Client
 
 from cicada2.shared.types import AssertResult
 from cicada2.shared.asserts import assert_strings
+from cicada2.shared.util import get_runtime_ms
 
 
 class ActionParams(TypedDict):
@@ -83,10 +84,6 @@ def get_contents(path: str, client: S3FileSystem) -> Optional[str]:
 
     with client.open(path, "r") as fp:
         return fp.read()
-
-
-def get_runtime_ms(start: datetime, end: datetime):
-    return int((end - start).seconds * 1000 + (end - start).microseconds / 1000)
 
 
 def run_action(

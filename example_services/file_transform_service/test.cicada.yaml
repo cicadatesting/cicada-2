@@ -3,13 +3,14 @@ version: 0.0
 tests:
   - name: seed
     description: create test bucket
-    runner: s3-runner
+    # runner: s3-runner
     config:
       accessKeyID: EXAMPLE_ACCESS_KEY
       secretAccessKey: EXAMPLE_SECRET_KEY
       region: local
       endpointURL: http://s3:9000
-    template: >
+    template: |
+      image: {{ getenv("S3_RUNNER_IMAGE") }}
       volumes:
         - source: {{ getenv("WORKDIR") }}/test_data
           destination: /test_data
@@ -26,10 +27,11 @@ tests:
 
   - name: send-messages
     description: Send a message to service
-    runner: kafka-runner
+    # runner: kafka-runner
     config:
       servers: kafka:9092
-    template: >
+    template: |
+      image: {{ getenv("KAFKA_RUNNER_IMAGE") }}
       actions:
         {% for tf in state["globals"]["transform_files"] %}
         - type: Send
@@ -52,13 +54,14 @@ tests:
 
   - name: check-file-transform
     description: Check that file has been updated
-    runner: s3-runner
+    # runner: s3-runner
     config:
       accessKeyID: EXAMPLE_ACCESS_KEY
       secretAccessKey: EXAMPLE_SECRET_KEY
       region: local
       endpointURL: http://s3:9000
-    template: >
+    template: |
+      image: {{ getenv("S3_RUNNER_IMAGE") }}
       volumes:
         - source: {{ getenv("WORKDIR") }}/test_data
           destination: /test_data
@@ -74,7 +77,8 @@ tests:
 
   - name: teardown
     description: Delete temporary S3 bucket
-    runner: s3-runner
+    # runner: s3-runner
+    image: "{{ getenv('S3_RUNNER_IMAGE') }}"
     config:
       accessKeyID: EXAMPLE_ACCESS_KEY
       secretAccessKey: EXAMPLE_SECRET_KEY

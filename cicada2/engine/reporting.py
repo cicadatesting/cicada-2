@@ -2,6 +2,8 @@ import os
 
 import jinja2
 
+from cicada2.shared.types import TestSummary
+
 
 TEMPLATES_DIRECTORY = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "templates"
@@ -10,6 +12,10 @@ TEMPLATES_DIRECTORY = os.path.join(
 # TODO: include more test/assert/action config information
 # NOTE: possibly add support for displaying erred calls in non versioned results
 # NOTE: May need to support displaying test duration in ms instead of seconds
+
+
+def test_succeeded(summary: TestSummary) -> bool:
+    return not summary["error"] and summary["remaining_asserts"] == []
 
 
 def render_report(
@@ -35,4 +41,4 @@ def render_report(
         extensions=["jinja2.ext.do"],
     ).get_template(template_file)
 
-    return template.render(state=state, **kwargs)
+    return template.render(state=state, test_succeeded=test_succeeded, **kwargs)

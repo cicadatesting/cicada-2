@@ -148,6 +148,8 @@ def create_docker_container(
 
     try:
         # Start container (will pull image if necessary)
+        LOGGER.debug("Starting Docker container with image %s", image)
+
         container = client.containers.run(
             image,
             name=container_id,

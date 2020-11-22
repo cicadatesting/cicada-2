@@ -38,6 +38,23 @@ def test_render_section():
     }
 
 
+def test_render_section_multiple_parts():
+    template_string = """
+        image: {{ state['foo'] }}
+        volumes:
+          - name: {{ state['bar'] }}
+            path: bar
+    """
+
+    section = {"name": "some name", "template": template_string}
+    state = {"foo": "fizz", "bar": "buzz"}
+
+    rendered_section = parsing.render_section(section, state=state)
+
+    assert rendered_section["image"] == "fizz"
+    assert rendered_section["volumes"][0]["name"] == "buzz"
+
+
 def test_render_section_kwargs():
     template_string = """
         params:

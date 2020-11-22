@@ -15,7 +15,7 @@ from cicada2.shared.logs import get_logger
 from cicada2.shared.types import AssertResult
 
 
-LOGGER = get_logger()
+LOGGER = get_logger("grpc-runner")
 
 
 class Metadata(TypedDict):
